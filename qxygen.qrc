@@ -1,0 +1,30 @@
+<RCC>
+	<qresource prefix="/">
+		<file alias="online.png">img/status/online.png</file>
+		<file alias="onlinei.png">img/status/onlinei.png</file>
+		<file alias="chatty.png">img/status/chat.png</file>
+		<file alias="chattyi.png">img/status/chati.png</file>
+		<file alias="away.png">img/status/away.png</file>
+		<file alias="awayi.png">img/status/awayi.png</file>
+		<file alias="unavailable.png">img/status/unavailable.png</file>
+		<file alias="unavailablei.png">img/status/unavailablei.png</file>
+		<file alias="dnd.png">img/status/dnd.png</file>
+		<file alias="dndi.png">img/status/dndi.png</file>
+		<file alias="invisible.png">img/status/invisible.png</file>
+		<file alias="invisiblei.png">img/status/invisiblei.png</file>
+		<file alias="offline.png">img/status/offline.png</file>
+		<file alias="offlinei.png">img/status/offlinei.png</file>
+		<file alias="quit.png">img/exit.png</file>
+		<file alias="msg.png">img/msg.png</file>
+		<file alias="expanded.png">img/group_open.png</file>
+		<file alias="collapsed.png">img/group_closed.png</file>
+		<file alias="nofoto.png">img/nofoto.png</file>
+		<file alias="menu.png">img/menu.png</file>
+		<file alias="remove.png">img/delete.png</file>
+		<file alias="add.png">img/add.png</file>
+		<file alias="send.png">img/send.png</file>
+		<file alias="enter.png">img/enter.png</file>
+		<file alias="non.png">img/notify_on.png</file>
+		<file alias="noff.png">img/notify_off.png</file>
+	</qresource>
+</RCC>

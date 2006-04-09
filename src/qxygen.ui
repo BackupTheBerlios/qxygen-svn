@@ -1,0 +1,431 @@
+<ui version="4.0" >
+ <author></author>
+ <comment></comment>
+ <exportmacro></exportmacro>
+ <class>Qxygen</class>
+ <widget class="QMainWindow" name="Qxygen" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>259</width>
+    <height>440</height>
+   </rect>
+  </property>
+  <property name="minimumSize" >
+   <size>
+    <width>200</width>
+    <height>200</height>
+   </size>
+  </property>
+  <property name="font" >
+   <font>
+    <family>Helvetica</family>
+    <pointsize>10</pointsize>
+    <weight>50</weight>
+    <italic>false</italic>
+    <bold>false</bold>
+    <underline>false</underline>
+    <strikeout>false</strikeout>
+   </font>
+  </property>
+  <property name="contextMenuPolicy" >
+   <enum>Qt::CustomContextMenu</enum>
+  </property>
+  <property name="windowTitle" >
+   <string>Qxygen</string>
+  </property>
+  <widget class="QWidget" name="centralwidget" >
+   <layout class="QGridLayout" >
+    <property name="margin" >
+     <number>9</number>
+    </property>
+    <property name="spacing" >
+     <number>6</number>
+    </property>
+    <item row="1" column="0" >
+     <widget class="QPushButton" name="menuButton" >
+      <property name="minimumSize" >
+       <size>
+        <width>90</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="maximumSize" >
+       <size>
+        <width>90</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="contextMenuPolicy" >
+       <enum>Qt::ActionsContextMenu</enum>
+      </property>
+      <property name="text" >
+       <string/>
+      </property>
+      <property name="iconSize" >
+       <size>
+        <width>66</width>
+        <height>22</height>
+       </size>
+      </property>
+      <property name="checkable" >
+       <bool>false</bool>
+      </property>
+      <property name="flat" >
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1" >
+     <spacer>
+      <property name="orientation" >
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" >
+       <size>
+        <width>111</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="1" column="2" >
+     <widget class="QPushButton" name="statusButton" >
+      <property name="minimumSize" >
+       <size>
+        <width>25</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="maximumSize" >
+       <size>
+        <width>25</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="text" >
+       <string/>
+      </property>
+      <property name="default" >
+       <bool>false</bool>
+      </property>
+      <property name="flat" >
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0" colspan="3" >
+     <widget class="rosterWidget" name="rosterView" >
+      <property name="palette" >
+       <palette>
+        <active>
+         <color>
+          <red>0</red>
+          <green>0</green>
+          <blue>0</blue>
+         </color>
+         <color>
+          <red>221</red>
+          <green>223</green>
+          <blue>228</blue>
+         </color>
+         <color>
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+         <color>
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+         <color>
+          <red>85</red>
+          <green>85</green>
+          <blue>85</blue>
+         </color>
+         <color>
+          <red>199</red>
+          <green>199</green>
+          <blue>199</blue>
+         </color>
+         <color>
+          <red>0</red>
+          <green>0</green>
+          <blue>0</blue>
+         </color>
+         <color>
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+         <color>
+          <red>0</red>
+          <green>0</green>
+          <blue>0</blue>
+         </color>
+         <color>
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+         <color>
+          <red>239</red>
+          <green>239</green>
+          <blue>239</blue>
+         </color>
+         <color>
+          <red>0</red>
+          <green>0</green>
+          <blue>0</blue>
+         </color>
+         <color>
+          <red>103</red>
+          <green>141</green>
+          <blue>178</blue>
+         </color>
+         <color>
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+         <color>
+          <red>0</red>
+          <green>0</green>
+          <blue>238</blue>
+         </color>
+         <color>
+          <red>82</red>
+          <green>24</green>
+          <blue>139</blue>
+         </color>
+         <color>
+          <red>232</red>
+          <green>232</green>
+          <blue>232</blue>
+         </color>
+        </active>
+        <inactive>
+         <color>
+          <red>0</red>
+          <green>0</green>
+          <blue>0</blue>
+         </color>
+         <color>
+          <red>221</red>
+          <green>223</green>
+          <blue>228</blue>
+         </color>
+         <color>
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+         <color>
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+         <color>
+          <red>85</red>
+          <green>85</green>
+          <blue>85</blue>
+         </color>
+         <color>
+          <red>199</red>
+          <green>199</green>
+          <blue>199</blue>
+         </color>
+         <color>
+          <red>0</red>
+          <green>0</green>
+          <blue>0</blue>
+         </color>
+         <color>
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+         <color>
+          <red>0</red>
+          <green>0</green>
+          <blue>0</blue>
+         </color>
+         <color>
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+         <color>
+          <red>239</red>
+          <green>239</green>
+          <blue>239</blue>
+         </color>
+         <color>
+          <red>0</red>
+          <green>0</green>
+          <blue>0</blue>
+         </color>
+         <color>
+          <red>103</red>
+          <green>141</green>
+          <blue>178</blue>
+         </color>
+         <color>
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+         <color>
+          <red>0</red>
+          <green>0</green>
+          <blue>238</blue>
+         </color>
+         <color>
+          <red>82</red>
+          <green>24</green>
+          <blue>139</blue>
+         </color>
+         <color>
+          <red>232</red>
+          <green>232</green>
+          <blue>232</blue>
+         </color>
+        </inactive>
+        <disabled>
+         <color>
+          <red>128</red>
+          <green>128</green>
+          <blue>128</blue>
+         </color>
+         <color>
+          <red>221</red>
+          <green>223</green>
+          <blue>228</blue>
+         </color>
+         <color>
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+         <color>
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+         <color>
+          <red>85</red>
+          <green>85</green>
+          <blue>85</blue>
+         </color>
+         <color>
+          <red>199</red>
+          <green>199</green>
+          <blue>199</blue>
+         </color>
+         <color>
+          <red>199</red>
+          <green>199</green>
+          <blue>199</blue>
+         </color>
+         <color>
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+         <color>
+          <red>128</red>
+          <green>128</green>
+          <blue>128</blue>
+         </color>
+         <color>
+          <red>239</red>
+          <green>239</green>
+          <blue>239</blue>
+         </color>
+         <color>
+          <red>239</red>
+          <green>239</green>
+          <blue>239</blue>
+         </color>
+         <color>
+          <red>0</red>
+          <green>0</green>
+          <blue>0</blue>
+         </color>
+         <color>
+          <red>86</red>
+          <green>117</green>
+          <blue>148</blue>
+         </color>
+         <color>
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+         <color>
+          <red>0</red>
+          <green>0</green>
+          <blue>238</blue>
+         </color>
+         <color>
+          <red>82</red>
+          <green>24</green>
+          <blue>139</blue>
+         </color>
+         <color>
+          <red>232</red>
+          <green>232</green>
+          <blue>232</blue>
+         </color>
+        </disabled>
+       </palette>
+      </property>
+      <property name="contextMenuPolicy" >
+       <enum>Qt::DefaultContextMenu</enum>
+      </property>
+      <property name="verticalScrollBarPolicy" >
+       <enum>Qt::ScrollBarAsNeeded</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy" >
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="indentation" >
+       <number>0</number>
+      </property>
+      <property name="rootIsDecorated" >
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>421</y>
+     <width>259</width>
+     <height>19</height>
+    </rect>
+   </property>
+  </widget>
+ </widget>
+ <layoutdefault spacing="0" margin="0" />
+ <pixmapfunction></pixmapfunction>
+ <customwidgets>
+  <customwidget>
+   <class>rosterWidget</class>
+   <extends>QTreeView</extends>
+   <header>roster_widget.h</header>
+   <container>0</container>
+   <pixmap></pixmap>
+  </customwidget>
+ </customwidgets>
+ <includes/>
+ <resources>
+  <include location="../Qxygen.qrc" />
+ </resources>
+ <connections/>
+</ui>

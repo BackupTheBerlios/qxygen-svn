@@ -1,0 +1,39 @@
++++++++TODO+++++++
+
+==CHATTING
+-typing notifying
+-send alarm
+-emoticons in chat window
+
+==ROSTER
+-editing items (now you can edit by adding same item, but we need full edit dlg)
+-context menu for items/groups
+-extended contact info (foto, phone, mobile etc)
+
+==SEARCHING
+-create search window
+-implement search methods
+-implement search result display
+
+==CONFIGURATION
+-create configuration dialog
+-profiles support
+-color/font picking
+
+==OTHER
+-file transfer
+
++++++++DONE+++++++
+
+==CHATTING
+-create chat window;
+-message sending to window
+-message coding/sending
+
+==ROSTER
+-authorization accept/refuse
+-sorting groups/contacts by name and presence
+-icons with description ("i")
+-subgroups/metacontact currently available/unavailable/awaiting subscription (make as items heading the avail/unavail/unsubscribed w/o Qt::ItemIsSelectable flag to avoid selecting)
+-adding items
+-removing items
