@@ -52,6 +52,20 @@ void TrayIcon::swapIcon()
 	msg=!msg;
 }
 
+void TrayIcon::windowOpened(QString owner)
+{
+	if(jid.count())
+	{
+		jid.removeAll(owner);
+		if(!jid.count())
+		{
+			msgTimer->stop();
+			if(!msg)
+				swapIcon();
+		}
+	}
+}
+
 void TrayIcon::gotMsg(QString from)
 {
 	jid.removeAll(from);

@@ -18,90 +18,29 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef QXYGEN_H
-#define QXYGEN_H
+#ifndef SETTINGS_H
+#define SETTINGS_H
 
-#define VERSION 0.0.0_20060407
+#include <QObject>
 
-#include <QDomNode>
+class QDir;
+class QSettings;
 
-#include "ui_qxygen.h"
-
-class QMenu;
-
-class TrayIcon;
-class rosterView;
-class rosterDelegate;
-class tlen;
-class chatWindow;
-class settingsMenager;
-
-class qxygen: public QMainWindow
+class settingsMenager: public QObject
 {
 Q_OBJECT
 
 public:
-	enum {Available=0, Chatty=1, Away=2, Unavailable=3, Dnd=4, Invisible=5, Offline=6};
-	qxygen(QWidget *parent=0, QString title="Qxygen");
-	~qxygen();
+	settingsMenager(QObject *parent=0);
+	~settingsMenager();
 
-public slots:
-	void parseRemove();
-	void collapseItem(const QModelIndex &index);
-	void expandItem(const QModelIndex &index);
-	void toggleVisibility();
-	void slotTrayClosed();
-	void showMainMenu();
-	void showStatusMenu();
-	void statusChange();
-	void authorizationAsk(QString);
-	void addUser();
+	void initModule();
 
-	void chatMsgReceived(QDomNode);
-
-	void windowUpdate(QString,QIcon);
-
-	void showChatWindow(const QModelIndex&);
-	void openMsg(QString);
-
-	void createProfile();
 signals:
-	void authorize(QString, bool);
-	void windowOpened(QString);
-
-protected:
-	void queueMsg(QString,QString,QString);
-	void setupModel();
-	void setupTray();
-	void setupMenus();
-	void closeEvent(QCloseEvent *e);
+	void noProfile();
 
 private:
-	QMap<QString /*jid*/, chatWindow*> chatMap;
-	QMap<QString /*jid*/, QStringList /*msg queue*/> msgMap;
-
-	settingsMenager *settings;
-
-	QMenu	*mTrayMenu,
-		*mainMenu,
-		*statusMenu,
-		*rosterMenu;
-
-	QAction *exit,
-		*online,
-		*chatty,
-		*away,
-		*unavailable,
-		*dnd,
-		*invisible,
-		*offline,
-		*add,
-		*remove;
-
-	tlen *Tlen;
-	rosterView *rosterModel;
-	rosterDelegate *delegate;
-	TrayIcon *mTray;
-	Ui::Qxygen ui;
+	QSettings *qxygen;
+	QDir *dir;
 };
 #endif

@@ -22,6 +22,8 @@
 #include <QMessageBox>
 #include <QDateTime>
 
+#include <QDebug>
+
 #include "qxygen.h"
 #include "roster_view.h"
 #include "roster_delegate.h"
@@ -30,9 +32,11 @@
 #include "tlen.h"
 #include "useradd.h"
 #include "chatwindow.h"
+#include "settings.h"
 
 qxygen::qxygen(QWidget *parent, QString title): QMainWindow(parent)
 {
+	settings=new settingsMenager();
 	ui.setupUi(this);
 
 	statusBar()->setHidden(TRUE);
@@ -56,6 +60,8 @@ qxygen::qxygen(QWidget *parent, QString title): QMainWindow(parent)
 
 	connect(ui.rosterView, SIGNAL(expanded ( const QModelIndex & )), this, SLOT(expandItem( const QModelIndex & )));
 	connect(ui.rosterView, SIGNAL(collapsed ( const QModelIndex & )), this, SLOT(collapseItem( const QModelIndex & )));
+
+	connect(this, SIGNAL(windowOpened(QString)), mTray, SLOT(windowOpened(QString)));
 
 	// TLEN PROTOCOL AND GUI
 	connect(Tlen, SIGNAL(statusChanged()), this, SLOT(statusChange()));
@@ -88,6 +94,10 @@ qxygen::qxygen(QWidget *parent, QString title): QMainWindow(parent)
 	connect(rosterModel, SIGNAL(groupAdded(const QModelIndex &)), ui.rosterView, SLOT(expand(const QModelIndex &)));
 
 	connect(mTray, SIGNAL(openMsg(QString)), this, SLOT(openMsg(QString)));
+
+	connect(settings, SIGNAL(noProfile()), this, SLOT(createProfile()));
+
+	settings->initModule();
 }
 
 qxygen::~qxygen()
@@ -317,7 +327,7 @@ void qxygen::chatMsgReceived(QDomNode n)
 	QDomElement msg=n.toElement();
 	QString from=msg.attribute("from");
 	QString body;
-	QString timeStamp="";
+	QString timeStamp;
 
 	QDomNodeList nl=msg.childNodes();
 	for(int i=0; i<nl.count();++i)
@@ -328,19 +338,22 @@ void qxygen::chatMsgReceived(QDomNode n)
 
 		if(tmp.nodeName()=="x")
 		{
+			qDebug()<<"Reading stamp from node";
 			QDomElement e=tmp.toElement();
 			if(e.hasAttribute("xmlns") && e.attribute("xmlns")=="jabber:x:delay")
 			{
-				QDateTime dt;
+				QDateTime dt(QDateTime::fromString(e.attribute("stamp"), "yyyyMMdd'T'hh:mm:ss"));
 				dt.setTimeSpec(Qt::UTC);
-				dt=QDateTime::fromString("yyyyMMddTHHmmss");
 				timeStamp=dt.toLocalTime().toString("dd.MM.yyyy hh:mm:ss");
 			}
 		}
 	}
 
 	if(timeStamp.isEmpty())
+	{
+		qDebug()<<"Current stamp";
 		timeStamp=QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss");
+	}
 
 	//<message type='chat' from='qxygen@tlen.pl'><body>wiadomosc</body></message>
 
@@ -377,8 +390,17 @@ void qxygen::showChatWindow(const QModelIndex &index)
 			chatWindow *w=new chatWindow(label,jid,0);
 			w->setWindowIcon(QIcon(QPixmap::fromImage(index.model()->data(index,Qt::DecorationRole).value<QImage>())));
 			chatMap.insert(jid,w);
+			QStringListIterator it(msgMap[jid]);
+			while(it.hasNext())
+			{
+				QString line=it.next();
+				QStringList msg=line.split("\t");
+				w->displayMsg(Tlen->decode(msg[0].toUtf8()), msg[1]);
+			}
+			msgMap[jid].clear();
 			connect(w, SIGNAL(writeMsg(QString,QString)), Tlen, SLOT(writeMsg(QString,QString)));
 			w->show();
+			emit windowOpened(jid);
 		}
 	}
 }
@@ -439,4 +461,9 @@ void qxygen::windowUpdate(QString owner, QIcon ico)
 {
 	if(chatWindow *w=chatMap[owner])
 		w->setWindowIcon(ico);
+}
+
+void qxygen::createProfile()
+{
+	qDebug()<<"Create profile";
 }

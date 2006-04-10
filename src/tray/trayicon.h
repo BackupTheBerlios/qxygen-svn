@@ -82,6 +82,7 @@ public slots:
 	void setToolTip( const QString &tip );
 
 	void swapIcon();
+	void windowOpened(QString);
 
 	void show();
 	void hide();

@@ -28,6 +28,8 @@
 #include <QApplication>
 #include <QLabel>
 
+#include <QDebug>
+
 #include "chatwindow.h"
 #include "chattextedit.h"
 
@@ -43,6 +45,7 @@ chatWindow::chatWindow(QString label, QString jid, QWidget *parent): QWidget(par
 	splitter->setChildrenCollapsible(FALSE);
 	display=new chatTextEdit(splitter);
 	display->setReadOnly(TRUE);
+	display->setWordWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
 
 	QWidget *lower=new QWidget(splitter);
 
@@ -85,6 +88,8 @@ chatWindow::chatWindow(QString label, QString jid, QWidget *parent): QWidget(par
 
 	typingNotify->adjustSize();
 	setReturnSend->adjustSize();
+
+	qDebug()<<setReturnSend->sizeHint().width()<<setReturnSend->sizeHint().height();
 }
 
 void chatWindow::checkSend()
@@ -125,7 +130,7 @@ void chatWindow::sendMsg()
 	input->clear();
 	msg.replace("<","&lt;");
 	msg.replace(">","&gt;");
-	msg.replace(" ", "&nbsp;");
+	msg.replace(" ", "&ensp;");
 	msg.replace("\n", "<br/>");
 	display->append("<div><b>Naresh :: "+QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss")+"</b><br/>"+msg+"</div>");
 }
@@ -134,7 +139,7 @@ void chatWindow::displayMsg(QString msg, QString time)
 {
 	msg.replace("<","&lt;");
 	msg.replace(">","&gt;");
-	msg.replace(" ", "&nbsp;");
+	msg.replace(" ", "&ensp;");
 	msg.replace("\n","<br/>");
 	display->append("<div><b>"+title+" :: "+time+"</b><br/>"+msg+"</div>");
 }

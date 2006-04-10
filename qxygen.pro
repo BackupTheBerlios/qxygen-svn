@@ -7,9 +7,9 @@ OBJECTS_DIR=tmp/obj
 MOC_DIR=tmp/moc
 UI_DIR=tmp/ui
 
-DEPENDPATH=src/roster
+DEPENDPATH=src/roster src/settings
 
-INCLUDEPATH=src src/roster src/protocol src/chat src/tray
+INCLUDEPATH=src src/roster src/protocol src/chat src/tray src/settings
 
 FORMS = src/qxygen.ui \
 	src/roster/useradd.ui
@@ -17,6 +17,7 @@ FORMS = src/qxygen.ui \
 RESOURCES=qxygen.qrc
 
 HEADERS=src/qxygen.h \
+	src/settings/settings.h \
 	src/roster/roster_view.h \
 	src/roster/roster_item.h \
 	src/roster/roster_delegate.h \
@@ -31,6 +32,7 @@ HEADERS=src/qxygen.h \
 
 SOURCES=src/main.cpp \
 	src/qxygen.cpp \
+	src/settings/settings.cpp \
 	src/roster/roster_view.cpp \
 	src/roster/roster_item.cpp \
 	src/roster/roster_delegate.cpp \
