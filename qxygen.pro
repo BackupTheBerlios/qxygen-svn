@@ -12,12 +12,14 @@ DEPENDPATH=src/roster src/settings
 INCLUDEPATH=src src/roster src/protocol src/chat src/tray src/settings
 
 FORMS = src/qxygen.ui \
-	src/roster/useradd.ui
+	src/roster/useradd.ui \
+	src/settings/profile.ui
 
 RESOURCES=qxygen.qrc
 
 HEADERS=src/qxygen.h \
 	src/settings/settings.h \
+	src/settings/profileform.h \
 	src/roster/roster_view.h \
 	src/roster/roster_item.h \
 	src/roster/roster_delegate.h \
@@ -33,6 +35,7 @@ HEADERS=src/qxygen.h \
 SOURCES=src/main.cpp \
 	src/qxygen.cpp \
 	src/settings/settings.cpp \
+	src/settings/profileform.cpp \
 	src/roster/roster_view.cpp \
 	src/roster/roster_item.cpp \
 	src/roster/roster_delegate.cpp \

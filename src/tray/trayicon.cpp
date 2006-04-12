@@ -45,6 +45,14 @@
 #include <QTimer>
 #include <QEvent>
 
+void TrayIcon::clearQueue()
+{
+	jid.clear();
+	msgTimer->stop();
+	if(!msg)
+		swapIcon();
+}
+
 void TrayIcon::swapIcon()
 {
 	msg?old=pm:old=old;

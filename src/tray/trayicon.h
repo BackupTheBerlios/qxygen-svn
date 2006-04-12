@@ -83,6 +83,7 @@ public slots:
 
 	void swapIcon();
 	void windowOpened(QString);
+	void clearQueue();
 
 	void show();
 	void hide();

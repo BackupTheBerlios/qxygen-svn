@@ -33,10 +33,13 @@
 #include "useradd.h"
 #include "chatwindow.h"
 #include "settings.h"
+#include "profileform.h"
 
 qxygen::qxygen(QWidget *parent, QString title): QMainWindow(parent)
 {
 	settings=new settingsMenager();
+	connect(settings, SIGNAL(noProfile()), this, SLOT(createProfile()));
+
 	ui.setupUi(this);
 
 	statusBar()->setHidden(TRUE);
@@ -91,13 +94,16 @@ qxygen::qxygen(QWidget *parent, QString title): QMainWindow(parent)
 	connect(add,SIGNAL(triggered()),this,SLOT(addUser()));
 	connect(remove, SIGNAL(triggered()), this, SLOT(parseRemove()));
 
+	connect(createProfileAction, SIGNAL(triggered()), this, SLOT(createProfile()));
+	connect(profiles, SIGNAL(triggered(QAction*)), this, SLOT(choseProfile(QAction*)));
+
 	connect(rosterModel, SIGNAL(groupAdded(const QModelIndex &)), ui.rosterView, SLOT(expand(const QModelIndex &)));
 
 	connect(mTray, SIGNAL(openMsg(QString)), this, SLOT(openMsg(QString)));
 
-	connect(settings, SIGNAL(noProfile()), this, SLOT(createProfile()));
-
 	settings->initModule();
+	loadProfile();
+	updateProfilesMenu();
 }
 
 qxygen::~qxygen()
@@ -208,6 +214,11 @@ void qxygen::setupMenus()
 	mainMenu=new QMenu(ui.menuButton);
 	statusMenu=new QMenu(ui.statusButton);
 	rosterMenu=new QMenu(ui.rosterView);
+	profilesMenu=new QMenu(tr("Profiles"));
+
+	profiles=new QActionGroup(this);
+
+	createProfileAction=new QAction(tr("Add profile"), this);
 
 	exit=new QAction(QIcon(":quit.png"), tr("Exit program"), this);
 
@@ -247,6 +258,7 @@ void qxygen::setupMenus()
 	mTrayMenu->addSeparator();
 	mTrayMenu->addAction(exit);
 
+	mainMenu->addMenu(profilesMenu);
 	mainMenu->addAction(add);
 	mainMenu->addSeparator();
 	mainMenu->addAction(exit);
@@ -338,7 +350,6 @@ void qxygen::chatMsgReceived(QDomNode n)
 
 		if(tmp.nodeName()=="x")
 		{
-			qDebug()<<"Reading stamp from node";
 			QDomElement e=tmp.toElement();
 			if(e.hasAttribute("xmlns") && e.attribute("xmlns")=="jabber:x:delay")
 			{
@@ -350,10 +361,7 @@ void qxygen::chatMsgReceived(QDomNode n)
 	}
 
 	if(timeStamp.isEmpty())
-	{
-		qDebug()<<"Current stamp";
 		timeStamp=QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss");
-	}
 
 	//<message type='chat' from='qxygen@tlen.pl'><body>wiadomosc</body></message>
 
@@ -387,7 +395,7 @@ void qxygen::showChatWindow(const QModelIndex &index)
 		else
 		{
 			QString label=index.model()->data(index,Qt::DisplayRole).toString();
-			chatWindow *w=new chatWindow(label,jid,0);
+			chatWindow *w=new chatWindow(label,jid,windowTitle(),0);
 			w->setWindowIcon(QIcon(QPixmap::fromImage(index.model()->data(index,Qt::DecorationRole).value<QImage>())));
 			chatMap.insert(jid,w);
 			QStringListIterator it(msgMap[jid]);
@@ -440,7 +448,7 @@ void qxygen::openMsg(QString from)
 	{
 		rosterItem *item=rosterModel->find(from);
 		QString label=item->data(0);
-		chatWindow *w=new chatWindow(label,from,0);
+		chatWindow *w=new chatWindow(label,from, windowTitle(),0);
 		chatMap.insert(from,w);
 		connect(w, SIGNAL(writeMsg(QString,QString)), Tlen, SLOT(writeMsg(QString,QString)));
 		w->setWindowIcon(QIcon(QPixmap::fromImage(item->icon())));
@@ -465,5 +473,56 @@ void qxygen::windowUpdate(QString owner, QIcon ico)
 
 void qxygen::createProfile()
 {
-	qDebug()<<"Create profile";
+	QStringList profilesList=settings->profilesList();
+	profileForm *form=new profileForm(this, profilesList);
+	connect(form, SIGNAL(addProfile(QString,QString,QString)), this, SLOT(addProfile(QString,QString,QString)));
+	form->exec();
+}
+
+void qxygen::addProfile(QString profile,QString login,QString pass)
+{
+	settings->addProfile(profile,login,pass);
+	updateProfilesMenu();
+	loadProfile();
+}
+
+void qxygen::updateProfilesMenu()
+{
+	profilesMenu->clear();
+	QStringList profileNames=settings->profilesList();
+
+	profiles->setExclusive(TRUE);
+
+	QStringListIterator it(profileNames);
+	while(it.hasNext())
+	{
+		QString name=it.next();
+		QAction *a=new QAction(name,this);
+		a->setCheckable(TRUE);
+		if(name==windowTitle())
+			a->setChecked(TRUE);
+		profiles->addAction(a);
+		profilesMenu->addAction(a);
+	}
+	if(profileNames.count())
+		profilesMenu->addSeparator();
+	profilesMenu->addAction(createProfileAction);
+}
+
+void qxygen::loadProfile()
+{
+	mTray->clearQueue();
+	if(Tlen->isConnected())
+		Tlen->closeConn();
+
+	Tlen->setPass(settings->pass());
+	Tlen->setUname(settings->user());
+	setWindowTitle(settings->profileName());
+	rosterModel->clearRoster();
+}
+
+void qxygen::choseProfile(QAction *a)
+{
+	settings->choseProfile(a->text());
+	loadProfile();
 }

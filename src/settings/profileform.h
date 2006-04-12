@@ -29,9 +29,16 @@ class profileForm: public QDialog
 Q_OBJECT
 
 public:
-	profileForm(QWidget *parent=0);
+	profileForm(QWidget *parent=0, QStringList ls=QStringList());
+
+public slots:
+	void profileConfirm();
+
+signals:
+	void addProfile(QString,QString,QString);
 
 private:
+	QStringList profilesList;
 	Ui::newProfileDialog ui;
 };
 #endif

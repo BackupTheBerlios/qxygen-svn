@@ -34,13 +34,22 @@ public:
 	settingsMenager(QObject *parent=0);
 	~settingsMenager();
 
+	QStringList profilesList();
+
+	QString user();
+	QString pass();
+	QString profileName();
+
+	void choseProfile(QString);
+
 	void initModule();
+	void addProfile(QString,QString,QString);
 
 signals:
 	void noProfile();
 
 private:
-	QSettings *qxygen;
+	QSettings *qxygen,*profile;
 	QDir *dir;
 };
 #endif

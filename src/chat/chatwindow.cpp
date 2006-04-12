@@ -27,15 +27,18 @@
 #include <QMenu>
 #include <QApplication>
 #include <QLabel>
+#include <QTimer>
 
 #include <QDebug>
 
 #include "chatwindow.h"
 #include "chattextedit.h"
 
-chatWindow::chatWindow(QString label, QString jid, QWidget *parent): QWidget(parent)
+chatWindow::chatWindow(QString label, QString jid, QString profile,QWidget *parent): QWidget(parent)
 {
+	installEventFilter(this);
 	setGeometry(150,150,350,300);
+	profileName=profile;
 	title=label;
 	owner=jid;
 	setWindowTitle(title);
@@ -89,7 +92,9 @@ chatWindow::chatWindow(QString label, QString jid, QWidget *parent): QWidget(par
 	typingNotify->adjustSize();
 	setReturnSend->adjustSize();
 
-	qDebug()<<setReturnSend->sizeHint().width()<<setReturnSend->sizeHint().height();
+	msgTimer=new QTimer();
+
+	connect(msgTimer, SIGNAL(timeout()), this, SLOT(swapTitleBar()));
 }
 
 void chatWindow::checkSend()
@@ -117,6 +122,12 @@ bool chatWindow::eventFilter(QObject *obj, QEvent *ev)
 			}
 		}
 	}
+	else if(ev->type()==QEvent::WindowActivate)
+	{
+		msgTimer->stop();
+		if(windowTitle()==" ")
+			setWindowTitle(title);
+	}
 
 	return QWidget::eventFilter(obj,ev);
 }
@@ -132,7 +143,7 @@ void chatWindow::sendMsg()
 	msg.replace(">","&gt;");
 	msg.replace(" ", "&ensp;");
 	msg.replace("\n", "<br/>");
-	display->append("<div><b>Naresh :: "+QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss")+"</b><br/>"+msg+"</div>");
+	display->append("<table width=\"100%\" style=\"background-color: #ffffff;\"><tr><td><b>"+profileName+" :: "+QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss")+"</b></td></tr><tr><td>"+msg+"</td></tr></table>");
 }
 
 void chatWindow::displayMsg(QString msg, QString time)
@@ -141,5 +152,13 @@ void chatWindow::displayMsg(QString msg, QString time)
 	msg.replace(">","&gt;");
 	msg.replace(" ", "&ensp;");
 	msg.replace("\n","<br/>");
-	display->append("<div><b>"+title+" :: "+time+"</b><br/>"+msg+"</div>");
+	display->append("<table width=\"100%\" style=\"background-color: #e0e0e0;\"><tr><td><b>"+title+" :: "+time+"</b></td></tr><tr><td>"+msg+"</td></tr></table>");
+
+	if(!isActiveWindow())
+		msgTimer->start(500);
+}
+
+void chatWindow::swapTitleBar()
+{
+	windowTitle()==" "?setWindowTitle(title):setWindowTitle(" ");
 }

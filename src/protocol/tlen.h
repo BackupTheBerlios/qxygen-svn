@@ -32,9 +32,6 @@ class tlen: public QObject
 {
 Q_OBJECT
 
-Q_PROPERTY( QString uname READ uname WRITE setUname )
-Q_PROPERTY( QString pass READ pass WRITE setPass )
-
 public:
 	enum ConnectionState{	ConnectingToHub = 0,
 				Connecting = 1,

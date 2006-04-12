@@ -38,13 +38,6 @@ tlen::tlen(QObject *parent): QObject(parent)
 
 	QSettings settings("qxygen.berlios.de", "Qxygen");
 
-// To connect you need to uncoment lines above and fillup proper data
-//	settings.setValue("user", "your-username");
-//	settings.setValue("pass", "your-password");
-
-	u=settings.value("user").toString();
-	p=settings.value("pass").toString();
-
 	status="unavailable";
 	descr="";
 

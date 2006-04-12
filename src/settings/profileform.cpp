@@ -18,9 +18,39 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#include <QMessageBox>
+
 #include "profileform.h"
 
-profileForm::profileForm(QWidget *parent):QDialog(parent)
+profileForm::profileForm(QWidget *parent, QStringList pl):QDialog(parent)
 {
+	profilesList=pl;
 	ui.setupUi(this);
+	setWindowTitle(tr("Create new profile"));
+
+	ui.passwordLineEdit->setEchoMode(QLineEdit::Password);
+
+	connect(ui.createPushButton, SIGNAL(clicked()), this, SLOT(profileConfirm()));
+	connect(ui.cancelPushButton, SIGNAL(clicked()), this, SLOT(close()));
+}
+
+void profileForm::profileConfirm()
+{
+	if(ui.loginLineEdit->text().isEmpty() || ui.passwordLineEdit->text().isEmpty())
+	{
+		QMessageBox::warning(this, tr("Missing fields"), tr("You have to fill up at least \"Login\" and \"Password\" fields."), tr("Ok"));
+		return;
+	}
+
+	if(ui.profileLineEdit->text().isEmpty())
+		ui.profileLineEdit->setText(ui.loginLineEdit->text());
+
+	if(profilesList.contains(ui.profileLineEdit->text(), Qt::CaseInsensitive))
+	{
+		QMessageBox::warning(this, tr("Profile exists"), tr("Porfile \"%1\" already exists. Pick another profile name.").arg(ui.profileLineEdit->text()), tr("Ok"));
+		return;
+	}
+
+	emit addProfile(ui.profileLineEdit->text(), ui.loginLineEdit->text(), ui.passwordLineEdit->text());
+	close();
 }

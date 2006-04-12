@@ -16,8 +16,8 @@
 -implement search result display
 
 ==CONFIGURATION
+-profiles editing
 -create configuration dialog
--profiles support
 -color/font picking
 
 ==OTHER
@@ -29,6 +29,7 @@
 -create chat window;
 -message sending to window
 -message coding/sending
+-title bar blinking
 
 ==ROSTER
 -authorization accept/refuse
@@ -37,3 +38,6 @@
 -subgroups/metacontact currently available/unavailable/awaiting subscription (make as items heading the avail/unavail/unsubscribed w/o Qt::ItemIsSelectable flag to avoid selecting)
 -adding items
 -removing items
+
+==CONFIGURATION
+-profiles adding/switching

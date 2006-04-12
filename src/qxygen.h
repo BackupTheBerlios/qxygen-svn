@@ -65,6 +65,10 @@ public slots:
 	void openMsg(QString);
 
 	void createProfile();
+	void addProfile(QString,QString,QString);
+	void updateProfilesMenu();
+	void loadProfile();
+	void choseProfile(QAction*);
 signals:
 	void authorize(QString, bool);
 	void windowOpened(QString);
@@ -85,7 +89,10 @@ private:
 	QMenu	*mTrayMenu,
 		*mainMenu,
 		*statusMenu,
-		*rosterMenu;
+		*rosterMenu,
+		*profilesMenu;
+
+	QActionGroup *profiles;
 
 	QAction *exit,
 		*online,
@@ -96,7 +103,8 @@ private:
 		*invisible,
 		*offline,
 		*add,
-		*remove;
+		*remove,
+		*createProfileAction;
 
 	tlen *Tlen;
 	rosterView *rosterModel;

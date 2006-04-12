@@ -43,6 +43,49 @@ void settingsMenager::initModule()
 		dir->mkdir(dir->path());
 
 	qxygen=new QSettings(dir->path()+"/qxygen",QSettings::NativeFormat);
-	if(qxygen->value("profile").toString().isEmpty())
+	if(qxygen->value("profiles/default").toString().isEmpty())
 		emit noProfile();
+	else
+		profile=new QSettings(dir->path()+"/"+qxygen->value("profiles/default").toString(), QSettings::NativeFormat);
+}
+
+void settingsMenager::addProfile(QString name, QString login, QString pass)
+{
+	profile=new QSettings(dir->path()+"/"+name, QSettings::NativeFormat);
+	qxygen->setValue("profiles/default", name);
+	QStringList profilesList=qxygen->value("profiles/list").value<QStringList>();
+	profilesList<<name;
+	qxygen->setValue("profiles/list", profilesList);
+	profile->setValue("user/profile", name);
+	profile->setValue("user/login",login);
+	profile->setValue("user/pass", pass);
+}
+
+QStringList settingsMenager::profilesList()
+{
+	if(qxygen->contains("profiles/list"))
+		return qxygen->value("profiles/list").value<QStringList>();
+	else
+		return QStringList();
+}
+
+QString settingsMenager::user()
+{
+	return profile->value("user/login").toString();
+}
+
+QString settingsMenager::pass()
+{
+	return profile->value("user/pass").toString();
+}
+
+QString settingsMenager::profileName()
+{
+	return profile->value("user/profile").toString();
+}
+
+void settingsMenager::choseProfile(QString p)
+{
+	qxygen->setValue("profiles/default", p);
+	profile=new QSettings(dir->path()+"/"+qxygen->value("profiles/default").toString(), QSettings::NativeFormat);
 }
