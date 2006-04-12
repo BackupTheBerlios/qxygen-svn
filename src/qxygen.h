@@ -42,7 +42,7 @@ Q_OBJECT
 
 public:
 	enum {Available=0, Chatty=1, Away=2, Unavailable=3, Dnd=4, Invisible=5, Offline=6};
-	qxygen(QWidget *parent=0, QString title="Qxygen");
+	qxygen(QWidget *parent=0);
 	~qxygen();
 
 public slots:
@@ -75,9 +75,12 @@ signals:
 
 protected:
 	void queueMsg(QString,QString,QString);
-	void setupModel();
+	void setupRoster();
 	void setupTray();
 	void setupMenus();
+	void setupProtocol();
+	void setupGui();
+	void setupSettings();
 	void closeEvent(QCloseEvent *e);
 
 private:

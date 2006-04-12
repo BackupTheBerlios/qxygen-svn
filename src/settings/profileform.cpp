@@ -22,8 +22,7 @@
 
 #include "profileform.h"
 
-profileForm::profileForm(QWidget *parent, QStringList pl):QDialog(parent)
-{
+profileForm::profileForm( QWidget *parent, QStringList pl ): QDialog( parent ) {
 	profilesList=pl;
 	ui.setupUi(this);
 	setWindowTitle(tr("Create new profile"));
@@ -34,10 +33,8 @@ profileForm::profileForm(QWidget *parent, QStringList pl):QDialog(parent)
 	connect(ui.cancelPushButton, SIGNAL(clicked()), this, SLOT(close()));
 }
 
-void profileForm::profileConfirm()
-{
-	if(ui.loginLineEdit->text().isEmpty() || ui.passwordLineEdit->text().isEmpty())
-	{
+void profileForm::profileConfirm() {
+	if(ui.loginLineEdit->text().isEmpty() || ui.passwordLineEdit->text().isEmpty()) {
 		QMessageBox::warning(this, tr("Missing fields"), tr("You have to fill up at least \"Login\" and \"Password\" fields."), tr("Ok"));
 		return;
 	}
@@ -45,8 +42,7 @@ void profileForm::profileConfirm()
 	if(ui.profileLineEdit->text().isEmpty())
 		ui.profileLineEdit->setText(ui.loginLineEdit->text());
 
-	if(profilesList.contains(ui.profileLineEdit->text(), Qt::CaseInsensitive))
-	{
+	if(profilesList.contains(ui.profileLineEdit->text(), Qt::CaseInsensitive)) {
 		QMessageBox::warning(this, tr("Profile exists"), tr("Porfile \"%1\" already exists. Pick another profile name.").arg(ui.profileLineEdit->text()), tr("Ok"));
 		return;
 	}

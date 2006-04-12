@@ -28,8 +28,7 @@ class rosterWidget: public QTreeView
 Q_OBJECT
 
 public:
-	rosterWidget(QObject *parent=0);
-	~rosterWidget();
+	rosterWidget(QWidget *parent=0);
 
 	void setMenu(QMenu *m){menu=m;}
 

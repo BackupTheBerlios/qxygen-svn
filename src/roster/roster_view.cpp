@@ -23,54 +23,39 @@
 #include "roster_item.h"
 #include "roster_view.h"
 
-rosterView::rosterView(QObject *parent)
-    : QAbstractItemModel((QObject*)parent)
-{
+rosterView::rosterView( QObject *parent ): QAbstractItemModel( parent ) {
 	rootItem = new rosterItem();
 	subgroups=TRUE;
 	descr=TRUE;
 }
 
-rosterView::~rosterView()
-{
+rosterView::~rosterView() {
 	delete rootItem;
 }
 
-int rosterView::columnCount(const QModelIndex &parent) const
-{
+int rosterView::columnCount( const QModelIndex &parent ) const {
 	if (parent.isValid())
 			return static_cast<rosterItem*>(parent.internalPointer())->columnCount();
 		else
 			return rootItem->columnCount();
 }
 
-QVariant rosterView::data(const QModelIndex &index, int role) const
-{
+QVariant rosterView::data( const QModelIndex &index, int role ) const {
 	if (!index.isValid())
 		return QVariant();
 
 	rosterItem *item = static_cast<rosterItem*>(index.internalPointer());
 
-	if (role == Qt::DisplayRole)
-	{
+	if( role == Qt::DisplayRole )
 		return item->data(0);
-	}
-	else if(role == TypeRole)
-	{
+	else if( role == TypeRole )
 		return item->type();
-	}
-	else if(role == FotoRole)
-	{
+	else if( role == FotoRole )
 		return QImage(":/nofoto.png");
-	}
-	else if(role == Qt::DecorationRole)
-	{
+	else if( role == Qt::DecorationRole )
 		return item->icon();
-	}
-	else if(role == rosterView::StatusRole)
-	{
+	else if( role == rosterView::StatusRole ) {
 		QString s=item->data(4);
-
 		if(s=="available")
 			return tr("Available");
 		else if(s=="chat")
@@ -84,63 +69,45 @@ QVariant rosterView::data(const QModelIndex &index, int role) const
 
 		return tr("Unavailable");
 	}
-	else if(role == DescriptionRole)
-	{
+	else if( role == DescriptionRole ) {
 		if(descr)
 			return item->data(1);
 		else
 			return QVariant();
 	}
-	else if(role == DescriptionForTooltipRole)
-	{
+	else if( role == DescriptionForTooltipRole )
 		return item->data(1);
-	}
-	else if(role == ChildCountRole)
-	{
+	else if( role == ChildCountRole )
 		return item->childCount();
-	}
-	else if(role == ContactCountRole)
-	{
+	else if( role == ContactCountRole )
 		return item->contactCount();
-	}
-	else if(role == AvailCountRole)
-	{
+	else if( role == AvailCountRole )
 		return item->availCount();
-	}
-	else if(role == JidRole)
-	{
+	else if( role == JidRole )
 		return item->data(2);
-	}
-	else if(role == SubscriptionRole)
-	{
+	else if( role == SubscriptionRole )
 		return item->data(3);
-	}
 
 	return QVariant();
 }
 
-Qt::ItemFlags rosterView::flags(const QModelIndex &index) const
-{
+Qt::ItemFlags rosterView::flags( const QModelIndex &index ) const {
 	if (!index.isValid())
 		return Qt::ItemIsEnabled;
 
-
-	switch(data(index,rosterView::TypeRole).toInt())
-	{
-	case rosterItem::Contact: return Qt::ItemIsEnabled | Qt::ItemIsSelectable /*| Qt::ItemIsEditable*/;
+	switch(data(index,rosterView::TypeRole).toInt()) {
+	case rosterItem::Contact: return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 
 	case rosterItem::Group: return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 	}
 	return 0;
 }
 
-QVariant rosterView::headerData(int /*section*/, Qt::Orientation /*orientation*/, int /*role*/) const
-{
-    return QVariant();
+QVariant rosterView::headerData( int, Qt::Orientation, int ) const {
+	return QVariant();
 }
 
-QModelIndex rosterView::index(int row, int column, const QModelIndex &parent) const
-{
+QModelIndex rosterView::index( int row, int column, const QModelIndex &parent ) const {
     rosterItem *parentItem;
 
     if (!parent.isValid())
@@ -155,8 +122,7 @@ QModelIndex rosterView::index(int row, int column, const QModelIndex &parent) co
         return QModelIndex();
 }
 
-QModelIndex rosterView::parent(const QModelIndex &index) const
-{
+QModelIndex rosterView::parent( const QModelIndex &index ) const {
     if (!index.isValid())
         return QModelIndex();
 
@@ -169,8 +135,7 @@ QModelIndex rosterView::parent(const QModelIndex &index) const
     return createIndex(parentItem->row(), 0, parentItem);
 }
 
-int rosterView::rowCount(const QModelIndex &parent) const
-{
+int rosterView::rowCount( const QModelIndex &parent ) const {
     rosterItem *parentItem;
 
     if (!parent.isValid())
@@ -181,13 +146,11 @@ int rosterView::rowCount(const QModelIndex &parent) const
     return parentItem->childCount();
 }
 
-rosterItem* rosterView::itemAt(int row)
-{
+rosterItem* rosterView::itemAt( int row ) {
 	return rootItem->child(row);
 }
 
-void rosterView::addGroup(QString name,bool sort)
-{
+void rosterView::addGroup( QString name,bool sort ) {
 	if(rootItem->child(name))
 		return;
 
@@ -206,39 +169,32 @@ void rosterView::addGroup(QString name,bool sort)
 	emit layoutChanged();
 }
 
-void rosterView::addItem(QString jid, QString dn, QString subscription, QString group,bool sort)
-{
+void rosterView::addItem( QString jid, QString dn, QString subscription, QString group,bool sort ) {
 	if(!rootItem->child(group))
 		addGroup(group,sort);
 
 	rosterItem *parent=rootItem->child(group);
 
-	if(rosterItem *item=find(jid))
-	{
+	if(rosterItem *item=find(jid)) {
 		if(item->data(0)==dn && (item->data(3)==subscription || !subgroups))
 			sort=FALSE;
 
-		if(item->parent()->data(0)!=group)
-		{
+		if(item->parent()->data(0)!=group) {
 			//remove and create new in other group
 			item->parent()->takeChild(item);
 			item->parent()->sort();
 			addItem(jid,dn,subscription,group,sort);
 			sort=TRUE;
 		}
-		else
-		{
+		else {
 			//update existing item
-			if(item->data(0)!=dn)
-			{
+			if(item->data(0)!=dn) {
 				item->setName(dn);
 				sort=TRUE;
 			}
 
-			if(item->data(3)!=subscription)
-			{
-				if(subscription=="none")
-				{
+			if(item->data(3)!=subscription) {
+				if(subscription=="none") {
 					item->setStatus("unavailable");
 					item->setDescr("");
 				}
@@ -246,8 +202,7 @@ void rosterView::addItem(QString jid, QString dn, QString subscription, QString 
 			}
 		}
 	}
-	else
-	{
+	else {
 		beginInsertRows(index(parent->row(),0),parent->childCount(),parent->childCount());
 		parent->appendChild(new rosterItem(jid, dn, rosterItem::Contact, parent, subscription));
 		endInsertRows();
@@ -259,20 +214,16 @@ void rosterView::addItem(QString jid, QString dn, QString subscription, QString 
 	emit layoutChanged();
 }
 
-void rosterView::setShowDescr(bool d)
-{
+void rosterView::setShowDescr( bool d ) {
 	descr=d;
 }
 
-void rosterView::setSubgroups(bool s)
-{
+void rosterView::setSubgroups( bool s ) {
 	subgroups=s;
 }
 
-bool rosterView::setData(const QModelIndex &index, const QVariant &value, int role)
-{
-	if(role==rosterView::ExpandRole)
-	{
+bool rosterView::setData( const QModelIndex &index, const QVariant &value, int role ) {
+	if( role==rosterView::ExpandRole ) {
 		rosterItem *item = static_cast<rosterItem*>(index.internalPointer());
 		item->setExpanded(value.toBool());
 		return true;
@@ -281,29 +232,25 @@ bool rosterView::setData(const QModelIndex &index, const QVariant &value, int ro
 	return false;
 }
 
-void rosterView::emitLayoutChanged()
-{
+void rosterView::emitLayoutChanged() {
 	emit layoutChanged();
 }
 
-QList<rosterItem*> rosterView::groupList()
-{
+QList<rosterItem*> rosterView::groupList() {
 	return rootItem->childList();
 }
 
-void rosterView::clearRoster()
-{
+void rosterView::clearRoster() {
 	QList<rosterItem*> current=groupList();
 	QListIterator<rosterItem*> i(current);
 	while(i.hasNext())
 		rootItem->takeChild(i.next());
 }
 
-void rosterView::presenceUpdate(QString from, QString status, QString descr)
-{
+void rosterView::presenceUpdate( QString from, QString status, QString descr ) {
 	rosterItem *item=find(from);
 	bool sort=TRUE;
-	//SORTING NOT NEEDED IF STATUS CHANGE IS FROM OFFLINE TO OFFLINE OR FROM ONLINE TO ONLINE
+
 	if((item->data(4)=="unavailable" && status=="unavailable") || (item->data(4)!="unavailable" && status!="unavailable"))
 		sort=FALSE;
 
@@ -317,17 +264,14 @@ void rosterView::presenceUpdate(QString from, QString status, QString descr)
 	emit layoutChanged();
 }
 
-void rosterView::presenceDisconnected()
-{
+void rosterView::presenceDisconnected() {
 	QList<rosterItem*> groups=groupList();
 	QListIterator<rosterItem*> gi(groups);
-	while(gi.hasNext())
-	{
+	while(gi.hasNext()) {
 		rosterItem *g=gi.next();
 		QList<rosterItem*> items=g->childList();
 		QListIterator<rosterItem*> it(items);
-		while(it.hasNext())
-		{
+		while(it.hasNext()) {
 			rosterItem* item=it.next();
 			item->setStatus("unavailable");
 			item->setDescr("");
@@ -337,41 +281,34 @@ void rosterView::presenceDisconnected()
 	emit layoutChanged();
 }
 
-void rosterView::sortRoster()
-{
+void rosterView::sortRoster() {
 	rootItem->sort();
 	QList<rosterItem*> groups=groupList();
 	QListIterator<rosterItem*> gi(groups);
-	while(gi.hasNext())
-	{
+	while(gi.hasNext()) {
 		rosterItem *group=gi.next();
 		group->sort(subgroups);
 		emit groupAdded(index(group->row(),0));
 	}
 }
 
-QStringList rosterView::groupNames()
-{
+QStringList rosterView::groupNames() {
 	QList<rosterItem*> groups=groupList();
 	QListIterator<rosterItem*> gi(groups);
 	QMap<QString,QString> gmap;
-	while(gi.hasNext())
-	{
+	while(gi.hasNext()) {
 		QString n=gi.next()->data(0);
 		gmap.insert(n.toLower(),n);
 	}
 	return QStringList(gmap.values());
 }
 
-void rosterView::removeItem(QString jid)
-{
+void rosterView::removeItem( QString jid ) {
 	QList<rosterItem*> groups=groupList();
 	QListIterator<rosterItem*> gi(groups);
-	while(gi.hasNext())
-	{
+	while(gi.hasNext()) {
 		rosterItem *g=gi.next();
-		if(rosterItem *item=g->child(jid,2))
-		{
+		if(rosterItem *item=g->child(jid,2)) {
 			g->takeChild(item);
 			if(subgroups)
 				g->sort(subgroups);
@@ -381,18 +318,15 @@ void rosterView::removeItem(QString jid)
 	}
 }
 
-void rosterView::checkGroup(rosterItem *group)
-{
+void rosterView::checkGroup( rosterItem *group ) {
 	if(!group->childCount())
 		rootItem->takeChild(group);
 }
 
-rosterItem* rosterView::find(QString jid)
-{
+rosterItem* rosterView::find( QString jid ) {
 	QList<rosterItem*> groups=groupList();
 	QListIterator<rosterItem*> gi(groups);
-	while(gi.hasNext())
-	{
+	while(gi.hasNext()) {
 		if(rosterItem *item=gi.next()->child(jid,2))
 			return item;
 	}

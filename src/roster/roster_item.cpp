@@ -22,8 +22,7 @@
 
 #include "roster_item.h"
 
-rosterItem::rosterItem(QString j, QString dn, int type, rosterItem *parent, QString s): QObject((QObject*)parent)
-{
+rosterItem::rosterItem( QString j, QString dn, int type, rosterItem *parent, QString s ): QObject( (QObject*)parent ) {
 	parentItem = parent;
 	expanded=FALSE;
 	jid=j;
@@ -33,101 +32,75 @@ rosterItem::rosterItem(QString j, QString dn, int type, rosterItem *parent, QStr
 	t=type;
 }
 
-rosterItem::~rosterItem()
-{
+rosterItem::~rosterItem() {
     qDeleteAll(childItems);
 }
 
-void rosterItem::appendChild(rosterItem *item)
-{
+void rosterItem::appendChild( rosterItem* item ) {
     childItems.append(item);
 }
 
-void rosterItem::takeChild(rosterItem *item)
-{
+void rosterItem::takeChild( rosterItem* item) {
 	childItems.removeAll(item);
 }
 
-rosterItem *rosterItem::child(int row)
-{
+rosterItem *rosterItem::child( int row ) {
     return childItems.value(row);
 }
 
-int rosterItem::childCount() const
-{
+int rosterItem::childCount() const {
     return childItems.count();
 }
 
-int rosterItem::columnCount() const
-{
+int rosterItem::columnCount() const {
 	return 1;
 }
 
-QString rosterItem::data(int column) const
-{
-	switch(column)
-	{
+QString rosterItem::data(int column) const {
+	switch(column) {
 	case 0:
 		return displayName;
-	break;
-
 	case 1:
 		return descr;
-	break;
-
 	case 2:
 		return jid;
-	break;
-
 	case 3:
 		return subscription;
-	break;
-
 	case 4:
 		return status;
-	break;
-
 	default:
 		return QString();
-	break;
 	}
 }
 
-rosterItem *rosterItem::parent()
-{
+rosterItem *rosterItem::parent() {
     return parentItem;
 }
 
-int rosterItem::row() const
-{
+int rosterItem::row() const {
     if (parentItem)
         return parentItem->childItems.indexOf(const_cast<rosterItem*>(this));
 
     return 0;
 }
 
-void rosterItem::setExpanded(bool state)
-{
+void rosterItem::setExpanded( bool state ) {
 	expanded=state;
 }
 
-rosterItem* rosterItem::child(QString name, int col)
-{
+rosterItem* rosterItem::child( QString name, int col ) {
 	QListIterator<rosterItem*> i(childItems);
 
-	while(i.hasNext())
-	{
+	while(i.hasNext()) {
 		rosterItem* item=i.next();
 		if(item->data(col)==name)
 			return item;
 	}
-	return 0; // IF NONE WAS FOUND
+	return 0;
 }
 
-QImage rosterItem::icon()
-{
-	switch(t)
-	{
+QImage rosterItem::icon() {
+	switch(t) {
 	case rosterItem::Contact:
 		if(status=="available")
 			return descr.isEmpty()?QImage(":online.png"):QImage(":onlinei.png");
@@ -151,23 +124,19 @@ QImage rosterItem::icon()
 	}
 }
 
-void rosterItem::setStatus(QString s)
-{
+void rosterItem::setStatus( QString s ) {
 	status=s;
 }
 
-void rosterItem::setDescr(QString d)
-{
+void rosterItem::setDescr( QString d ) {
 	descr=d;
 }
 
-void rosterItem::setName(QString n)
-{
+void rosterItem::setName( QString n ) {
 	displayName=n;
 }
 
-int rosterItem::availCount() const
-{
+int rosterItem::availCount() const {
 	int count=0;
 	QListIterator<rosterItem*> it(childItems);
 	while(it.hasNext())
@@ -177,21 +146,18 @@ int rosterItem::availCount() const
 	return count;
 }
 
-void rosterItem::moveItem(int from, int to)
-{
+void rosterItem::moveItem( int from, int to ) {
 	childItems.move(from,to);
 }
 
-void rosterItem::sort(bool subgroups)
-{
+void rosterItem::sort( bool subgroups ) {
 	removeSubgroups();
 
 	QMap<QString,QString> sort;
 	QMap<QString,rosterItem*> childMap;
 	int available=availCount();
 	QListIterator<rosterItem*> it(childItems);
-	while(it.hasNext())
-	{
+	while(it.hasNext()) {
 		rosterItem *item=it.next();
 		QString name=item->data(0);
 		QString jid=item->data(2);
@@ -199,58 +165,48 @@ void rosterItem::sort(bool subgroups)
 		childMap.insert(jid,item);
 	}
 
-	if(sort.count()>1)
-	{
+	if(sort.count()>1) {
 		QStringList list=sort.values();
 
 		QListIterator<QString> si(list);
 		int to=0;
 
-		while(si.hasNext())
-		{
+		while(si.hasNext()) {
 			int from=childMap[si.next()]->row();
 			if(from!=to)
 				moveItem(from,to);
 			++to;
 		}
 
-		if(!parent())
-		{
+		if(!parent()) {
 			int f=-1;
 			if(rosterItem *general=child(tr("General")))
 				f=general->row();
 			if(f!=-1 && f!=0)
 				moveItem(f,0);
 		}
-		else
-		{
+		else {
 			it=childItems;
-			if(available<childCount()-available)
-			{
+			if(available<childCount()-available) {
 				to=0;
-				while(it.hasNext())
-				{
+				while(it.hasNext()) {
 					if(to==available)
 						break;
 					rosterItem *item=it.next();
-					if(item->data(4)!="unavailable")
-					{
+					if(item->data(4)!="unavailable") {
 						moveItem(item->row(), to);
 						++to;
 					}
 				}
 			}
-			else
-			{
+			else {
 				to=childCount()-1;
 				it.toBack();
-				while(it.hasPrevious())
-				{
+				while(it.hasPrevious()) {
 					if(to==available-1)
 						break;
 					rosterItem *item=it.previous();
-					if(item->data(4)=="unavailable")
-					{
+					if(item->data(4)=="unavailable") {
 						moveItem(item->row(), to);
 						--to;
 					}
@@ -259,48 +215,40 @@ void rosterItem::sort(bool subgroups)
 		}
 	}
 
-	if(subgroups)
-	{
+	if(subgroups) {
 		int ask=0;
 		int none=0;
 		int lastPos=childCount()-1;
 		it=childItems;
 		it.toBack();
-		while(it.hasPrevious())
-		{
+		while(it.hasPrevious()) {
 			rosterItem *item=it.previous();
-			if(item->data(3)=="none")
-			{
+			if(item->data(3)=="none") {
 				moveItem(item->row(), lastPos-none);
 				++none;
 			}
-			else if(item->data(3)=="subscribe")
-			{
+			else if(item->data(3)=="subscribe") {
 				moveItem(item->row(), lastPos-(none+ask));
 				++ask;
 			}
 		}
 
-		if(none)
-		{
+		if(none) {
 			rosterItem *item=new rosterItem(QString(), tr("No authorization"), rosterItem::SubGroup,static_cast<rosterItem*>(this));
 			appendChild(item);
 			moveItem(item->row(), childCount()-(none+1));
 		}
-		if(ask)
-		{
+		if(ask) {
 			rosterItem *item=new rosterItem(QString(), tr("Awaiting authorization"), rosterItem::SubGroup,static_cast<rosterItem*>(this));
 			appendChild(item);
 			moveItem(item->row(), childCount()-(none+ask+(none?2:1)));
 		}
-		if(contactCount()-(ask+none+available))
-		{
+		if(contactCount()-(ask+none+available)) {
 			rosterItem *item=new rosterItem(QString(), tr("Unavailable"), rosterItem::SubGroup,static_cast<rosterItem*>(this));
 			appendChild(item);
 			moveItem(item->row(),available);
 		}
-		if(available)
-		{
+		if(available) {
 			rosterItem *item=new rosterItem(QString(), tr("Currently available"), rosterItem::SubGroup,static_cast<rosterItem*>(this));
 			appendChild(item);
 			moveItem(item->row(),0);
@@ -308,23 +256,19 @@ void rosterItem::sort(bool subgroups)
 	}
 }
 
-void rosterItem::removeSubgroups()
-{
+void rosterItem::removeSubgroups() {
 	QListIterator<rosterItem*> it(childItems);
-	while(it.hasNext())
-	{
+	while(it.hasNext()) {
 		rosterItem *item=it.next();
 		if(item->type()==rosterItem::SubGroup)
 			takeChild(item);
 	}
 }
 
-int rosterItem::contactCount() const
-{
+int rosterItem::contactCount() const {
 	int count=0;
 	QListIterator<rosterItem*> it(childItems);
-	while(it.hasNext())
-	{
+	while(it.hasNext()) {
 		rosterItem *item=it.next();
 		if(item->type()==rosterItem::Contact)
 			++count;
@@ -332,7 +276,6 @@ int rosterItem::contactCount() const
 	return count;
 }
 
-void rosterItem::setSubscription(QString s)
-{
+void rosterItem::setSubscription( QString s ) {
 	subscription=s;
 }

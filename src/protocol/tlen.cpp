@@ -30,13 +30,10 @@
 #include "tlen.h"
 #include "auth.h"
 
-tlen::tlen(QObject *parent): QObject(parent)
-{
+tlen::tlen( QObject* parent ): QObject( parent ) {
 	state = tlen::Disconnected;
 	hostname = "s1.tlen.pl";
 	hostport = 443;
-
-	QSettings settings("qxygen.berlios.de", "Qxygen");
 
 	status="unavailable";
 	descr="";
@@ -56,28 +53,18 @@ tlen::tlen(QObject *parent): QObject(parent)
 	connect(ping, SIGNAL(timeout()), this, SLOT(sendPing()));
 }
 
-tlen::~tlen()
-{
-	if(socket)
-		delete socket;
-}
-
-void tlen::openConn()
-{
+void tlen::openConn() {
 	state=tlen::Connecting;
 	socket->connectToHost(hostname, hostport);
 }
 
-void tlen::closeConn()
-{
+void tlen::closeConn() {
 	socket->close();
 	state=tlen::Disconnected;
 }
 
-bool tlen::isConnected()
-{
-	switch(state)
-	{
+bool tlen::isConnected() {
+	switch(state) {
 	case tlen::Connected:
 	case tlen::Connecting:
 		return true;
@@ -90,8 +77,7 @@ bool tlen::isConnected()
 	return false;
 }
 
-void tlen::socketReadyRead()
-{
+void tlen::socketReadyRead() {
 	stream="<s>";
 	stream+=socket->readAll();
 	stream+="</s>";
@@ -102,16 +88,14 @@ void tlen::socketReadyRead()
 	d.setContent(stream);
 	QDomNode root=d.firstChild();
 
-	if(root.hasChildNodes())
-	{
+	if(root.hasChildNodes()) {
 		QDomNodeList sl=root.childNodes();
 		for(int i=0; i<sl.count(); i++)
 			emit eventReceived(sl.item(i));
 	}
 }
 
-void tlen::socketConnected()
-{
+void tlen::socketConnected() {
 	state = tlen::Connecting;
 	socket->write(QString("<s v=\"7\" t=\"05170402\">").toUtf8());
 }
@@ -119,79 +103,62 @@ void tlen::socketConnected()
 
 bool sort=TRUE;
 
-void tlen::event(QDomNode n)
-{
+void tlen::event(QDomNode n) {
 	QString nodeName=n.nodeName();
 	QDomElement element = n.toElement();
-	if(nodeName=="s" && element.hasAttribute("i"))
-	{
+	if(nodeName=="s" && element.hasAttribute("i")) {
 		ping->start( 60000 );
 		sid = element.attribute("i");
 		if(tlenLogin())
-		{
  			state = tlen::Connected;
-		}
 		else
 			socket->close();
 	}
-	else if(nodeName=="iq")
-	{
-		if(element.hasAttribute( "type" ) && element.attribute("type") == "result")
-		{
-			if(element.hasAttribute("id") && element.attribute("id")==sid)
-			{
+	else if(nodeName=="iq") {
+		if(element.hasAttribute( "type" ) && element.attribute("type") == "result") {
+			if(element.hasAttribute("id") && element.attribute("id")==sid) {
 				rosterRequest();
 				emit tlenLoggedIn();
 			}
 
-			if(element.hasAttribute("id") && element.attribute("id")=="GetRoster")
-			{
+			if(element.hasAttribute("id") && element.attribute("id")=="GetRoster") {
 				emit clearRosterView();
 				sort=FALSE;
 			}
 
-			if(n.hasChildNodes())
-			{
+			if(n.hasChildNodes()) {
 				QDomNodeList el=n.childNodes();
 				for(int i=0;i<el.count();++i)
 					emit eventReceived(el.item(i));
 			}
 
-			if(!sort)
-			{
+			if(!sort) {
 				emit sortRoster();
 				sort=TRUE;
 			}
 
 		}
-		else if(element.hasAttribute("type") && element.attribute("type") == "set")
-		{
-			if(n.hasChildNodes())
-			{
+		else if(element.hasAttribute("type") && element.attribute("type") == "set") {
+			if(n.hasChildNodes()) {
 				QDomNodeList el=n.childNodes();
 				for(int i=0;i<el.count();++i)
 					emit eventReceived(el.item(i));
 			}
 		}
 	}
-	else if(nodeName=="query")
-	{
+	else if(nodeName=="query") {
 		QDomElement e=n.toElement();
-
 		QDomNodeList nl=n.childNodes();
 		for(int i=0;i<nl.count();++i)
 			event(nl.item(i));
-
 	}
-	else if(nodeName=="item")
-	{
+	else if(nodeName=="item") {
 		QDomElement e=n.toElement();
 		QString jid=e.attribute("jid");
 		QString subscription=e.attribute("subscription");
 		QString name=NULL, group=NULL;
 
-		if(subscription=="remove")
-		{
+		if(subscription=="remove") {
 			emit removeItem(jid);
 			return;
 		}
@@ -202,11 +169,9 @@ void tlen::event(QDomNode n)
 		if(e.hasAttribute("name"))
 			name=e.attribute("name");
 
-		if(n.hasChildNodes())
-		{
+		if( n.hasChildNodes() ) {
 			QDomNodeList nl=n.childNodes();
-			for(int i=0;i<nl.count();++i)
-			{
+			for(int i=0;i<nl.count();++i) {
 				group=nl.item(i).firstChild().toText().data();
 			}
 		}
@@ -222,19 +187,16 @@ void tlen::event(QDomNode n)
 		emit itemReceived(jid, name, subscription, group, sort);
 
 	}
-	else if(nodeName=="presence")
-	{
+	else if(nodeName=="presence") {
 		QDomElement e=n.toElement();
 		QString from=e.attribute("from");
 
-		if(e.hasAttribute("type") && e.attribute("type")=="subscribe")
-		{
+		if(e.hasAttribute("type") && e.attribute("type")=="subscribe") {
 			emit authorizationAsk(from);
 		}
 		else if(e.hasAttribute("type") && (e.attribute("type")=="unsubscribe" || e.attribute("type")=="subscribed" || e.attribute("type")=="unsubscribed"))
 			return;
-		else
-		{
+		else {
 			QString status="none";
 			QString descr="";
 
@@ -243,8 +205,7 @@ void tlen::event(QDomNode n)
 
 			QDomNodeList l=n.childNodes();
 
-			for(int i=0; i<l.count(); ++i)
-			{
+			for(int i=0; i<l.count(); ++i) {
 				if(l.item(i).nodeName()=="show" && status=="none")
 					status=l.item(i).firstChild().toText().data();
 				if(l.item(i).nodeName()=="status")
@@ -256,26 +217,22 @@ void tlen::event(QDomNode n)
 			emit presenceChanged(from,status,descr);
 		}
 	}
-	else if(nodeName=="message")
-	{
+	else if(nodeName=="message") {
 		QDomElement e=n.toElement();
 		if(e.hasAttribute("type") && e.attribute("type")=="chat")
 			emit chatMsgReceived(n);
 	}
-	else if(nodeName=="m")
-	{
+	else if(nodeName=="m") {
 		//<m tp='t' f='qxygen@tlen.pl'/> - user qxygen@tlen.pl is typing
 		//<m tp='u' f='qxygen@tlen.pl'/> - user qxygen@tlen.pl stoped typing
 		//<m tp='a' f='qxygen@tlen.pl'/> - user qxygen@tlen.pl sent sound alarm
 	}
-	else if(nodeName=="n")
-	{
+	else if(nodeName=="n") {
 		//<n f='Rainer+Wiesenfarth+%3CRainer.Wiesenfarth@inpho.de%3E' s='Re%3A+qt+and+mysql,+odbc'/> - new mail
 	}
 }
 
-void tlen::socketDisconnected()
-{
+void tlen::socketDisconnected() {
 	state=tlen::Disconnected;
 	ping->stop();
 	status="unavailable";
@@ -283,14 +240,12 @@ void tlen::socketDisconnected()
 	emit presenceDisconnected();
 }
 
-void tlen::sendPing()
-{
+void tlen::sendPing() {
 	socket->write(QString("  \t  ").toUtf8());
 }
 
-bool tlen::tlenLogin()
-{
-	if(!isConnected())
+bool tlen::tlenLogin() {
+	if( !isConnected() )
 		return false;
 
 	QDomDocument doc;
@@ -318,17 +273,13 @@ bool tlen::tlenLogin()
 	
 	QDomElement resource = doc.createElement( "resource" );
 	query.appendChild( resource );
-	
 	text = doc.createTextNode( "t" );
 	resource.appendChild( text );
-	
 	return write(doc);
 }
 
-bool tlen::write(const QDomDocument &d)
-{
-	if(!isConnected())
-	{
+bool tlen::write( const QDomDocument &d ) {
+	if( !isConnected() ) {
 		openConn();
 		return FALSE;
 	}
@@ -338,35 +289,28 @@ bool tlen::write(const QDomDocument &d)
 	return (socket->write(d.toByteArray()) == (qint64)d.toByteArray().size());
 }
 
-void tlen::rosterRequest()
-{
+void tlen::rosterRequest() {
 	QDomDocument doc;
-	
 	QDomElement iq = doc.createElement( "iq" );
 	iq.setAttribute( "type", "get" );
 	iq.setAttribute( "id", "GetRoster" );
 	doc.appendChild( iq );
-	
 	QDomElement query = doc.createElement( "query" );
 	query.setAttribute( "xmlns", "jabber:iq:roster" );
 	iq.appendChild( query );
-	
 	write(doc);
 }
 
-QString tlen::decode( const QByteArray &in )
-{
+QString tlen::decode( const QByteArray &in ) {
 	QByteArray o;
 	QString out;
 
 	QRegExp ex("\\%[0-9A-Fa-f][0-9A-Fa-f]");
 
-	for(int i = 0; i < in.length(); ++i)
-	{
+	for(int i = 0; i < in.length(); ++i) {
 		if( in.mid(i,1) == "+" )
 			o += " ";
-		else if( ex.exactMatch(in.mid(i,3)) )
-		{
+		else if( ex.exactMatch(in.mid(i,3)) ) {
 			bool ok;
 			int code = QString(in.mid(i+1,2)).toInt( &ok, 16 );
 
@@ -384,8 +328,7 @@ QString tlen::decode( const QByteArray &in )
 	return out;
 }
 
-QByteArray tlen::encode( const QString &in )
-{
+QByteArray tlen::encode( const QString &in ) {
 	QTextCodec *codec = QTextCodec::codecForName("ISO 8859-2");
 	QByteArray o = codec->fromUnicode( in );
 
@@ -393,12 +336,10 @@ QByteArray tlen::encode( const QString &in )
 
 	QRegExp ex("[^A-Za-z0-9\\.\\-\\_]");
 
-	for(int i = 0; i < o.length(); ++i)
-	{
+	for(int i = 0; i < o.length(); ++i) {
 		if( o.mid(i,1) == " " )
 			out += "+";
-		else if( ex.exactMatch( o.mid(i,1) ) )
-		{
+		else if( ex.exactMatch( o.mid(i,1) ) ) {
 			uchar inCh = (uchar)o[ i ];
 
 			out += "%";
@@ -418,26 +359,19 @@ QByteArray tlen::encode( const QString &in )
 	return out;
 }
 
-void tlen::writeStatus()
-{
+void tlen::writeStatus() {
 	QDomDocument doc;
 	QDomElement p = doc.createElement("presence");
 	QDomElement s = doc.createElement("show");
 	QDomElement d = doc.createElement("status");
 
 	if(status=="unavailable" || status=="invisible")
-	{
 		p.setAttribute("type", status);
-	}
 	else
-	{
 		s.appendChild(doc.createTextNode(status));
-	}
 
 	if(!descr.isEmpty())
-	{
 		d.appendChild(doc.createTextNode(QString(encode(descr))));
-	}
 
 	p.appendChild(s);
 	p.appendChild(d);
@@ -447,15 +381,11 @@ void tlen::writeStatus()
 		emit statusChanged();
 }
 
-void tlen::setStatus() // send by action
-{
+void tlen::setStatus() {
 	QAction *a=qobject_cast<QAction*>(sender());
-
 	if(intStatus()==a->data().toInt())
 		return;
-
-	switch(a->data().toInt())
-	{
+	switch(a->data().toInt()) {
 	case 0: status="available"; break;
 	case 1: status="chat"; break;
 	case 2: status="away"; break;
@@ -467,8 +397,7 @@ void tlen::setStatus() // send by action
 	emit statusUpdate();
 }
 
-void tlen::setStatus(QString s)
-{
+void tlen::setStatus( QString s ) {
 	if(status==s)
 		return;
 
@@ -476,55 +405,41 @@ void tlen::setStatus(QString s)
 	emit statusUpdate();
 }
 
-int tlen::intStatus()
-{
-	if(status=="available")
-		return 0;
-	else if(status=="chat")
-		return 1;
-	else if(status=="away")
-		return 2;
-	else if(status=="xa")
-		return 3;
-	else if(status=="dnd")
-		return 4;
-	else if(status=="invisible")
-		return 5;
+int tlen::intStatus() {
+	if(status=="available") return 0;
+	else if(status=="chat") return 1;
+	else if(status=="away") return 2;
+	else if(status=="xa") return 3;
+	else if(status=="dnd") return 4;
+	else if(status=="invisible") return 5;
 
 	return 6;
 }
 
-void tlen::authorize(QString to, bool subscribe)
-{
+void tlen::authorize( QString to, bool subscribe ) {
 	QDomDocument doc;
 	QDomElement p=doc.createElement("presence");
 	p.setAttribute("to", to);
 
-	if(subscribe)
-	{
-		// <presence type="subscribe" to="qxygen@tlen.pl" /> - confirm subscribe - ask for subscription again
+	if(subscribe) {
 		p.setAttribute("type", "subscribe");
 		doc.appendChild(p);
 		write(doc);
 		doc.clear();
 		p=doc.createElement("presence");
 		p.setAttribute("to", to);
-		// <presence type="subscribed" to="qxygen@tlen.pl" /> - subscribed
 		p.setAttribute("type", "subscribed");
 		doc.appendChild(p);
 		write(doc);
 	}
-	else
-	{
-		// <presence type="unsubscribed" to="qxygen@tlen.pl" /> - no subscribe
+	else {
 		p.setAttribute("type", "unsubscribed");
 		doc.appendChild(p);
 		write(doc);
 	}
 }
 
-void tlen::addItem(QString jid, QString name, QString g, bool subscribe)
-{
+void tlen::addItem( QString jid, QString name, QString g, bool subscribe ) {
 	QDomDocument doc;
 	QDomElement iq=doc.createElement("iq");
 	iq.setAttribute("type", "set");
@@ -546,8 +461,7 @@ void tlen::addItem(QString jid, QString name, QString g, bool subscribe)
 	if(!name.isEmpty())
 		item.setAttribute("name", name);
 
-	if(!g.isEmpty())
-	{
+	if(!g.isEmpty()) {
 		QDomElement group=doc.createElement("group");
 		QDomText t=doc.createTextNode(g);
 		group.appendChild(t);
@@ -559,8 +473,7 @@ void tlen::addItem(QString jid, QString name, QString g, bool subscribe)
 	doc.appendChild(iq);
 	write(doc);
 
-	if(subscribe)
-	{
+	if(subscribe) {
 		doc.clear();
 		QDomElement p=doc.createElement("presence");
 		p.setAttribute("type","subscribe");
@@ -570,8 +483,7 @@ void tlen::addItem(QString jid, QString name, QString g, bool subscribe)
 	}
 }
 
-void tlen::remove(QString jid)
-{
+void tlen::remove(QString jid) {
 	QDomDocument doc;
 	QDomElement iq=doc.createElement("iq");
 	iq.setAttribute("type", "set");
@@ -590,10 +502,7 @@ void tlen::remove(QString jid)
 	write(doc);
 }
 
-void tlen::writeMsg(QString msg, QString to)
-{
-	//<message type="chat" to="naresh@tlen.pl" ><body>wiadomosc</body></message>
-
+void tlen::writeMsg( QString msg, QString to ) {
 	QDomDocument doc;
 	QDomElement message=doc.createElement("message");
 	message.setAttribute("type", "chat");

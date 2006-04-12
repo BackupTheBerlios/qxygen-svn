@@ -32,34 +32,24 @@
 
 rosterTipLabel *rosterTipLabel::instance=0;
 
-rosterWidget::rosterWidget(QObject *parent): QTreeView((QWidget*)parent)
-{
+rosterWidget::rosterWidget( QWidget *parent ): QTreeView( parent ) {
 	setUniformRowHeights(FALSE);
 	header()->setHidden(TRUE);
 }
 
-rosterWidget::~rosterWidget()
-{
-}
-
-void rosterWidget::resizeEvent(QResizeEvent *event)
-{
+void rosterWidget::resizeEvent( QResizeEvent *event ) {
 	((rosterDelegate*)itemDelegate())->setWidth(viewport()->width());
 	((rosterView*)model())->emitLayoutChanged();
 	QTreeView::resizeEvent(event);
 }
 
-bool rosterWidget::viewportEvent(QEvent *event)
-{
-	switch(event->type())
-	{
+bool rosterWidget::viewportEvent(QEvent *event) {
+	switch(event->type()) {
 	case QEvent::ToolTip:
-		if(isActiveWindow())
-		{
+		if(isActiveWindow()) {
 			QHelpEvent *e=static_cast<QHelpEvent*>(event);
 			QModelIndex idx=indexAt(e->pos());
-			if(idx.isValid())
-			{
+			if(idx.isValid()) {
 				paintToolTip(idx,e->globalPos(),this);
 				return true;
 			}
@@ -74,8 +64,7 @@ bool rosterWidget::viewportEvent(QEvent *event)
 	return QTreeView::viewportEvent(event);
 }
 
-void rosterWidget::paintToolTip(const QModelIndex &idx, const QPoint &pos, QWidget *w)
-{
+void rosterWidget::paintToolTip( const QModelIndex &idx, const QPoint &pos, QWidget *w ) {
 	if(rosterTipLabel::instance && rosterTipLabel::instance->index()==idx)
 		return;
 
@@ -91,7 +80,7 @@ void rosterWidget::paintToolTip(const QModelIndex &idx, const QPoint &pos, QWidg
 	QRect screen = QApplication::desktop()->screenGeometry(scr);
 #endif
 
-    QLabel *label = new rosterTipLabel(idx, QApplication::desktop()->screen(scr));
+	QLabel *label = new rosterTipLabel(idx, QApplication::desktop()->screen(scr));
 
 	QPoint p = pos;
 
@@ -122,8 +111,7 @@ void rosterWidget::paintToolTip(const QModelIndex &idx, const QPoint &pos, QWidg
 	label->show();
 }
 
-rosterTipLabel::rosterTipLabel(const QModelIndex &index,QWidget *parent): QLabel(parent, Qt::ToolTip)
-{
+rosterTipLabel::rosterTipLabel( const QModelIndex &index,QWidget *parent): QLabel(parent, Qt::ToolTip ) {
 	delete instance;
 	instance=this;
 
@@ -156,18 +144,14 @@ rosterTipLabel::rosterTipLabel(const QModelIndex &index,QWidget *parent): QLabel
 	setPalette(pal);
 }
 
-rosterTipLabel::~rosterTipLabel()
-{
+rosterTipLabel::~rosterTipLabel() {
 	instance=0;
 }
 
-bool rosterTipLabel::eventFilter(QObject *, QEvent *e)
-{
-	switch (e->type())
-	{
+bool rosterTipLabel::eventFilter( QObject*, QEvent* e ) {
+	switch (e->type()) {
 	case QEvent::KeyPress:
-	case QEvent::KeyRelease:
-	{
+	case QEvent::KeyRelease: {
 		int key = static_cast<QKeyEvent*>(e)->key();
 		Qt::KeyboardModifiers mody = static_cast<QKeyEvent*>(e)->modifiers();
 
@@ -184,13 +168,12 @@ bool rosterTipLabel::eventFilter(QObject *, QEvent *e)
 	case QEvent::FocusOut:
 		hideTip();
 	default:
-		;
+		break;
 	}
 	return false;
 }
 
-QSize rosterTipLabel::sizeHint () const
-{
+QSize rosterTipLabel::sizeHint () const {
 	QFontMetrics fm(font());
 
 	if(idx.model()->data(idx,rosterView::TypeRole).toInt()>1)
@@ -206,23 +189,19 @@ QSize rosterTipLabel::sizeHint () const
 	return QSize(400, qMax(texth,imgh)+10);
 }
 
-void rosterTipLabel::hideTip()
-{
+void rosterTipLabel::hideTip() {
 	hide();
-	// timer based deletion to prevent animation
 	deleteTimer.start(250, this);
 }
 
-void rosterTipLabel::timerEvent(QTimerEvent *e)
-{
+void rosterTipLabel::timerEvent(QTimerEvent *e) {
 	if (e->timerId() == hideTimer.timerId())
 		hideTip();
 	else if (e->timerId() == deleteTimer.timerId())
 		delete this;
 }
 
-void rosterTipLabel::paintEvent(QPaintEvent */*e*/)
-{
+void rosterTipLabel::paintEvent( QPaintEvent* ) {
 	QSize sh=sizeHint();
 	QPainter painter(this);
 	painter.setPen(Qt::NoPen);
@@ -232,20 +211,15 @@ void rosterTipLabel::paintEvent(QPaintEvent */*e*/)
 	painter.drawRect(QRect(1,1,sh.width()-2,sh.height()-2));
 	painter.setPen(palette().windowText().color());
 
-	if(idx.model()->data(idx,rosterView::TypeRole).toInt()>1)
-	{
+	if(idx.model()->data(idx,rosterView::TypeRole).toInt()>1) {
 		painter.drawText(2,2,sh.width()-2,sh.height()-2,Qt::AlignTop|Qt::AlignLeft, nick);
 	}
-	else
-	{
+	else {
 		if(img.height())
 			painter.drawImage(QRect(5,5,img.width(),img.height()),img);
 
 		QFontMetrics fm(font());
-
 		painter.drawText(img.width()+(img.height()?10:5), 5, 400-img.width()-(img.height()?15:10), fm.height(), Qt::AlignTop|Qt::AlignLeft,nick);
-
-		// STATUS
 		painter.drawText(img.width()+(img.height()?10:5), fm.height()+10, 400-img.width()-(img.height()?15:10), qMax(fm.height(),status.height()), Qt::AlignVCenter|Qt::AlignLeft, tr("Status:"));
 
 		if(fm.height()<=status.height())
@@ -254,15 +228,13 @@ void rosterTipLabel::paintEvent(QPaintEvent */*e*/)
 			painter.drawImage(QPoint(img.width()+(img.height()?10:5)+fm.width(tr("Status:"))+5, fm.height()+10+((fm.height()-status.height())/2)), status);
 
 		painter.drawText(img.width()+(img.height()?10:5)+fm.width(tr("Status:"))+5+status.width()+5, fm.height()+10, 100, qMax(fm.height(),status.height()), Qt::AlignVCenter|Qt::AlignLeft, idx.model()->data(idx,rosterView::StatusRole).toString());
-		// STATUS END
 
 		if(!descr.isEmpty())
 			painter.drawText(img.width()+(img.height()?10:5), 5 /*margin*/+fm.height()/*nick height*/+5/*spacing*/+qMax(fm.height(),status.height())/*status line height*/+5/*spacing*/, 400-img.width()-(img.height()?15:10), fm.boundingRect(0,0,400-img.width()-(img.height()?15:10),1000,Qt::AlignLeft|Qt::AlignTop|Qt::TextWrapAnywhere,descr).height(), Qt::AlignTop|Qt::AlignLeft|Qt::TextWrapAnywhere, descr);
 	}
 }
 
-void rosterWidget::contextMenuEvent(QContextMenuEvent *e)
-{
+void rosterWidget::contextMenuEvent( QContextMenuEvent* e ) {
 	QModelIndex idx=indexAt(e->pos());
 	if(idx.isValid() && idx.model()->data(idx,rosterView::TypeRole)==0)
 		menu->popup(e->globalPos());

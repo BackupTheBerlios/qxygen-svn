@@ -22,13 +22,11 @@
 
 #include "useradd.h"
 
-useradd::useradd(QStringList sl,QWidget *parent): QDialog(parent)
-{
+useradd::useradd(QStringList sl,QWidget *parent): QDialog(parent) {
 	ui.setupUi(this);
 	sl.prepend("");
 	ui.groupLine->addItems(sl);
 
-// FOR LINGUIST - DON'T KNOW WHY BUT IT DOESN'T READ FROM UI FILES
 	ui.addButton->setText(tr("Add"));
 	ui.cancelButton->setText(tr("Cacnel"));
 	ui.afaCheckBox->setText(tr("Ask for authorization"));
@@ -40,14 +38,8 @@ useradd::useradd(QStringList sl,QWidget *parent): QDialog(parent)
 	connect(ui.cancelButton, SIGNAL(clicked()), this, SLOT(close()));
 }
 
-useradd::~useradd()
-{
-}
-
-void useradd::add()
-{
-	if(ui.loginLine->text().isEmpty())
-	{
+void useradd::add() {
+	if(ui.loginLine->text().isEmpty()) {
 		QMessageBox::warning(	this,
 					tr("User adding"),
 					tr("You must fill up \"Login\""));

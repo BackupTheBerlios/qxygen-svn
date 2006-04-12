@@ -23,16 +23,7 @@
 
 #include "settings.h"
 
-settingsMenager::settingsMenager(QObject *parent):QObject(parent)
-{
-}
-
-settingsMenager::~settingsMenager()
-{
-}
-
-void settingsMenager::initModule()
-{
+settingsMenager::settingsMenager( QObject* parent ):QObject( parent ) {
 #ifdef Q_WS_WIN
 	dir=new QDir(QDir::homePath()+"\\qxygen");
 #else
@@ -43,14 +34,19 @@ void settingsMenager::initModule()
 		dir->mkdir(dir->path());
 
 	qxygen=new QSettings(dir->path()+"/qxygen",QSettings::NativeFormat);
+}
+
+settingsMenager::~settingsMenager() {
+}
+
+void settingsMenager::initModule() {
 	if(qxygen->value("profiles/default").toString().isEmpty())
 		emit noProfile();
 	else
 		profile=new QSettings(dir->path()+"/"+qxygen->value("profiles/default").toString(), QSettings::NativeFormat);
 }
 
-void settingsMenager::addProfile(QString name, QString login, QString pass)
-{
+void settingsMenager::addProfile(QString name, QString login, QString pass) {
 	profile=new QSettings(dir->path()+"/"+name, QSettings::NativeFormat);
 	qxygen->setValue("profiles/default", name);
 	QStringList profilesList=qxygen->value("profiles/list").value<QStringList>();
@@ -61,31 +57,26 @@ void settingsMenager::addProfile(QString name, QString login, QString pass)
 	profile->setValue("user/pass", pass);
 }
 
-QStringList settingsMenager::profilesList()
-{
+QStringList settingsMenager::profilesList() {
 	if(qxygen->contains("profiles/list"))
 		return qxygen->value("profiles/list").value<QStringList>();
 	else
 		return QStringList();
 }
 
-QString settingsMenager::user()
-{
+QString settingsMenager::user() {
 	return profile->value("user/login").toString();
 }
 
-QString settingsMenager::pass()
-{
+QString settingsMenager::pass() {
 	return profile->value("user/pass").toString();
 }
 
-QString settingsMenager::profileName()
-{
+QString settingsMenager::profileName() {
 	return profile->value("user/profile").toString();
 }
 
-void settingsMenager::choseProfile(QString p)
-{
+void settingsMenager::choseProfile(QString p) {
 	qxygen->setValue("profiles/default", p);
 	profile=new QSettings(dir->path()+"/"+qxygen->value("profiles/default").toString(), QSettings::NativeFormat);
 }

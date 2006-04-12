@@ -34,8 +34,7 @@
 #include "chatwindow.h"
 #include "chattextedit.h"
 
-chatWindow::chatWindow(QString label, QString jid, QString profile,QWidget *parent): QWidget(parent)
-{
+chatWindow::chatWindow( QString label, QString jid, QString profile,QWidget *parent ): QWidget( parent ) {
 	installEventFilter(this);
 	setGeometry(150,150,350,300);
 	profileName=profile;
@@ -43,6 +42,7 @@ chatWindow::chatWindow(QString label, QString jid, QString profile,QWidget *pare
 	owner=jid;
 	setWindowTitle(title);
 	QGridLayout *layout=new QGridLayout(this);
+	layout->setMargin(2);
 	QSplitter *splitter=new QSplitter(Qt::Vertical);
 	layout->addWidget(splitter,0,0);
 	splitter->setChildrenCollapsible(FALSE);
@@ -69,7 +69,9 @@ chatWindow::chatWindow(QString label, QString jid, QString profile,QWidget *pare
 	setReturnSend->setCheckable(TRUE);
 
 	QBoxLayout *top=new QBoxLayout(QBoxLayout::LeftToRight);
+	top->setMargin(0);
 	QBoxLayout *bottom=new QBoxLayout(QBoxLayout::RightToLeft);
+	bottom->setMargin(0);
 
 	typingNotify=new QLabel();
 	typingNotify->setPixmap(QPixmap(":noff.png"));
@@ -77,7 +79,6 @@ chatWindow::chatWindow(QString label, QString jid, QString profile,QWidget *pare
 	bottom->addWidget(sendButton);
 	bottom->addWidget(setReturnSend);
 	bottom->insertStretch(-1,10);
-
 
 	top->addWidget(typingNotify);
 	top->insertStretch(-1,10);
@@ -97,20 +98,15 @@ chatWindow::chatWindow(QString label, QString jid, QString profile,QWidget *pare
 	connect(msgTimer, SIGNAL(timeout()), this, SLOT(swapTitleBar()));
 }
 
-void chatWindow::checkSend()
-{
+void chatWindow::checkSend() {
 	sendButton->setDisabled(input->toPlainText().isEmpty());
 }
 
-bool chatWindow::eventFilter(QObject *obj, QEvent *ev)
-{
-	if(obj==input)
-	{
-		if(ev->type()==QEvent::KeyPress)
-		{
+bool chatWindow::eventFilter(QObject *obj, QEvent *ev) {
+	if(obj==input) {
+		if(ev->type()==QEvent::KeyPress) {
 			QKeyEvent *keyEvent=static_cast<QKeyEvent*>(ev);
-			if(keyEvent->key()==Qt::Key_Return || keyEvent->key()==Qt::Key_Enter)
-			{
+			if(keyEvent->key()==Qt::Key_Return || keyEvent->key()==Qt::Key_Enter) {
 				if(QApplication::keyboardModifiers()==Qt::ShiftModifier)
 					input->insertPlainText("\n");
 				else if(setReturnSend->isChecked())
@@ -122,8 +118,7 @@ bool chatWindow::eventFilter(QObject *obj, QEvent *ev)
 			}
 		}
 	}
-	else if(ev->type()==QEvent::WindowActivate)
-	{
+	else if(ev->type()==QEvent::WindowActivate) {
 		msgTimer->stop();
 		if(windowTitle()==" ")
 			setWindowTitle(title);
@@ -132,8 +127,7 @@ bool chatWindow::eventFilter(QObject *obj, QEvent *ev)
 	return QWidget::eventFilter(obj,ev);
 }
 
-void chatWindow::sendMsg()
-{
+void chatWindow::sendMsg() {
 	QString msg=input->toPlainText();
 	if(msg.isEmpty())
 		return;
@@ -146,8 +140,7 @@ void chatWindow::sendMsg()
 	display->append("<table width=\"100%\" style=\"background-color: #ffffff;\"><tr><td><b>"+profileName+" :: "+QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss")+"</b></td></tr><tr><td>"+msg+"</td></tr></table>");
 }
 
-void chatWindow::displayMsg(QString msg, QString time)
-{
+void chatWindow::displayMsg(QString msg, QString time) {
 	msg.replace("<","&lt;");
 	msg.replace(">","&gt;");
 	msg.replace(" ", "&ensp;");
@@ -158,7 +151,6 @@ void chatWindow::displayMsg(QString msg, QString time)
 		msgTimer->start(500);
 }
 
-void chatWindow::swapTitleBar()
-{
+void chatWindow::swapTitleBar() {
 	windowTitle()==" "?setWindowTitle(title):setWindowTitle(" ");
 }

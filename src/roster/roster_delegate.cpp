@@ -23,12 +23,10 @@
 #include "roster_delegate.h"
 #include "roster_view.h"
 
-rosterDelegate::rosterDelegate(QObject *parent): QItemDelegate((QObject*)parent)
-{
+rosterDelegate::rosterDelegate( QObject *parent ): QItemDelegate( parent ) {
 }
 
-void rosterDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
-{
+void rosterDelegate::paint( QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index ) const {
 	if (option.state & QStyle::State_Selected)
 		painter->setBrush(option.palette.highlight());
 	else if(index.model()->data(index,rosterView::TypeRole)==2) // GROUP
@@ -50,14 +48,9 @@ void rosterDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
 	QImage img=index.model()->data(index, Qt::DecorationRole).value<QImage>();
 	painter->drawImage(QRect(option.rect.x()+1, option.rect.y(), img.width(), img.height()), img);
 
-	if(index.model()->data(index,rosterView::TypeRole)==0) // CONTACT
-	{
-		// CONTACT NAME
+	if(index.model()->data(index,rosterView::TypeRole)==0) {
 		painter->drawText(QRect(option.rect.x()+img.width()+1, y, sh.width()-img.width()-1, option.fontMetrics.height()), Qt::AlignLeft|Qt::AlignTop, elidedText(option.fontMetrics, sh.width()-img.width()-1,Qt::ElideRight, index.model()->data(index, Qt::DisplayRole).toString())); // single line elided text
-
-		// DESCRIPTION
-		if(!(index.model()->data(index, rosterView::DescriptionRole).toString()).isEmpty())
-		{
+		if(!(index.model()->data(index, rosterView::DescriptionRole).toString()).isEmpty()) {
 			QFont pf=painter->font();
 			pf.setItalic(TRUE);
 			painter->setFont(pf);
@@ -66,9 +59,7 @@ void rosterDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
 			painter->setFont(pf);
 		}
 	}
-	else if(index.model()->data(index,rosterView::TypeRole)==2) // GROUP
-	{
-		// GROUP WITH AVAIL COUNT
+	else if(index.model()->data(index,rosterView::TypeRole)==2) {
 		QFont pf=painter->font();
 		pf.setBold(TRUE);
 		QFontMetrics fm(pf);
@@ -77,8 +68,7 @@ void rosterDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
 		pf.setBold(FALSE);
 		painter->setFont(pf);
 	}
-	else if(index.model()->data(index,rosterView::TypeRole)==3) // GROUP
-	{
+	else if(index.model()->data(index,rosterView::TypeRole)==3) {
 		QFont pf=painter->font();
 		pf.setBold(TRUE);
 		QFontMetrics fm(pf);
@@ -90,8 +80,7 @@ void rosterDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
 	}
 }
 
-QSize rosterDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
-{
+QSize rosterDelegate::sizeHint( const QStyleOptionViewItem &option, const QModelIndex &index ) const {
 		QFont f=option.font;
 		f.setItalic(TRUE);
 		QFontMetrics fm(f);
@@ -100,7 +89,6 @@ QSize rosterDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelI
 		return QSize(width-2,row+((index.model()->data(index,rosterView::DescriptionRole).toString()).isEmpty()?0:descr));
 }
 
-void rosterDelegate::setWidth(int i)
-{
+void rosterDelegate::setWidth( int i ) {
 	width=i;
 }

@@ -40,7 +40,6 @@ public:
 				Disconnected = 4 };
 
 	tlen(QObject *parent=0);
-	~tlen();
 
 	bool isConnected();
 

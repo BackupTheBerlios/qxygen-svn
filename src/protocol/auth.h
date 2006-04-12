@@ -29,8 +29,7 @@
 #include <stdio.h>
 #include <string.h>
 
- 	typedef struct
-	{
+ 	typedef struct {
 		unsigned long H[5];
 		unsigned long W[80];
 		int lenW;

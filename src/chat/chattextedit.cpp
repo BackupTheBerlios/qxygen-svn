@@ -27,8 +27,7 @@
 
 #include "chattextedit.h"
 
-chatTextEdit::chatTextEdit(QWidget *parent): QTextEdit(parent)
-{
+chatTextEdit::chatTextEdit( QWidget* parent ): QTextEdit( parent ) {
 	displayM=new QMenu();
 	inputM=new QMenu();
 	selectAllA=new QAction(tr("Select All"), this);
@@ -74,24 +73,21 @@ chatTextEdit::chatTextEdit(QWidget *parent): QTextEdit(parent)
 	connect(redoA, SIGNAL(triggered()), document(), SLOT(redo()));
 }
 
-void chatTextEdit::contextMenuEvent(QContextMenuEvent *e)
-{
+void chatTextEdit::contextMenuEvent( QContextMenuEvent* e ) {
 	if(isReadOnly())
 		displayM->popup(e->globalPos());
 	else
 		inputM->popup(e->globalPos());
 }
 
-void chatTextEdit::checkPaste()
-{
+void chatTextEdit::checkPaste() {
 	if(QApplication::clipboard()->text().isEmpty())
 		pasteA->setEnabled(FALSE);
 	else
 		pasteA->setEnabled(TRUE);
 }
 
-void chatTextEdit::checkActions()
-{
+void chatTextEdit::checkActions() {
 	selectAllA->setDisabled(toPlainText().isEmpty());
 	clearA->setDisabled(toPlainText().isEmpty());
 }

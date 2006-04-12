@@ -31,7 +31,6 @@ Q_OBJECT
 
 public:
 	useradd(QStringList,QWidget *parent=0);
-	~useradd();
 
 public slots:
 	void add();

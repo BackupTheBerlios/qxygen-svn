@@ -45,28 +45,27 @@
 #include <QTimer>
 #include <QEvent>
 
-void TrayIcon::clearQueue()
-{
+/*!
+  \brief queue messages for main window
+*/
+
+void TrayIcon::clearQueue() {
 	jid.clear();
 	msgTimer->stop();
 	if(!msg)
 		swapIcon();
 }
 
-void TrayIcon::swapIcon()
-{
+void TrayIcon::swapIcon() {
 	msg?old=pm:old=old;
 	msg?setIcon(QPixmap(":msg.png")):setIcon(old);
 	msg=!msg;
 }
 
-void TrayIcon::windowOpened(QString owner)
-{
-	if(jid.count())
-	{
+void TrayIcon::windowOpened(QString owner) {
+	if(jid.count()) {
 		jid.removeAll(owner);
-		if(!jid.count())
-		{
+		if(!jid.count()) {
 			msgTimer->stop();
 			if(!msg)
 				swapIcon();
@@ -74,8 +73,7 @@ void TrayIcon::windowOpened(QString owner)
 	}
 }
 
-void TrayIcon::gotMsg(QString from)
-{
+void TrayIcon::gotMsg(QString from) {
 	jid.removeAll(from);
 	jid.prepend(from);
 	msgTimer->start(500);
