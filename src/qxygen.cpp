@@ -81,7 +81,6 @@ void qxygen::setupGui() {
 void qxygen::setupMenus() {
 	mainMenu=new QMenu(ui.menuButton);
 	statusMenu=new QMenu(ui.statusButton);
-	rosterMenu=new QMenu(ui.rosterView);
 	profilesMenu=new QMenu(tr("Profiles"));
 	profiles=new QActionGroup(this);
 	connect(profiles, SIGNAL(triggered(QAction*)), this, SLOT(choseProfile(QAction*)));
@@ -138,6 +137,7 @@ void qxygen::setupMenus() {
 }
 
 void qxygen::setupRoster() {
+	rosterMenu=new QMenu(ui.rosterView);
 	rosterModel=new rosterView();
 	ui.rosterView->setModel(rosterModel);
 	delegate=new rosterDelegate();
