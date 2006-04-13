@@ -76,6 +76,8 @@ void qxygen::setupGui() {
 	connect(ui.statusButton, SIGNAL(clicked()), this, SLOT(showStatusMenu()));
 	ui.menuButton->setIcon(QIcon(":menu.png"));
 	connect(ui.menuButton, SIGNAL(clicked()), this, SLOT(showMainMenu()));
+	resize(settings->defaultValue("window/size").value<QSize>());
+	move(settings->defaultValue("window/position").value<QPoint>());
 }
 
 void qxygen::setupMenus() {
@@ -186,6 +188,8 @@ void qxygen::toggleVisibility() {
 			else
 				showNormal();
 		}
+		resize(settings->defaultValue("window/size").value<QSize>());
+		move(settings->defaultValue("window/position").value<QPoint>());
 		raise();
 		activateWindow();
 	}
@@ -451,4 +455,14 @@ void qxygen::loadProfile() {
 void qxygen::choseProfile ( QAction* a ) {
 	settings->choseProfile( a->text() );
 	loadProfile();
+}
+
+void qxygen::resizeEvent (QResizeEvent *e) {
+	settings->setDefaultValue("window/size", QVariant(size()));
+	QMainWindow::resizeEvent(e);
+}
+
+void qxygen::moveEvent (QMoveEvent *e) {
+	settings->setDefaultValue("window/position", QVariant(pos()));
+	QMainWindow::moveEvent(e);
 }

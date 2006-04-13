@@ -37,6 +37,7 @@ public:
 	void choseProfile(QString);
 
 	void setProfileValue(QString, QVariant);
+	void setDefaultValue(QString, QVariant);
 	QVariant profileValue(QString);
 	QVariant defaultValue(QString);
 

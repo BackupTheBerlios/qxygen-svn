@@ -21,8 +21,6 @@
 #ifndef QXYGEN_H
 #define QXYGEN_H
 
-#define VERSION 0.0.0_20060407
-
 #include <QDomNode>
 
 #include "ui_qxygen.h"
@@ -82,6 +80,8 @@ protected:
 	void setupGui();
 	void setupSettings();
 	void closeEvent(QCloseEvent *e);
+	void resizeEvent(QResizeEvent*);
+	void moveEvent(QMoveEvent*);
 
 private:
 	QMap<QString /*jid*/, chatWindow*> chatMap;

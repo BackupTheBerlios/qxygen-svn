@@ -71,6 +71,10 @@ void settingsMenager::setProfileValue(QString key, QVariant value) {
 	profile->setValue(key,value);
 }
 
+void settingsMenager::setDefaultValue(QString key, QVariant value) {
+	qxygen->setValue(key, value);
+}
+
 QVariant settingsMenager::profileValue(QString key) {
 	return profile->value(key);
 }

@@ -48,6 +48,8 @@ signals:
 	void writeMsg(QString,QString);
 
 protected:
+	void resizeEvent(QResizeEvent*);
+	void moveEvent(QMoveEvent*);
 	bool eventFilter(QObject *obj, QEvent *ev);
 
 private:

@@ -99,6 +99,9 @@ chatWindow::chatWindow( QString label, QString jid, QWidget *parent ): QWidget( 
 
 	connect(msgTimer, SIGNAL(timeout()), this, SLOT(swapTitleBar()));
 	input->setFocus();
+
+	move(settings->profileValue("chat/position").value<QPoint>());
+	resize(settings->profileValue("chat/size").value<QSize>());
 }
 
 void chatWindow::checkSend() {
@@ -160,4 +163,16 @@ void chatWindow::swapTitleBar() {
 
 void chatWindow::setupReturnSend() {
 	settings->setProfileValue("chat/returnSend", QVariant(setReturnSend->isChecked()));
+}
+
+void chatWindow::resizeEvent(QResizeEvent *e) {
+	settings->setProfileValue("chat/size", QVariant(size()));
+	settings->setProfileValue("chat/position", QVariant(pos()));
+	QWidget::resizeEvent(e);
+}
+
+void chatWindow::moveEvent(QMoveEvent *e) {
+	settings->setProfileValue("chat/size", QVariant(size()));
+	settings->setProfileValue("chat/position", QVariant(pos()));
+	QWidget::moveEvent(e);
 }
