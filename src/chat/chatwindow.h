@@ -33,7 +33,7 @@ class chatWindow: public QWidget
 Q_OBJECT
 
 public:
-	chatWindow(QString,QString, QString, QWidget *parent=0);
+	chatWindow(QString,QString, QWidget *parent=0);
 
 	QString jid(){return owner;}
 	void displayMsg(QString,QString);
@@ -42,6 +42,7 @@ private slots:
 	void checkSend();
 	void sendMsg();
 	void swapTitleBar();
+	void setupReturnSend();
 
 signals:
 	void writeMsg(QString,QString);
@@ -50,7 +51,7 @@ protected:
 	bool eventFilter(QObject *obj, QEvent *ev);
 
 private:
-	QString owner,title,profileName;
+	QString owner,title;
 
 	QTimer *msgTimer;
 

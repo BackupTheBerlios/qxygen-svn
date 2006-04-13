@@ -165,7 +165,6 @@ void qxygen::setupProtocol() {
 }
 
 void qxygen::setupSettings() {
-	settings=new settingsMenager();
 	connect(settings, SIGNAL(noProfile()), this, SLOT(createProfile()));
 	settings->initModule();
 	loadProfile();
@@ -332,7 +331,7 @@ void qxygen::showChatWindow(const QModelIndex &index)
 		}
 		else {
 			QString label=index.model()->data(index,Qt::DisplayRole).toString();
-			chatWindow *w=new chatWindow(label,jid,settings->profileName(),0);
+			chatWindow *w=new chatWindow(label,jid,0);
 			w->setWindowIcon(QIcon(QPixmap::fromImage(index.model()->data(index,Qt::DecorationRole).value<QImage>())));
 			chatMap.insert(jid,w);
 			QStringListIterator it(msgMap[jid]);
@@ -380,7 +379,7 @@ void qxygen::openMsg(QString from)
 	else {
 		rosterItem *item=rosterModel->find(from);
 		QString label=item->data(0);
-		chatWindow *w=new chatWindow(label,from, settings->profileName(),0);
+		chatWindow *w=new chatWindow(label,from,0);
 		chatMap.insert(from,w);
 		connect(w, SIGNAL(writeMsg(QString,QString)), Tlen, SLOT(writeMsg(QString,QString)));
 		w->setWindowIcon(QIcon(QPixmap::fromImage(item->icon())));
@@ -404,8 +403,7 @@ void qxygen::windowUpdate(QString owner, QIcon ico)
 
 void qxygen::createProfile()
 {
-	QStringList profilesList=settings->profilesList();
-	profileForm *form=new profileForm(this, profilesList);
+	profileForm *form=new profileForm(this);
 	connect(form, SIGNAL(addProfile(QString,QString,QString)), this, SLOT(addProfile(QString,QString,QString)));
 	form->exec();
 }
@@ -420,7 +418,7 @@ void qxygen::addProfile(QString profile,QString login,QString pass)
 void qxygen::updateProfilesMenu()
 {
 	profilesMenu->clear();
-	QStringList profileNames=settings->profilesList();
+	QStringList profileNames=settings->defaultValue("profiles/list").value<QStringList>();
 
 	profiles->setExclusive(TRUE);
 
@@ -429,7 +427,7 @@ void qxygen::updateProfilesMenu()
 		QString name=it.next();
 		QAction *a=new QAction(name,this);
 		a->setCheckable(TRUE);
-		if(name==settings->profileName())
+		if(name==settings->profileValue("user/profile").toString())
 			a->setChecked(TRUE);
 		profiles->addAction(a);
 		profilesMenu->addAction(a);
@@ -444,9 +442,9 @@ void qxygen::loadProfile() {
 	if( Tlen->isConnected() )
 		Tlen->closeConn();
 
-	Tlen->setPass( settings->pass() );
-	Tlen->setUname( settings->user() );
-	setWindowTitle( "Qxygen: "+settings->profileName() );
+	Tlen->setPass( settings->profileValue("user/pass").toString() );
+	Tlen->setUname( settings->profileValue("user/login").toString() );
+	setWindowTitle( "Qxygen: "+settings->profileValue("user/profile").toString() );
 	rosterModel->clearRoster();
 }
 

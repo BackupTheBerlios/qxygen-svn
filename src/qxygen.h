@@ -87,7 +87,7 @@ private:
 	QMap<QString /*jid*/, chatWindow*> chatMap;
 	QMap<QString /*jid*/, QStringList /*msg queue*/> msgMap;
 
-	settingsMenager *settings;
+//	settingsMenager *settings;
 
 	QMenu	*mTrayMenu,
 		*mainMenu,

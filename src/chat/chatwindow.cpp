@@ -33,11 +33,11 @@
 
 #include "chatwindow.h"
 #include "chattextedit.h"
+#include "settings.h"
 
-chatWindow::chatWindow( QString label, QString jid, QString profile,QWidget *parent ): QWidget( parent ) {
+chatWindow::chatWindow( QString label, QString jid, QWidget *parent ): QWidget( parent ) {
 	installEventFilter(this);
 	setGeometry(150,150,350,300);
-	profileName=profile;
 	title=label;
 	owner=jid;
 	setWindowTitle(title);
@@ -67,6 +67,7 @@ chatWindow::chatWindow( QString label, QString jid, QString profile,QWidget *par
 	setReturnSend=new QPushButton();
 	setReturnSend->setIcon(QIcon(":enter.png"));
 	setReturnSend->setCheckable(TRUE);
+	setReturnSend->setChecked(settings->profileValue("chat/returnSend").toBool());
 
 	QBoxLayout *top=new QBoxLayout(QBoxLayout::LeftToRight);
 	top->setMargin(0);
@@ -89,6 +90,7 @@ chatWindow::chatWindow( QString label, QString jid, QString profile,QWidget *par
 
 	connect(input,SIGNAL(textChanged()),this,SLOT(checkSend()));
 	connect(sendButton, SIGNAL(clicked()),this,SLOT(sendMsg()));
+	connect(setReturnSend, SIGNAL(clicked()), this, SLOT(setupReturnSend()));
 
 	typingNotify->adjustSize();
 	setReturnSend->adjustSize();
@@ -96,6 +98,7 @@ chatWindow::chatWindow( QString label, QString jid, QString profile,QWidget *par
 	msgTimer=new QTimer();
 
 	connect(msgTimer, SIGNAL(timeout()), this, SLOT(swapTitleBar()));
+	input->setFocus();
 }
 
 void chatWindow::checkSend() {
@@ -137,7 +140,7 @@ void chatWindow::sendMsg() {
 	msg.replace(">","&gt;");
 	msg.replace(" ", "&ensp;");
 	msg.replace("\n", "<br/>");
-	display->append("<table width=\"100%\" style=\"background-color: #ffffff;\"><tr><td><b>"+profileName+" :: "+QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss")+"</b></td></tr><tr><td>"+msg+"</td></tr></table>");
+	display->append("<table width=\"100%\" style=\"background-color: #ffffff;\"><tr><td><b>"+settings->profileValue("user/profile").toString()+" :: "+QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss")+"</b></td></tr><tr><td>"+msg+"</td></tr></table>");
 }
 
 void chatWindow::displayMsg(QString msg, QString time) {
@@ -153,4 +156,8 @@ void chatWindow::displayMsg(QString msg, QString time) {
 
 void chatWindow::swapTitleBar() {
 	windowTitle()==" "?setWindowTitle(title):setWindowTitle(" ");
+}
+
+void chatWindow::setupReturnSend() {
+	settings->setProfileValue("chat/returnSend", QVariant(setReturnSend->isChecked()));
 }

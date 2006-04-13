@@ -21,9 +21,9 @@
 #include <QMessageBox>
 
 #include "profileform.h"
+#include "settings.h"
 
-profileForm::profileForm( QWidget *parent, QStringList pl ): QDialog( parent ) {
-	profilesList=pl;
+profileForm::profileForm( QWidget *parent): QDialog( parent ) {
 	ui.setupUi(this);
 	setWindowTitle(tr("Create new profile"));
 
@@ -42,7 +42,7 @@ void profileForm::profileConfirm() {
 	if(ui.profileLineEdit->text().isEmpty())
 		ui.profileLineEdit->setText(ui.loginLineEdit->text());
 
-	if(profilesList.contains(ui.profileLineEdit->text(), Qt::CaseInsensitive)) {
+	if(settings->defaultValue("profiles/list").value<QStringList>().contains(ui.profileLineEdit->text(), Qt::CaseInsensitive)) {
 		QMessageBox::warning(this, tr("Profile exists"), tr("Porfile \"%1\" already exists. Pick another profile name.").arg(ui.profileLineEdit->text()), tr("Ok"));
 		return;
 	}

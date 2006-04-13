@@ -34,13 +34,11 @@ public:
 	settingsMenager(QObject *parent=0);
 	~settingsMenager();
 
-	QStringList profilesList();
-
-	QString user();
-	QString pass();
-	QString profileName();
-
 	void choseProfile(QString);
+
+	void setProfileValue(QString, QVariant);
+	QVariant profileValue(QString);
+	QVariant defaultValue(QString);
 
 	void initModule();
 	void addProfile(QString,QString,QString);
@@ -52,4 +50,5 @@ private:
 	QSettings *qxygen,*profile;
 	QDir *dir;
 };
+extern settingsMenager *settings;
 #endif

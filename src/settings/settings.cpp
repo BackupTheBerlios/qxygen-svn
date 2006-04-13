@@ -23,15 +23,20 @@
 
 #include "settings.h"
 
+settingsMenager *settings=new settingsMenager();
+
 settingsMenager::settingsMenager( QObject* parent ):QObject( parent ) {
 #ifdef Q_WS_WIN
-	dir=new QDir(QDir::homePath()+"\\qxygen");
+	dir=new QDir(QDir::homePath()+"/qxygen");
 #else
 	dir=new QDir(QDir::homePath()+"/.qxygen");
 #endif
 
 	if(!dir->exists())
 		dir->mkdir(dir->path());
+
+	if(!dir->exists(dir->path()+"/profiles"))
+		dir->mkdir(dir->path()+"/profiles");
 
 	qxygen=new QSettings(dir->path()+"/qxygen",QSettings::NativeFormat);
 }
@@ -43,7 +48,7 @@ void settingsMenager::initModule() {
 	if(qxygen->value("profiles/default").toString().isEmpty())
 		emit noProfile();
 	else
-		profile=new QSettings(dir->path()+"/"+qxygen->value("profiles/default").toString(), QSettings::NativeFormat);
+		profile=new QSettings(dir->path()+"/profiles/"+qxygen->value("profiles/default").toString(), QSettings::NativeFormat);
 }
 
 void settingsMenager::addProfile(QString name, QString login, QString pass) {
@@ -57,26 +62,19 @@ void settingsMenager::addProfile(QString name, QString login, QString pass) {
 	profile->setValue("user/pass", pass);
 }
 
-QStringList settingsMenager::profilesList() {
-	if(qxygen->contains("profiles/list"))
-		return qxygen->value("profiles/list").value<QStringList>();
-	else
-		return QStringList();
-}
-
-QString settingsMenager::user() {
-	return profile->value("user/login").toString();
-}
-
-QString settingsMenager::pass() {
-	return profile->value("user/pass").toString();
-}
-
-QString settingsMenager::profileName() {
-	return profile->value("user/profile").toString();
-}
-
 void settingsMenager::choseProfile(QString p) {
 	qxygen->setValue("profiles/default", p);
-	profile=new QSettings(dir->path()+"/"+qxygen->value("profiles/default").toString(), QSettings::NativeFormat);
+	profile=new QSettings(dir->path()+"/profiles/"+qxygen->value("profiles/default").toString(), QSettings::NativeFormat);
+}
+
+void settingsMenager::setProfileValue(QString key, QVariant value) {
+	profile->setValue(key,value);
+}
+
+QVariant settingsMenager::profileValue(QString key) {
+	return profile->value(key);
+}
+
+QVariant settingsMenager::defaultValue(QString key) {
+	return qxygen->value(key);
 }
