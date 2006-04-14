@@ -52,7 +52,7 @@ void settingsMenager::initModule() {
 }
 
 void settingsMenager::addProfile(QString name, QString login, QString pass) {
-	profile=new QSettings(dir->path()+"/"+name, QSettings::NativeFormat);
+	profile=new QSettings(dir->path()+"/profiles/"+name, QSettings::NativeFormat);
 	qxygen->setValue("profiles/default", name);
 	QStringList profilesList=qxygen->value("profiles/list").value<QStringList>();
 	profilesList<<name;

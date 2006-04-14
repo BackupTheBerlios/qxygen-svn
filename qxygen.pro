@@ -2,8 +2,6 @@ CONFIG += qt warn_on x11 release
 
 QT += network xml
 
-QMAKE_LFLAGS_RELEASE=-Wl,--as-needed -Wl,-O2 -Wl,--sort-common -Wl,-s -Wl,-Bdirect
-
 RCC_DIR=tmp/rcc
 OBJECTS_DIR=tmp/obj
 MOC_DIR=tmp/moc
