@@ -1,4 +1,4 @@
-CONFIG += qt warn_on x11 debug
+CONFIG += qt warn_on x11 release
 
 QT += network xml
 
@@ -14,12 +14,14 @@ DEPENDPATH=src/roster src/settings
 INCLUDEPATH=src src/roster src/protocol src/chat src/tray src/settings
 
 FORMS = src/qxygen.ui \
+	src/descrdialog.ui \
 	src/roster/useradd.ui \
 	src/settings/profile.ui
 
 RESOURCES=qxygen.qrc
 
 HEADERS=src/qxygen.h \
+	src/descrdialog.h \
 	src/settings/settings.h \
 	src/settings/profileform.h \
 	src/roster/roster_view.h \
@@ -36,6 +38,7 @@ HEADERS=src/qxygen.h \
 
 SOURCES=src/main.cpp \
 	src/qxygen.cpp \
+	src/descrdialog.cpp \
 	src/settings/settings.cpp \
 	src/settings/profileform.cpp \
 	src/roster/roster_view.cpp \

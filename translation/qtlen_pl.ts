@@ -38,10 +38,106 @@
     </message>
 </context>
 <context>
+    <name>chatTextEdit</name>
+    <message>
+        <source>Select All</source>
+        <translation>Zaznacz wszystko</translation>
+    </message>
+    <message>
+        <source>Copy</source>
+        <translation>Kopiuj</translation>
+    </message>
+    <message>
+        <source>Cut</source>
+        <translation>Wytnij</translation>
+    </message>
+    <message>
+        <source>Paste</source>
+        <translation>Wklej</translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation>Wyczyść</translation>
+    </message>
+    <message>
+        <source>Redo</source>
+        <translation>Powtórz</translation>
+    </message>
+    <message>
+        <source>Undo</source>
+        <translation>Cofnij</translation>
+    </message>
+</context>
+<context>
     <name>chatWindow</name>
     <message>
         <source>Send</source>
         <translation>Wyślij</translation>
+    </message>
+</context>
+<context>
+    <name>descrDialog</name>
+    <message>
+        <source>Set description</source>
+        <translation>Ustaw opis</translation>
+    </message>
+    <message>
+        <source>Ok</source>
+        <translation>Ok</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Anuluj</translation>
+    </message>
+</context>
+<context>
+    <name>newProfileDialog</name>
+    <message>
+        <source>Create</source>
+        <translation>Stwórz</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Anuluj</translation>
+    </message>
+    <message>
+        <source>Password:</source>
+        <translation>Hasło:</translation>
+    </message>
+    <message>
+        <source>Login:</source>
+        <translation>Login:</translation>
+    </message>
+    <message>
+        <source>Profile name:</source>
+        <translation>Nazwa profilu:</translation>
+    </message>
+    <message>
+        <source>Create new profile</source>
+        <translation>Stwórz nowy profil</translation>
+    </message>
+</context>
+<context>
+    <name>profileForm</name>
+    <message>
+        <source>Missing fields</source>
+        <translation>Brakujące pola</translation>
+    </message>
+    <message>
+        <source>You have to fill up at least &quot;Login&quot; and &quot;Password&quot; fields.</source>
+        <translation>Musisz wypełnić pola &quot;Login&quot; i &quot;Hasło&quot;.</translation>
+    </message>
+    <message>
+        <source>Ok</source>
+        <translation>Ok</translation>
+    </message>
+    <message>
+        <source>Profile exists</source>
+        <translation>Profil istnieje</translation>
+    </message>
+    <message>
+        <source>Porfile &quot;%1&quot; already exists. Pick another profile name.</source>
+        <translation>Profile %1 już istnieje. Wybierz inną nazwę profilu.</translation>
     </message>
 </context>
 <context>
@@ -101,6 +197,18 @@
     <message>
         <source>&amp;No</source>
         <translation>&amp;Nie</translation>
+    </message>
+    <message>
+        <source>Profiles</source>
+        <translation>Profile</translation>
+    </message>
+    <message>
+        <source>Add profile</source>
+        <translation>Dodaj profil</translation>
+    </message>
+    <message>
+        <source>With description</source>
+        <translation>Z opisem</translation>
     </message>
 </context>
 <context>
@@ -191,27 +299,27 @@
     </message>
     <message>
         <source>Add</source>
-        <translation>Dodaj</translation>
+        <translation type="obsolete">Dodaj</translation>
     </message>
     <message>
         <source>Cacnel</source>
-        <translation>Anuluj</translation>
+        <translation type="obsolete">Anuluj</translation>
     </message>
     <message>
         <source>Ask for authorization</source>
-        <translation>Poproś o autoryzacje</translation>
+        <translation type="obsolete">Poproś o autoryzacje</translation>
     </message>
     <message>
         <source>Name:</source>
-        <translation>Nazwa:</translation>
+        <translation type="obsolete">Nazwa:</translation>
     </message>
     <message>
         <source>Login:</source>
-        <translation>Login:</translation>
+        <translation type="obsolete">Login:</translation>
     </message>
     <message>
         <source>Group:</source>
-        <translation>Grupa:</translation>
+        <translation type="obsolete">Grupa:</translation>
     </message>
 </context>
 </TS>

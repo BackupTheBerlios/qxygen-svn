@@ -395,6 +395,7 @@ void tlen::setStatus() {
 	case 5: status="invisible"; break;
 	case 6: status="unavailable"; break;
 	}
+	descr="";
 	emit statusUpdate();
 }
 
@@ -402,6 +403,15 @@ void tlen::setStatus( QString s ) {
 	if(status==s)
 		return;
 
+	status=s;
+	emit statusUpdate();
+}
+
+void tlen::setStatusDescr( QString s, QString d ) {
+	if(descr==d && status==s)
+		return;
+
+	descr=d;
 	status=s;
 	emit statusUpdate();
 }

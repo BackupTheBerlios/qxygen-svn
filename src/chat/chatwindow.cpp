@@ -124,7 +124,7 @@ bool chatWindow::eventFilter(QObject *obj, QEvent *ev) {
 
 				return true;
 			}
-			else if(!keyEvent->text().isEmpty()) {
+			else if(!keyEvent->text().isEmpty() && keyEvent->key()!=Qt::Key_Tab) {
 				if(!notifyTimer->isActive())
 					emit chatNotify(owner, TRUE);
 				notifyTimer->start(3000);

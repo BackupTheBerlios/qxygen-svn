@@ -429,7 +429,6 @@
   <tabstop>menuButton</tabstop>
   <tabstop>statusButton</tabstop>
  </tabstops>
- <includes/>
  <resources>
   <include location="../Qxygen.qrc" />
  </resources>

@@ -27,13 +27,6 @@ useradd::useradd(QStringList sl,QWidget *parent): QDialog(parent) {
 	sl.prepend("");
 	ui.groupLine->addItems(sl);
 
-	ui.addButton->setText(tr("Add"));
-	ui.cancelButton->setText(tr("Cacnel"));
-	ui.afaCheckBox->setText(tr("Ask for authorization"));
-	ui.nameLabel->setText(tr("Name:"));
-	ui.loginLabel->setText(tr("Login:"));
-	ui.groupLabel->setText(tr("Group:"));
-
 	connect(ui.addButton,SIGNAL(clicked()), this, SLOT(add()));
 	connect(ui.cancelButton, SIGNAL(clicked()), this, SLOT(close()));
 }

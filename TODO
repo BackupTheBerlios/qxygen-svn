@@ -1,7 +1,6 @@
 +++++++TODO+++++++
 
 ==CHATTING
--typing notifying
 -send alarm
 -emoticons in chat window
 
@@ -30,6 +29,7 @@
 -message sending to window
 -message coding/sending
 -title bar blinking
+-typing notifying
 
 ==ROSTER
 -authorization accept/refuse

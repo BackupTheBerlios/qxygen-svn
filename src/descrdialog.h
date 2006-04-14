@@ -18,34 +18,25 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <QMessageBox>
+#ifndef DESCRDIALOG_H
+#define DESCRDIALOG_H
 
-#include "profileform.h"
-#include "settings.h"
+#include "ui_descrdialog.h"
 
-profileForm::profileForm( QWidget *parent): QDialog( parent ) {
-	ui.setupUi(this);
+class descrDialog: public QDialog {
+Q_OBJECT
 
-	ui.passwordLineEdit->setEchoMode(QLineEdit::Password);
+public:
+	descrDialog(QString, QString,QWidget *parent=0);
 
-	connect(ui.createPushButton, SIGNAL(clicked()), this, SLOT(profileConfirm()));
-	connect(ui.cancelPushButton, SIGNAL(clicked()), this, SLOT(close()));
-}
+public slots:
+	void enableButton();
+	void setDescr();
 
-void profileForm::profileConfirm() {
-	if(ui.loginLineEdit->text().isEmpty() || ui.passwordLineEdit->text().isEmpty()) {
-		QMessageBox::warning(this, tr("Missing fields"), tr("You have to fill up at least \"Login\" and \"Password\" fields."), tr("Ok"));
-		return;
-	}
+signals:
+	void statusChanged(QString,QString);
 
-	if(ui.profileLineEdit->text().isEmpty())
-		ui.profileLineEdit->setText(ui.loginLineEdit->text());
-
-	if(settings->defaultValue("profiles/list").value<QStringList>().contains(ui.profileLineEdit->text(), Qt::CaseInsensitive)) {
-		QMessageBox::warning(this, tr("Profile exists"), tr("Porfile \"%1\" already exists. Pick another profile name.").arg(ui.profileLineEdit->text()), tr("Ok"));
-		return;
-	}
-
-	emit addProfile(ui.profileLineEdit->text(), ui.loginLineEdit->text(), ui.passwordLineEdit->text());
-	close();
-}
+private:
+	Ui::descrDialog ui;
+};
+#endif

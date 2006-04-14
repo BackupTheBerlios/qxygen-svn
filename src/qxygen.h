@@ -63,6 +63,8 @@ public slots:
 	void showChatWindow(const QModelIndex&);
 	void openMsg(QString);
 
+	void setDescrDialog();
+
 	void createProfile();
 	void addProfile(QString,QString,QString);
 	void updateProfilesMenu();
@@ -106,6 +108,7 @@ private:
 		*dnd,
 		*invisible,
 		*offline,
+		*withDescr,
 		*add,
 		*remove,
 		*createProfileAction;

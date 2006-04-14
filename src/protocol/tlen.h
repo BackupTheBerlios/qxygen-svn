@@ -68,6 +68,7 @@ public slots:
 	void rosterRequest();
 	void setStatus();
 	void setStatus(QString s);
+	void setStatusDescr(QString,QString);
 	void addItem(QString jid, QString name, QString group, bool subscribe);
 
 private slots:

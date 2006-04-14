@@ -34,6 +34,7 @@
 #include "chatwindow.h"
 #include "settings.h"
 #include "profileform.h"
+#include "descrdialog.h"
 
 qxygen::qxygen( QWidget* parent): QMainWindow( parent ) {
 	setupTray();
@@ -111,6 +112,8 @@ void qxygen::setupMenus() {
 	offline=new QAction(QIcon(":offline.png"), tr("Unavailable"), this);
 	offline->setData(qxygen::Offline);
 	connect(offline, SIGNAL(triggered()), Tlen, SLOT(setStatus()));
+	withDescr=new QAction(QIcon(":offlinei.png"), tr("With description"), this);
+	connect(withDescr, SIGNAL(triggered()), this, SLOT(setDescrDialog()));
 	add=new QAction(QIcon(":add.png"), tr("Add contact"), this);
 	connect(add,SIGNAL(triggered()),this,SLOT(addUser()));
 	remove=new QAction(QIcon(":remove.png"), tr("Remove contact"), this);
@@ -123,6 +126,7 @@ void qxygen::setupMenus() {
 	mTrayMenu->addAction(dnd);
 	mTrayMenu->addAction(invisible);
 	mTrayMenu->addAction(offline);
+	mTrayMenu->addAction(withDescr);
 	mTrayMenu->addSeparator();
 	mTrayMenu->addAction(exit);
 	mainMenu->addMenu(profilesMenu);
@@ -136,6 +140,8 @@ void qxygen::setupMenus() {
 	statusMenu->addAction(dnd);
 	statusMenu->addAction(invisible);
 	statusMenu->addAction(offline);
+	statusMenu->addSeparator();
+	statusMenu->addAction(withDescr);
 }
 
 void qxygen::setupRoster() {
@@ -238,7 +244,7 @@ void qxygen::statusChange() {
 
 	if(status=="available")
 		px=descr?QPixmap(":online.png"):QPixmap(":onlinei.png");
-	else if(status=="chat")
+	else if(status=="chatty")
 		px=descr?QPixmap(":chatty.png"):QPixmap(":chattyi.png");
 	else if(status=="away")
 		px=descr?QPixmap(":away.png"):QPixmap(":awayi.png");
@@ -247,7 +253,7 @@ void qxygen::statusChange() {
 	else if(status=="dnd")
 		px=descr?QPixmap(":dnd.png"):QPixmap(":dndi.png");
 	else if(status=="invisible")
-		px=descr?QPixmap(":invisible.png"):QPixmap("invisiblei.png");
+		px=descr?QPixmap(":invisible.png"):QPixmap(":invisiblei.png");
 	else
 		px=descr?QPixmap(":offline.png"):QPixmap(":offlinei.png");
 
@@ -480,4 +486,10 @@ void qxygen::chatNotify(QString to, QString type) {
 	//<m tp='t' f='qxygen@tlen.pl'/> - user qxygen@tlen.pl is typing
 	//<m tp='u' f='qxygen@tlen.pl'/> - user qxygen@tlen.pl stoped typing
 	//<m tp='a' f='qxygen@tlen.pl'/> - user qxygen@tlen.pl sent sound alarm
+}
+
+void qxygen::setDescrDialog() {
+	descrDialog *dlg=new descrDialog(Tlen->strStatus(), Tlen->description(), this);
+	connect(dlg, SIGNAL(statusChanged(QString, QString)), Tlen, SLOT(setStatusDescr(QString, QString)));
+	dlg->exec();
 }
