@@ -109,6 +109,8 @@ TrayIcon::TrayIcon( const QPixmap &icon, const QString &tooltip, QMenu *popup, Q
 	msgTimer=new QTimer();
 	v_isWMDock = FALSE;
 
+	connect(msgTimer, SIGNAL(timeout()), this, SLOT(swapIcon()));
+
 	if ( !pm.width() || !pm.height() )
 		pm = QPixmap( 16, 16 );
 }

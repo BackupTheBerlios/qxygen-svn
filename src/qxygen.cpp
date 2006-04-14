@@ -76,6 +76,8 @@ void qxygen::setupGui() {
 	ui.statusButton->setIcon(QIcon(":offline.png"));
 	connect(ui.statusButton, SIGNAL(clicked()), this, SLOT(showStatusMenu()));
 	ui.menuButton->setIcon(QIcon(":menu.png"));
+	ui.menuButton->setFixedSize(ui.menuButton->sizeHint());
+	ui.menuButton->setIconSize(ui.menuButton->sizeHint());
 	connect(ui.menuButton, SIGNAL(clicked()), this, SLOT(showMainMenu()));
 	resize(settings->defaultValue("window/size").value<QSize>());
 	move(settings->defaultValue("window/position").value<QPoint>());

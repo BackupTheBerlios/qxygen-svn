@@ -65,9 +65,12 @@ chatWindow::chatWindow( QString label, QString jid, QWidget *parent ): QWidget( 
 	sendButton->setDisabled(TRUE);
 
 	setReturnSend=new QPushButton();
-	setReturnSend->setIcon(QIcon(":enter.png"));
 	setReturnSend->setCheckable(TRUE);
 	setReturnSend->setChecked(settings->profileValue("chat/returnSend").toBool());
+	if(setReturnSend->isChecked())
+		setReturnSend->setIcon(QIcon(":return_on.png"));
+	else
+		setReturnSend->setIcon(QIcon(":return_off.png"));
 
 	QBoxLayout *top=new QBoxLayout(QBoxLayout::LeftToRight);
 	top->setMargin(0);
@@ -153,7 +156,7 @@ void chatWindow::sendMsg() {
 	input->clear();
 	msg.replace("<","&lt;");
 	msg.replace(">","&gt;");
-	msg.replace(" ", "&thinsp;");
+	msg.replace(" ", "&ensp;");
 	msg.replace("\n", "<br/>");
 	display->append("<table width=\"100%\" style=\"background-color: #ffffff;\"><tr><td><b>"+settings->profileValue("user/profile").toString()+" :: "+QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss")+"</b></td></tr><tr><td>"+msg+"</td></tr></table>");
 	notifyTimer->stop();
@@ -162,7 +165,7 @@ void chatWindow::sendMsg() {
 void chatWindow::displayMsg(QString msg, QString time) {
 	msg.replace("<","&lt;");
 	msg.replace(">","&gt;");
-	msg.replace(" ", "&thinsp;");
+	msg.replace(" ", "&ensp;");
 	msg.replace("\n","<br/>");
 	display->append("<table width=\"100%\" style=\"background-color: #e0e0e0;\"><tr><td><b>"+title+" :: "+time+"</b></td></tr><tr><td>"+msg+"</td></tr></table>");
 
@@ -176,6 +179,11 @@ void chatWindow::swapTitleBar() {
 }
 
 void chatWindow::setupReturnSend() {
+	if(setReturnSend->isChecked())
+		setReturnSend->setIcon(QIcon(":return_on.png"));
+	else
+		setReturnSend->setIcon(QIcon(":return_off.png"));
+
 	settings->setProfileValue("chat/returnSend", QVariant(setReturnSend->isChecked()));
 }
 

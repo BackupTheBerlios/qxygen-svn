@@ -23,7 +23,8 @@
 		<file alias="remove.png">img/delete.png</file>
 		<file alias="add.png">img/add.png</file>
 		<file alias="send.png">img/send.png</file>
-		<file alias="enter.png">img/enter.png</file>
+		<file alias="return_off.png">img/return_off.png</file>
+		<file alias="return_on.png">img/return_on.png</file>
 		<file alias="non.png">img/notify_on.png</file>
 		<file alias="noff.png">img/notify_off.png</file>
 	</qresource>
