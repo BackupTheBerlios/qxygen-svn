@@ -74,14 +74,14 @@ chatWindow::chatWindow( QString label, QString jid, QWidget *parent ): QWidget( 
 	QBoxLayout *bottom=new QBoxLayout(QBoxLayout::RightToLeft);
 	bottom->setMargin(0);
 
-	typingNotify=new QLabel();
-	typingNotify->setPixmap(QPixmap(":noff.png"));
+	typingNotifyLabel=new QLabel();
+	typingNotifyLabel->setPixmap(QPixmap(":noff.png"));
 
 	bottom->addWidget(sendButton);
 	bottom->addWidget(setReturnSend);
 	bottom->insertStretch(-1,10);
 
-	top->addWidget(typingNotify);
+	top->addWidget(typingNotifyLabel);
 	top->insertStretch(-1,10);
 
 	lowerLayout->addLayout(top,0,0);
@@ -92,12 +92,14 @@ chatWindow::chatWindow( QString label, QString jid, QWidget *parent ): QWidget( 
 	connect(sendButton, SIGNAL(clicked()),this,SLOT(sendMsg()));
 	connect(setReturnSend, SIGNAL(clicked()), this, SLOT(setupReturnSend()));
 
-	typingNotify->adjustSize();
+	typingNotifyLabel->adjustSize();
 	setReturnSend->adjustSize();
 
 	msgTimer=new QTimer();
+	notifyTimer=new QTimer();
 
 	connect(msgTimer, SIGNAL(timeout()), this, SLOT(swapTitleBar()));
+	connect(notifyTimer, SIGNAL(timeout()), this, SLOT(chatNotifyStop()));
 	input->setFocus();
 
 	move(settings->profileValue("chat/position").value<QPoint>());
@@ -122,6 +124,11 @@ bool chatWindow::eventFilter(QObject *obj, QEvent *ev) {
 
 				return true;
 			}
+			else if(!keyEvent->text().isEmpty()) {
+				if(!notifyTimer->isActive())
+					emit chatNotify(owner, TRUE);
+				notifyTimer->start(3000);
+			}
 		}
 	}
 	else if(ev->type()==QEvent::WindowActivate) {
@@ -131,6 +138,11 @@ bool chatWindow::eventFilter(QObject *obj, QEvent *ev) {
 	}
 
 	return QWidget::eventFilter(obj,ev);
+}
+
+void chatWindow::chatNotifyStop() {
+	emit chatNotify(owner, FALSE);
+	notifyTimer->stop();
 }
 
 void chatWindow::sendMsg() {
@@ -144,6 +156,7 @@ void chatWindow::sendMsg() {
 	msg.replace(" ", "&ensp;");
 	msg.replace("\n", "<br/>");
 	display->append("<table width=\"100%\" style=\"background-color: #ffffff;\"><tr><td><b>"+settings->profileValue("user/profile").toString()+" :: "+QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss")+"</b></td></tr><tr><td>"+msg+"</td></tr></table>");
+	notifyTimer->stop();
 }
 
 void chatWindow::displayMsg(QString msg, QString time) {
@@ -155,6 +168,7 @@ void chatWindow::displayMsg(QString msg, QString time) {
 
 	if(!isActiveWindow())
 		msgTimer->start(500);
+	typingNotifyLabel->setPixmap(QPixmap(":noff.png"));
 }
 
 void chatWindow::swapTitleBar() {
@@ -175,4 +189,11 @@ void chatWindow::moveEvent(QMoveEvent *e) {
 	settings->setProfileValue("chat/size", QVariant(size()));
 	settings->setProfileValue("chat/position", QVariant(pos()));
 	QWidget::moveEvent(e);
+}
+
+void chatWindow::typingNotify(bool t) {
+	if(t)
+		typingNotifyLabel->setPixmap(QPixmap(":non.png"));
+	else
+		typingNotifyLabel->setPixmap(QPixmap(":noff.png"));
 }

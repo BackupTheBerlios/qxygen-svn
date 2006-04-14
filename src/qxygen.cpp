@@ -164,6 +164,7 @@ void qxygen::setupProtocol() {
 	connect(this, SIGNAL(authorize(QString,bool)), Tlen, SLOT(authorize(QString,bool)));
 	connect(Tlen, SIGNAL(removeItem(QString)), rosterModel, SLOT(removeItem(QString)));
 	connect(Tlen, SIGNAL(chatMsgReceived(QDomNode)), this, SLOT(chatMsgReceived(QDomNode)));
+	connect(Tlen, SIGNAL(chatNotify(QString,QString)), this, SLOT(chatNotify(QString,QString)));
 }
 
 void qxygen::setupSettings() {
@@ -346,6 +347,7 @@ void qxygen::showChatWindow(const QModelIndex &index)
 			}
 			msgMap[jid].clear();
 			connect(w, SIGNAL(writeMsg(QString,QString)), Tlen, SLOT(writeMsg(QString,QString)));
+			connect(w, SIGNAL(chatNotify(QString, bool)), Tlen, SLOT(chatNotify(QString,bool)));
 			w->show();
 			emit windowOpened(jid);
 		}
@@ -386,6 +388,7 @@ void qxygen::openMsg(QString from)
 		chatWindow *w=new chatWindow(label,from,0);
 		chatMap.insert(from,w);
 		connect(w, SIGNAL(writeMsg(QString,QString)), Tlen, SLOT(writeMsg(QString,QString)));
+		connect(w, SIGNAL(chatNotify(QString, bool)), Tlen, SLOT(chatNotify(QString,bool)));
 		w->setWindowIcon(QIcon(QPixmap::fromImage(item->icon())));
 		QStringListIterator it(msgMap[from]);
 		while(it.hasNext()) {
@@ -465,4 +468,16 @@ void qxygen::resizeEvent (QResizeEvent *e) {
 void qxygen::moveEvent (QMoveEvent *e) {
 	settings->setDefaultValue("window/position", QVariant(pos()));
 	QMainWindow::moveEvent(e);
+}
+
+void qxygen::chatNotify(QString to, QString type) {
+	if(chatWindow *w=chatMap[to]) {
+		if(type=="t")
+			w->typingNotify(TRUE);
+		else if(type=="u")
+			w->typingNotify(FALSE);
+	}
+	//<m tp='t' f='qxygen@tlen.pl'/> - user qxygen@tlen.pl is typing
+	//<m tp='u' f='qxygen@tlen.pl'/> - user qxygen@tlen.pl stoped typing
+	//<m tp='a' f='qxygen@tlen.pl'/> - user qxygen@tlen.pl sent sound alarm
 }

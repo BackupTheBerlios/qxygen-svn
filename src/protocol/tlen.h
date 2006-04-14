@@ -64,6 +64,7 @@ public slots:
 	void openConn();
 	void closeConn();
 	void writeMsg(QString,QString);
+	void chatNotify(QString,bool);
 	void rosterRequest();
 	void setStatus();
 	void setStatus(QString s);
@@ -99,6 +100,7 @@ signals:
 	void statusUpdate();	// FOR TLEN TO WRITE STATUS
 	void eventReceived(QDomNode);
 
+	void chatNotify(QString,QString);
 private:
 	bool tlenLogin();
 

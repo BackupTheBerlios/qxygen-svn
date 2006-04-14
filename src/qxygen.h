@@ -59,6 +59,7 @@ public slots:
 
 	void windowUpdate(QString,QIcon);
 
+	void chatNotify(QString,QString);
 	void showChatWindow(const QModelIndex&);
 	void openMsg(QString);
 

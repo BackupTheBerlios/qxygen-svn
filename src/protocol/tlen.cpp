@@ -223,9 +223,10 @@ void tlen::event(QDomNode n) {
 			emit chatMsgReceived(n);
 	}
 	else if(nodeName=="m") {
-		//<m tp='t' f='qxygen@tlen.pl'/> - user qxygen@tlen.pl is typing
-		//<m tp='u' f='qxygen@tlen.pl'/> - user qxygen@tlen.pl stoped typing
-		//<m tp='a' f='qxygen@tlen.pl'/> - user qxygen@tlen.pl sent sound alarm
+		QDomElement e=n.toElement();
+		if(e.hasAttribute("tp")) {
+			chatNotify(e.attribute("f"), e.attribute("tp"));
+		}
 	}
 	else if(nodeName=="n") {
 		//<n f='Rainer+Wiesenfarth+%3CRainer.Wiesenfarth@inpho.de%3E' s='Re%3A+qt+and+mysql,+odbc'/> - new mail
@@ -513,5 +514,19 @@ void tlen::writeMsg( QString msg, QString to ) {
 	body.appendChild(text);
 	message.appendChild(body);
 	doc.appendChild(message);
+	write(doc);
+}
+
+void tlen::chatNotify( QString to, bool t ) {
+	QDomDocument doc;
+	QDomElement m=doc.createElement("m");
+	m.setAttribute("to", to);
+
+	if(t)
+		m.setAttribute("tp", "t");
+	else
+		m.setAttribute("tp", "u");
+
+	doc.appendChild(m);
 	write(doc);
 }

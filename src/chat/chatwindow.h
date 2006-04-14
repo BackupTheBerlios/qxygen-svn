@@ -38,14 +38,18 @@ public:
 	QString jid(){return owner;}
 	void displayMsg(QString,QString);
 
+	void typingNotify(bool);
+
 private slots:
 	void checkSend();
 	void sendMsg();
 	void swapTitleBar();
 	void setupReturnSend();
+	void chatNotifyStop();
 
 signals:
 	void writeMsg(QString,QString);
+	void chatNotify(QString, bool);
 
 protected:
 	void resizeEvent(QResizeEvent*);
@@ -55,10 +59,10 @@ protected:
 private:
 	QString owner,title;
 
-	QTimer *msgTimer;
+	QTimer *msgTimer,*notifyTimer;
 
 	chatTextEdit *input,*display;
-	QLabel *typingNotify;
+	QLabel *typingNotifyLabel;
 	QPushButton *sendButton, *sendAlarm, *setReturnSend;
 };
 #endif
