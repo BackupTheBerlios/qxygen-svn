@@ -21,7 +21,6 @@
 /*
  * trayicon.cpp - system-independent trayicon class (adapted from Qt example)
  * Copyright (C) 2003  Justin Karneges
- * Qt4 port: Stefan Gehn
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -40,10 +39,10 @@
  */
 
 #include "trayicon.h"
-
-#include <QMenu>
-#include <QTimer>
+#include <QPixmap>
+#include <QMouseEvent>
 #include <QEvent>
+#include <QTimer>
 
 /*!
   \brief queue messages for main window
@@ -90,7 +89,7 @@ void TrayIcon::gotMsg(QString from) {
 
   \sa show
 */
-TrayIcon::TrayIcon( QObject *parent)
+TrayIcon::TrayIcon( QObject *parent )
 : QObject(parent), pop(0), d(0)
 {
 	v_isWMDock = FALSE;
@@ -106,11 +105,9 @@ TrayIcon::TrayIcon( QObject *parent)
 TrayIcon::TrayIcon( const QPixmap &icon, const QString &tooltip, QMenu *popup, QObject *parent )
 : QObject(parent), pop(popup), pm(icon), tip(tooltip), d(0)
 {
-	v_isWMDock = FALSE;
-
 	msg=TRUE;
-	msgTimer = new QTimer();
-	connect(msgTimer, SIGNAL(timeout()), this, SLOT(swapIcon()));
+	msgTimer=new QTimer();
+	v_isWMDock = FALSE;
 
 	if ( !pm.width() || !pm.height() )
 		pm = QPixmap( 16, 16 );
@@ -162,6 +159,10 @@ QMenu* TrayIcon::popup() const
 */
 void TrayIcon::setIcon( const QPixmap &icon )
 {
+    //if(!popup()) {
+    //    tip = "";
+    //}
+
     pm = icon;
     sysUpdateIcon();
 }
@@ -266,7 +267,6 @@ void TrayIcon::mousePressEvent( QMouseEvent *e )
 			break;
 		case Qt::LeftButton:
 		case Qt::MidButton:
-		//AD MSG CHECK FUNCTION
 			if(jid.count())
 			{
 				QString from=jid[0];
@@ -319,7 +319,6 @@ void TrayIcon::mouseReleaseEvent( QMouseEvent *e )
 
 		case Qt::LeftButton:
 		case Qt::MidButton:
-		//AD MSG CHECK FUNCTION
 			if(jid.count())
 			{
 				QString from=jid[0];

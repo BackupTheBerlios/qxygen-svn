@@ -22,7 +22,6 @@
  * trayicon_x11.cpp - X11 trayicon (for use with KDE and GNOME)
  * Copyright (C) 2003  Justin Karneges
  * GNOME2 Notification Area support: Tomasz Sterna
- * Qt4 port: Stefan Gehn
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -42,17 +41,22 @@
 
 #include "trayicon.h"
 
-#include <QApplication>
 #include <QDesktopWidget>
+#include <QApplication>
+#include <QImage>
 #include <QPixmap>
-#include <QBitmap>
-#include <QToolTip>
 #include <QPainter>
-#include <QX11Info>
+#include <QBitmap>
 
+#include <stdio.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
+#include <QX11Info>
+
+//#if QT_VERSION < 0x030200
+//extern Time qt_x_time;
+//#endif
 
 //----------------------------------------------------------------------------
 // common stuff
@@ -86,14 +90,13 @@ static bool send_message(
 	long data1,	/* message data 1 */
 	long data2,	/* message data 2 */
 	long data3	/* message data 3 */
-)
-{
+) {
 	XEvent ev;
 
 	memset(&ev, 0, sizeof(ev));
 	ev.xclient.type = ClientMessage;
 	ev.xclient.window = w;
-	ev.xclient.message_type = XInternAtom(dpy, "_NET_SYSTEM_TRAY_OPCODE", False);
+	ev.xclient.message_type = XInternAtom (dpy, "_NET_SYSTEM_TRAY_OPCODE", False );
 	ev.xclient.format = 32;
 	ev.xclient.data.l[0] = CurrentTime;
 	ev.xclient.data.l[1] = message;
@@ -108,8 +111,8 @@ static bool send_message(
 }
 
 #define SYSTEM_TRAY_REQUEST_DOCK    0
-//#define SYSTEM_TRAY_BEGIN_MESSAGE   1
-//#define SYSTEM_TRAY_CANCEL_MESSAGE  2
+#define SYSTEM_TRAY_BEGIN_MESSAGE   1
+#define SYSTEM_TRAY_CANCEL_MESSAGE  2
 
 //----------------------------------------------------------------------------
 // TrayIcon::TrayIconPrivate
@@ -133,8 +136,6 @@ public:
 	virtual void mouseDoubleClickEvent(QMouseEvent *e);
 	virtual void closeEvent(QCloseEvent *e);
 
-	void updateMask();
-
 private:
 	TrayIcon *iconObject;
 	QPixmap pix;
@@ -142,20 +143,16 @@ private:
 };
 
 TrayIcon::TrayIconPrivate::TrayIconPrivate(TrayIcon *object, int _size)
-	: QWidget(0/*, Qt::WRepaintNoErase*/)
+	: QWidget(0)
 {
-	setObjectName(QCoreApplication::instance()->applicationName() + "dock");
 	iconObject = object;
 	size = _size;
+
 	setFocusPolicy(Qt::NoFocus);
+//	setBackgroundMode(Qt::X11ParentRelative);
 
-	//setBackgroundMode(Qt::X11ParentRelative);
-	setAttribute(Qt::WA_NoSystemBackground);
-	setBackgroundRole(QPalette::NoRole);
-
-	// This resize will not work as expected,
-	// we will get resized inside the tray later on.
-	resize(size, size);
+	setMinimumSize(size, size);
+	setMaximumSize(size, size);
 }
 
 // This base stuff is required by both FreeDesktop specification and WindowMaker
@@ -163,78 +160,82 @@ void TrayIcon::TrayIconPrivate::initWM(WId icon)
 {
 	Display *dsp = QX11Info::display();
 	WId leader   = winId();
-	char *resName = objectName().toLocal8Bit().data();
-	char *resClass = QCoreApplication::instance()->applicationName().toLocal8Bit().data();
 
 	// set the class hint
 	XClassHint classhint;
-	classhint.res_name  = resName;
-	classhint.res_class = resClass;
+	classhint.res_name  = (char*)"psidock";
+	classhint.res_class = (char*)"Psi";
 	XSetClassHint(dsp, leader, &classhint);
 
 	// set the Window Manager hints
 	XWMHints *hints;
-	hints = XGetWMHints(dsp, leader); // init hints
-
-	hints->flags = WindowGroupHint | IconWindowHint | StateHint;
-	hints->window_group = leader;
-	hints->initial_state = WithdrawnState;
-	hints->icon_window = icon; // in WM, this should be winId() of separate widget
+	hints = XGetWMHints(dsp, leader);	// init hints
+	hints->flags = WindowGroupHint | IconWindowHint | StateHint;	// set the window group hint
+	hints->window_group = leader;		// set the window hint
+	hints->initial_state = WithdrawnState;	// initial state
+	hints->icon_window = icon;		// in WM, this should be winId() of separate widget
 	hints->icon_x = 0;
 	hints->icon_y = 0;
-	XSetWMHints(dsp, leader, hints); // set the window hints for WM to use.
-	XFree(hints);
+	XSetWMHints(dsp, leader, hints);	// set the window hints for WM to use.
+	XFree( hints );
 }
 
 void TrayIcon::TrayIconPrivate::setPixmap(const QPixmap &pm)
 {
-	pix = pm;
-	setWindowIcon(QIcon(pix));
-	updateMask();
-	repaint();
-}
+        QBitmap mask( QWidget::size() );
 
-void TrayIcon::TrayIconPrivate::updateMask()
-{
-	if (!pix.isNull())
-	{
-		QBitmap mask(width(), height());
-		mask.clear();
-		QPainter mp(&mask);
-		mp.drawPixmap((width() - pix.width())/2, (height() - pix.height())/2, pix.mask());
-		mp.end();
-		setMask(mask);
+	if( pm.size() != QWidget::size() ) {
+		// let's make a new mask
+		mask.fill(Qt::color0);
+		QPainter maskPainter(&mask);
+		
+		// draw the old mask in the center
+		maskPainter.drawPixmap((width()  - pm.width() ) / 2, 
+		                       (height() - pm.height()) / 2, pm.mask());
+		
+		QPixmap newPix(QWidget::size());
+		QPainter pixPainter( &newPix );
+		
+		// draw the old pixmap in the center
+		pixPainter.drawPixmap((width() - pm.width())/2, 
+					(height() - pm.height())/2, pm);
+		newPix.setMask(mask);
+		pix = newPix;
 	}
+	else {
+		pix = pm;
+		mask = pm.mask(); 
+	}
+
+	setMask(mask);
+	setWindowIcon(pix);
+	repaint();
 }
 
 void TrayIcon::TrayIconPrivate::paintEvent(QPaintEvent *)
 {
 	QPainter p(this);
-	p.drawPixmap((width() - pix.width())/2, (height() - pix.height())/2, pix);
+	p.drawPixmap(0, 0, pix);
 }
 
 void TrayIcon::TrayIconPrivate::enterEvent(QEvent *e)
 {
 	// Taken from KSystemTray..
-/*#if QT_VERSION < 0x030200
-	if ( !qApp->focusWidget() )
-	{*/
+//#if QT_VERSION < 0x030200
+	//if ( !qApp->focusWidget() ) {
 		XEvent ev;
 		memset(&ev, 0, sizeof(ev));
-		ev.xfocus.display = QX11Info::display();
+		ev.xfocus.display = QX11Info::display(); //x11AppDisplay();
 		ev.xfocus.type = FocusIn;
 		ev.xfocus.window = winId();
 		ev.xfocus.mode = NotifyNormal;
 		ev.xfocus.detail = NotifyAncestor;
-
-		unsigned long oldTime = QX11Info::appTime();
-		QX11Info::setAppTime(1);
+		//Time time = qt_x_time;
+		//qt_x_time = 1;
 		qApp->x11ProcessEvent( &ev );
-		QX11Info::setAppTime(oldTime);
-
-	/*}
-#endif*/
-
+		//qt_x_time = time;
+	//}
+//#endif
 	QWidget::enterEvent(e);
 }
 
@@ -307,9 +308,7 @@ TrayIconFreeDesktop::TrayIconFreeDesktop(TrayIcon *object, const QPixmap &pm)
 	XFlush(dsp);
 
 	if ( manager_window != None )
-	{
 		send_message(dsp, manager_window, SYSTEM_TRAY_REQUEST_DOCK, winId(), 0, 0);
-	}
 	else
 	{
 		object->hide();
@@ -317,10 +316,11 @@ TrayIconFreeDesktop::TrayIconFreeDesktop(TrayIcon *object, const QPixmap &pm)
 	}
 
 	// some KDE mumbo-jumbo... why is it there? anybody?
-	//Atom kwm_dockwindow_atom = XInternAtom(dsp, "KWM_DOCKWINDOW", false);
+	Atom kwm_dockwindow_atom = XInternAtom(dsp, "KWM_DOCKWINDOW", false);
 	Atom kde_net_system_tray_window_for_atom = XInternAtom(dsp, "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR", false);
+
 	long data = 0;
-	//XChangeProperty(dsp, winId(), kwm_dockwindow_atom, kwm_dockwindow_atom, 32, PropModeReplace, (uchar*)&data, 1);
+	XChangeProperty(dsp, winId(), kwm_dockwindow_atom, kwm_dockwindow_atom, 32, PropModeReplace, (uchar*)&data, 1);
 	XChangeProperty(dsp, winId(), kde_net_system_tray_window_for_atom, XA_WINDOW, 32, PropModeReplace, (uchar*)&data, 1);
 
 	setPixmap(pm);
@@ -330,11 +330,9 @@ bool TrayIconFreeDesktop::x11Event(XEvent *ev)
 {
 	switch(ev->type)
 	{
-	case ReparentNotify:
-		setUpdatesEnabled(false);
-		show();
-		updateMask();
-		setUpdatesEnabled(true);
+		case ReparentNotify:
+			show();
+
 	}
 	return false;
 }
@@ -349,13 +347,10 @@ public:
 	TrayIconWharf(TrayIcon *object, const QPixmap &pm)
 		: TrayIconPrivate(object, 44)
 	{
-		char *resName = QString(objectName() + "-wharf").toLocal8Bit().data();
-		char *resClass = QCoreApplication::instance()->applicationName().toLocal8Bit().data();
-
 		// set the class hint
 		XClassHint classhint;
-		classhint.res_name  = resName;
-		classhint.res_class = resClass;
+		classhint.res_name  = (char*)"psidock-wharf";
+		classhint.res_class = (char*)"Psi";
 		XSetClassHint(QX11Info::display(), winId(), &classhint);
 
 		setPixmap(pm);
@@ -363,10 +358,20 @@ public:
 
 	void setPixmap(const QPixmap &_pm)
 	{
-		TrayIconPrivate::setPixmap(
-			_pm.scaled(_pm.width() * 2, _pm.height() * 2, Qt::KeepAspectRatio)
-		);
-		update();
+		QPixmap pm;
+		QImage i=_pm.toImage();
+		i = i.scaled(i.width() * 2, i.height() * 2);
+		pm.fromImage(i);
+
+		TrayIconPrivate::setPixmap(pm);
+
+		// thanks to Robert Spier for this:
+		// for some reason the repaint() isn't being honored, or isn't for
+		// the icon.  So force one on the widget behind the icon
+		repaint();
+//		erase();
+		QPaintEvent pe( rect() );
+		paintEvent(&pe);
 	}
 };
 
@@ -386,6 +391,7 @@ TrayIconWindowMaker::TrayIconWindowMaker(TrayIcon *object, const QPixmap &pm)
 	: TrayIconPrivate(object, 32)
 {
 	wharf = new TrayIconWharf(object, pm);
+
 	initWM( wharf->winId() );
 }
 
@@ -407,6 +413,7 @@ void TrayIcon::sysInstall()
 {
 	if ( d )
 		return;
+
 	if ( v_isWMDock )
 		d = (TrayIconPrivate *)(new TrayIconWindowMaker(this, pm));
 	else
@@ -422,6 +429,7 @@ void TrayIcon::sysRemove()
 {
 	if ( !d )
 		return;
+
 	delete d;
 	d = 0;
 }
@@ -430,6 +438,7 @@ void TrayIcon::sysUpdateIcon()
 {
 	if ( !d )
 		return;
+
 	QPixmap pix = pm;
 	d->setPixmap(pix);
 }
@@ -438,8 +447,9 @@ void TrayIcon::sysUpdateToolTip()
 {
 	if ( !d )
 		return;
+
 	if ( tip.isEmpty() )
-		d->setToolTip(QString::null);
+		d->setToolTip(QString());
 	else
 		d->setToolTip(tip);
 }
