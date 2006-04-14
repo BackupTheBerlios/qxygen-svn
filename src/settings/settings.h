@@ -46,6 +46,7 @@ public:
 
 signals:
 	void noProfile();
+	void loadProfile();
 
 private:
 	QSettings *qxygen,*profile;

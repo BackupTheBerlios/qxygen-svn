@@ -175,8 +175,8 @@ void qxygen::setupProtocol() {
 
 void qxygen::setupSettings() {
 	connect(settings, SIGNAL(noProfile()), this, SLOT(createProfile()));
+	connect(settings, SIGNAL(loadProfile()), this, SLOT(loadProfile()));
 	settings->initModule();
-	loadProfile();
 	updateProfilesMenu();
 }
 

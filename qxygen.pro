@@ -7,7 +7,7 @@ OBJECTS_DIR=tmp/obj
 MOC_DIR=tmp/moc
 UI_DIR=tmp/ui
 
-DEPENDPATH=src/roster src/settings
+DEPENDPATH=src/roster src/settings src/
 
 INCLUDEPATH=src src/roster src/protocol src/chat src/tray src/settings
 

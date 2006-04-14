@@ -48,7 +48,10 @@ void settingsMenager::initModule() {
 	if(qxygen->value("profiles/default").toString().isEmpty())
 		emit noProfile();
 	else
+	{
 		profile=new QSettings(dir->path()+"/profiles/"+qxygen->value("profiles/default").toString(), QSettings::NativeFormat);
+		emit loadProfile();
+	}
 }
 
 void settingsMenager::addProfile(QString name, QString login, QString pass) {
