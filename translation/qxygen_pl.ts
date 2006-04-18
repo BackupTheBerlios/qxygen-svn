@@ -89,6 +89,10 @@
         <source>Cancel</source>
         <translation>Anuluj</translation>
     </message>
+    <message>
+        <source>History:</source>
+        <translation>Historia:</translation>
+    </message>
 </context>
 <context>
     <name>newProfileDialog</name>

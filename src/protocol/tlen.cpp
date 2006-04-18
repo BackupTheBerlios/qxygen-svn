@@ -86,8 +86,6 @@ void tlen::socketReadyRead() {
 	QXmlSimpleReader reader;
 	QXmlInputSource *source=new QXmlInputSource;
 	source->setData(stream);
-//	QxygenXmlHandler *handler=new QxygenXmlHandler;
-//	reader.setContentHandler(handler);
 
 	if( reader.parse( source, false ) || stream.startsWith( "<s " ) ) {
 		stream.prepend("<s>");
@@ -552,31 +550,4 @@ void tlen::chatNotify( QString to, bool t ) {
 
 	doc.appendChild(m);
 	write(doc);
-}
-
-bool QxygenXmlHandler::startDocument() {
-	elementsCount = 0;
-	
-	return true;
-}
-
-bool QxygenXmlHandler::startElement( const QString&, const QString&, const QString &qName, const QXmlAttributes& ) {
-	if( qName == "s" && elementsCount == 0 )
-		stream = true;
-	
-	++elementsCount;
-	
-	return true;
-}
-
-bool QxygenXmlHandler::endElement( const QString&, const QString&, const QString& ) {
-	elementsCount--;
-	
-	return true;
-}
-
-bool QxygenXmlHandler::endDocument() {
-	if( elementsCount == 0 || stream )
-		return true;
-	return false;
 }

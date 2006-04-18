@@ -489,7 +489,7 @@ void qxygen::chatNotify(QString to, QString type) {
 }
 
 void qxygen::setDescrDialog() {
-	descrDialog *dlg=new descrDialog(Tlen->strStatus(), Tlen->description(), this);
+	descrDialog *dlg=new descrDialog(Tlen->strStatus(), this);
 	connect(dlg, SIGNAL(statusChanged(QString, QString)), Tlen, SLOT(setStatusDescr(QString, QString)));
 	dlg->exec();
 }

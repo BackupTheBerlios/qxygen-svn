@@ -29,32 +29,6 @@ class QTcpSocket;
 class QDomDocument;
 class QTimer;
 
-class QxygenXmlHandler:  public QXmlDefaultHandler
-{
-	public:
-		bool startDocument();
-		bool startElement( const QString&, const QString&, const QString&, const QXmlAttributes& );
-		bool endElement( const QString&, const QString&, const QString& );
-		bool endDocument();
-		
-		bool skippedEntity( const QString& ) { return true; };
-		bool characters( const QString& ) { return true; };
-		
-		bool startCDATA() { return true; };
-		bool startDTD( const QString&, const QString&, const QString& ) { return true; };
-		bool startEntity( const QString& ) { return true; };
-		bool startPrefixMapping(const QString&, const QString& ) { return true; };
-		
-		bool endCDATA() { return true; };
-		bool endDTD() { return true; };
-		bool endEntity( const QString& ) { return true; };
-		bool endPrefixMapping( const QString& ) { return true; };
-		
-	private:
-		int elementsCount;
-		bool stream;
-};
-
 class tlen: public QObject
 {
 Q_OBJECT

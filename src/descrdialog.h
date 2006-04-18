@@ -27,7 +27,7 @@ class descrDialog: public QDialog {
 Q_OBJECT
 
 public:
-	descrDialog(QString, QString,QWidget *parent=0);
+	descrDialog(QString, QWidget *parent=0);
 
 public slots:
 	void enableButton();

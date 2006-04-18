@@ -19,8 +19,9 @@
  ***************************************************************************/
 
 #include "descrdialog.h"
+#include "settings.h"
 
-descrDialog::descrDialog(QString status, QString descr, QWidget *parent): QDialog(parent) {
+descrDialog::descrDialog(QString status, QWidget *parent): QDialog(parent) {
 	ui.setupUi(this);
 	ui.availRadio->setIcon(QIcon(":onlinei.png"));
 	ui.chattyRadio->setIcon(QIcon(":chattyi.png"));
@@ -30,9 +31,11 @@ descrDialog::descrDialog(QString status, QString descr, QWidget *parent): QDialo
 	ui.invisRadio->setIcon(QIcon(":invisiblei.png"));
 	ui.offlineRadio->setIcon(QIcon(":offlinei.png"));
 
+	ui.historyComboBox->addItems( settings->profileValue( "status/description" ).value<QStringList>() );
+
 	if(status=="available")
 		ui.availRadio->setChecked(TRUE);
-	else if(status=="chatty")
+	else if(status=="chat")
 		ui.chattyRadio->setChecked(TRUE);
 	else if(status=="away")
 		ui.awayRadio->setChecked(TRUE);
@@ -45,14 +48,15 @@ descrDialog::descrDialog(QString status, QString descr, QWidget *parent): QDialo
 	else if(status=="unavailable")
 		ui.offlineRadio->setChecked(TRUE);
 
-	ui.descrTextEdit->setPlainText(descr);
+	ui.descrTextEdit->setPlainText( ui.historyComboBox->itemText(0) );
 	ui.descrTextEdit->setFocus();
-	if(descr.isEmpty())
+	if( ui.descrTextEdit->toPlainText().isEmpty() )
 		ui.okPushButton->setEnabled(FALSE);
 
-	connect(ui.descrTextEdit, SIGNAL(textChanged()), this, SLOT(enableButton()));
-	connect(ui.okPushButton, SIGNAL(clicked()), this, SLOT(setDescr()));
-	connect(ui.cancelPushButton, SIGNAL(clicked()), this, SLOT(close()));
+	connect( ui.historyComboBox, SIGNAL( currentIndexChanged ( const QString& ) ), ui.descrTextEdit, SLOT(setPlainText( const QString& ) ) );
+	connect( ui.descrTextEdit, SIGNAL( textChanged() ), this, SLOT( enableButton() ) );
+	connect( ui.okPushButton, SIGNAL( clicked() ), this, SLOT( setDescr() ) );
+	connect( ui.cancelPushButton, SIGNAL( clicked() ), this, SLOT( close() ) );
 }
 
 void descrDialog::enableButton() {
@@ -79,6 +83,15 @@ void descrDialog::setDescr() {
 	else if(ui.offlineRadio->isChecked())
 		status="unavailable";
 
-	emit statusChanged(status, ui.descrTextEdit->toPlainText());
+	ui.historyComboBox->insertItem(0, ui.descrTextEdit->toPlainText());
+
+	QStringList history;
+	for( int i=0; i<ui.historyComboBox->count(); ++i )
+		if( i==0 || ( i > 0 && ui.historyComboBox->itemText(i) != ui.historyComboBox->itemText(0) ) )
+			history<<ui.historyComboBox->itemText(i);
+
+	settings->setProfileValue( "status/description", QVariant( history ) );
+
+	emit statusChanged(status, ui.historyComboBox->itemText(0));
 	close();
 }
