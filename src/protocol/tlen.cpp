@@ -80,17 +80,15 @@ bool tlen::isConnected() {
 
 void tlen::socketReadyRead() {
 	stream+=socket->readAll();
-
+	stream.append("</s>");
+	stream.prepend("<s>");
 	qDebug()<<"Read chunk:"<<stream;
 
 	QXmlSimpleReader reader;
 	QXmlInputSource *source=new QXmlInputSource;
 	source->setData(stream);
 
-	if( reader.parse( source, false ) || stream.startsWith( "<s " ) ) {
-		stream.prepend("<s>");
-		stream.append("</s>");
-
+	if( reader.parse( source, false ) || stream.mid(3,3) == "<s " ) {
 		qDebug()<<"Read:"<<stream;
 
 		QDomDocument d;
@@ -103,6 +101,9 @@ void tlen::socketReadyRead() {
 				emit eventReceived(sl.item(i));
 		}
 		stream.clear();
+	} else {
+		stream.replace("<s>", "");
+		stream.replace("</s>","");
 	}
 }
 
@@ -395,7 +396,7 @@ void tlen::writeStatus() {
 
 void tlen::setStatus() {
 	QAction *a=qobject_cast<QAction*>(sender());
-	if(intStatus()==a->data().toInt())
+	if(intStatus()==a->data().toInt() && descr=="")
 		return;
 	switch(a->data().toInt()) {
 	case 0: status="available"; break;
@@ -411,7 +412,7 @@ void tlen::setStatus() {
 }
 
 void tlen::setStatus( QString s ) {
-	if(status==s)
+	if(status==s && descr == "")
 		return;
 
 	status=s;
@@ -481,7 +482,7 @@ void tlen::addItem( QString jid, QString name, QString g, bool subscribe ) {
 	item.setAttribute("jid", jid.toLower());
 
 	if(!name.isEmpty())
-		item.setAttribute("name", name);
+		item.setAttribute("name", QString( encode( name ) ) );
 
 	if(!g.isEmpty()) {
 		QDomElement group=doc.createElement("group");
