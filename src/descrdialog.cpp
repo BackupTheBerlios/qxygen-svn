@@ -67,7 +67,7 @@ void descrDialog::setDescr() {
 	if(ui.availRadio->isChecked())
 		status="available";
 	else if(ui.chattyRadio->isChecked())
-		status="chatty";
+		status="chat";
 	else if(ui.awayRadio->isChecked())
 		status="away";
 	else if(ui.unavailableRadio->isChecked())

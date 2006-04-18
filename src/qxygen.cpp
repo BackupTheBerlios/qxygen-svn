@@ -246,7 +246,7 @@ void qxygen::statusChange() {
 
 	if(status=="available")
 		px=descr?QPixmap(":online.png"):QPixmap(":onlinei.png");
-	else if(status=="chatty")
+	else if(status=="chat" || status=="chatty")
 		px=descr?QPixmap(":chatty.png"):QPixmap(":chattyi.png");
 	else if(status=="away")
 		px=descr?QPixmap(":away.png"):QPixmap(":awayi.png");
@@ -485,8 +485,6 @@ void qxygen::chatNotify(QString to, QString type) {
 		else if(type=="u")
 			w->typingNotify(FALSE);
 	}
-	//<m tp='t' f='qxygen@tlen.pl'/> - user qxygen@tlen.pl is typing
-	//<m tp='u' f='qxygen@tlen.pl'/> - user qxygen@tlen.pl stoped typing
 	//<m tp='a' f='qxygen@tlen.pl'/> - user qxygen@tlen.pl sent sound alarm
 }
 

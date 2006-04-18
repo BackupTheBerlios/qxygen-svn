@@ -50,7 +50,7 @@ SOURCES=src/main.cpp \
 	src/chat/chatwindow.cpp \
 	src/chat/chattextedit.cpp
 
-TRANSLATIONS =	translation/qtlen_pl.ts
+TRANSLATIONS =	translation/qxygen_pl.ts
 
 unix:!mac {
 	SOURCES += src/tray/trayicon_x11.cpp

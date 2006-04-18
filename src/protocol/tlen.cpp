@@ -25,6 +25,7 @@
 #include <QRegExp>
 #include <QAction>
 #include <QSettings>
+#include <QXmlSimpleReader>
 #include <QDebug>
 
 #include "tlen.h"
@@ -78,20 +79,32 @@ bool tlen::isConnected() {
 }
 
 void tlen::socketReadyRead() {
-	stream="<s>";
 	stream+=socket->readAll();
-	stream+="</s>";
 
-	qDebug()<<"Read:"<<stream;
+	qDebug()<<"Read chunk:"<<stream;
 
-	QDomDocument d;
-	d.setContent(stream);
-	QDomNode root=d.firstChild();
+	QXmlSimpleReader reader;
+	QXmlInputSource *source=new QXmlInputSource;
+	source->setData(stream);
+//	QxygenXmlHandler *handler=new QxygenXmlHandler;
+//	reader.setContentHandler(handler);
 
-	if(root.hasChildNodes()) {
-		QDomNodeList sl=root.childNodes();
-		for(int i=0; i<sl.count(); i++)
-			emit eventReceived(sl.item(i));
+	if( reader.parse( source, false ) || stream.startsWith( "<s " ) ) {
+		stream.prepend("<s>");
+		stream.append("</s>");
+
+		qDebug()<<"Read:"<<stream;
+
+		QDomDocument d;
+		d.setContent(stream);
+		QDomNode root=d.firstChild();
+
+		if(root.hasChildNodes()) {
+			QDomNodeList sl=root.childNodes();
+			for(int i=0; i<sl.count(); i++)
+				emit eventReceived(sl.item(i));
+		}
+		stream.clear();
 	}
 }
 
@@ -118,7 +131,6 @@ void tlen::event(QDomNode n) {
 		if(element.hasAttribute( "type" ) && element.attribute("type") == "result") {
 			if(element.hasAttribute("id") && element.attribute("id")==sid) {
 				rosterRequest();
-				emit tlenLoggedIn();
 			}
 
 			if(element.hasAttribute("id") && element.attribute("id")=="GetRoster") {
@@ -134,6 +146,7 @@ void tlen::event(QDomNode n) {
 
 			if(!sort) {
 				emit sortRoster();
+				emit tlenLoggedIn();
 				sort=TRUE;
 			}
 
@@ -539,4 +552,31 @@ void tlen::chatNotify( QString to, bool t ) {
 
 	doc.appendChild(m);
 	write(doc);
+}
+
+bool QxygenXmlHandler::startDocument() {
+	elementsCount = 0;
+	
+	return true;
+}
+
+bool QxygenXmlHandler::startElement( const QString&, const QString&, const QString &qName, const QXmlAttributes& ) {
+	if( qName == "s" && elementsCount == 0 )
+		stream = true;
+	
+	++elementsCount;
+	
+	return true;
+}
+
+bool QxygenXmlHandler::endElement( const QString&, const QString&, const QString& ) {
+	elementsCount--;
+	
+	return true;
+}
+
+bool QxygenXmlHandler::endDocument() {
+	if( elementsCount == 0 || stream )
+		return true;
+	return false;
 }
