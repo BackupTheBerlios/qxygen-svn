@@ -33,6 +33,9 @@ public:
 protected:
 	void contextMenuEvent(QContextMenuEvent *e);
 
+public slots:
+	void append(const QString&);
+
 private slots:
 	void checkPaste();
 	void checkActions();

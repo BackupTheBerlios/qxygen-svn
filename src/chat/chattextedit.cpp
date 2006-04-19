@@ -22,8 +22,8 @@
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
-#include <QKeyEvent>
 #include <QContextMenuEvent>
+#include <QScrollBar>
 
 #include "chattextedit.h"
 
@@ -90,4 +90,9 @@ void chatTextEdit::checkPaste() {
 void chatTextEdit::checkActions() {
 	selectAllA->setDisabled(toPlainText().isEmpty());
 	clearA->setDisabled(toPlainText().isEmpty());
+}
+
+void chatTextEdit::append(const QString &string) {
+	QTextEdit::append(string);
+	verticalScrollBar()->setValue(verticalScrollBar()->maximum());
 }

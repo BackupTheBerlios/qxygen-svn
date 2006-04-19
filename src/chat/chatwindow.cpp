@@ -118,7 +118,7 @@ bool chatWindow::eventFilter(QObject *obj, QEvent *ev) {
 		if(ev->type()==QEvent::KeyPress) {
 			QKeyEvent *keyEvent=static_cast<QKeyEvent*>(ev);
 			if(keyEvent->key()==Qt::Key_Return || keyEvent->key()==Qt::Key_Enter) {
-				if(QApplication::keyboardModifiers()==Qt::ShiftModifier)
+				if(QApplication::keyboardModifiers()==Qt::ShiftModifier && setReturnSend->isChecked())
 					input->insertPlainText("\n");
 				else if(setReturnSend->isChecked())
 					sendMsg();

@@ -39,6 +39,8 @@ tlen::tlen( QObject* parent ): QObject( parent ) {
 	status="unavailable";
 	descr="";
 
+	tmpDoc=new QDomDocument;
+
 	socket=new QTcpSocket();
 	ping=new QTimer();
 
@@ -84,11 +86,7 @@ void tlen::socketReadyRead() {
 	stream.prepend("<s>");
 	qDebug()<<"Read chunk:"<<stream;
 
-	QXmlSimpleReader reader;
-	QXmlInputSource *source=new QXmlInputSource;
-	source->setData(stream);
-
-	if( reader.parse( source, false ) || stream.mid(3,3) == "<s " ) {
+	if( tmpDoc->setContent(stream) || stream.startsWith("<s><s ") ) {
 		qDebug()<<"Read:"<<stream;
 
 		QDomDocument d;
@@ -100,6 +98,7 @@ void tlen::socketReadyRead() {
 			for(int i=0; i<sl.count(); i++)
 				emit eventReceived(sl.item(i));
 		}
+		tmpDoc->clear();
 		stream.clear();
 	} else {
 		stream.replace("<s>", "");
@@ -242,6 +241,26 @@ void tlen::event(QDomNode n) {
 	}
 	else if(nodeName=="n") {
 		//<n f='Rainer+Wiesenfarth+%3CRainer.Wiesenfarth@inpho.de%3E' s='Re%3A+qt+and+mysql,+odbc'/> - new mail
+	}
+	else if(nodeName=="f") {
+		//WHERE TO GET FILE
+		// <f a='83.6.94.2' p='443' e='6' i='120776000' f='sowerek'/> - a: ip; p:port; e:? ? ?; i: id; f:from
+
+		//receive <f n='%filename%' e='1' i='%rndid%' c='1' s='%filesize%' v='1' f='%sender%'/>
+		QDomElement e=n.toElement();
+		if(e.attribute("e")=="1") {
+			//<f n='rfc2616.txt' c='1' s='422279' v='1' e='1' i='9752995' f='sowerek'/>
+			emit fileIncoming( e.attribute("n"), e.attribute("f"), e.attribute("s"), e.attribute("i") );
+			/*QDomDocument doc;
+			QDomElement f=doc.createElement("f");
+			f.setAttribute( "t", e.attribute("f") );
+			f.setAttribute( "i", e.attribute("i") );
+			f.setAttribute( "e", "5" );
+			f.setAttribute( "v", "1" );
+			doc.appendChild( f );
+			write(doc);*/
+		}
+		//send <f t="%sender%" i="%rndid%" e="5" v="1"/>
 	}
 }
 

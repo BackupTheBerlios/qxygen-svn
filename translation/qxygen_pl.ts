@@ -301,29 +301,5 @@
         <source>You must fill up &quot;Login&quot;</source>
         <translation>Musisz wypełnić pole &quot;Login&quot;</translation>
     </message>
-    <message>
-        <source>Add</source>
-        <translation type="obsolete">Dodaj</translation>
-    </message>
-    <message>
-        <source>Cacnel</source>
-        <translation type="obsolete">Anuluj</translation>
-    </message>
-    <message>
-        <source>Ask for authorization</source>
-        <translation type="obsolete">Poproś o autoryzacje</translation>
-    </message>
-    <message>
-        <source>Name:</source>
-        <translation type="obsolete">Nazwa:</translation>
-    </message>
-    <message>
-        <source>Login:</source>
-        <translation type="obsolete">Login:</translation>
-    </message>
-    <message>
-        <source>Group:</source>
-        <translation type="obsolete">Grupa:</translation>
-    </message>
 </context>
 </TS>

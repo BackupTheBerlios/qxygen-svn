@@ -65,6 +65,8 @@ public slots:
 
 	void setDescrDialog();
 
+	void fileIncoming(QString,QString,QString,QString);
+
 	void createProfile();
 	void addProfile(QString,QString,QString);
 	void updateProfilesMenu();

@@ -173,6 +173,7 @@ void qxygen::setupProtocol() {
 	connect(Tlen, SIGNAL(removeItem(QString)), rosterModel, SLOT(removeItem(QString)));
 	connect(Tlen, SIGNAL(chatMsgReceived(QDomNode)), this, SLOT(chatMsgReceived(QDomNode)));
 	connect(Tlen, SIGNAL(chatNotify(QString,QString)), this, SLOT(chatNotify(QString,QString)));
+	connect(Tlen, SIGNAL(fileIncoming(QString,QString,QString,QString)), this, SLOT(fileIncoming(QString,QString,QString,QString)));
 }
 
 void qxygen::setupSettings() {
@@ -492,4 +493,7 @@ void qxygen::setDescrDialog() {
 	descrDialog *dlg=new descrDialog(Tlen->strStatus(), this);
 	connect(dlg, SIGNAL(statusChanged(QString, QString)), Tlen, SLOT(setStatusDescr(QString, QString)));
 	dlg->exec();
+}
+
+void qxygen::fileIncoming(QString,QString,QString,QString) {
 }

@@ -22,7 +22,6 @@
 #define TLEN_H
 
 #include <QObject>
-#include <QXmlDefaultHandler>
 #include <QDomNode>
 
 class QTcpSocket;
@@ -102,11 +101,15 @@ signals:
 	void statusUpdate();	// FOR TLEN TO WRITE STATUS
 	void eventReceived(QDomNode);
 
+	void fileIncoming(QString,QString,QString,QString);
+
 	void chatNotify(QString,QString);
 private:
 	bool tlenLogin();
 
 	QTimer *ping;
+
+	QDomDocument *tmpDoc;
 
 	QByteArray stream;
 
