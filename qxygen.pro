@@ -21,6 +21,7 @@ FORMS = src/qxygen.ui \
 	src/descrdialog.ui \
 	src/roster/useradd.ui \
 	src/settings/profile.ui \
+	src/settings/networkswidget.ui \
 	src/filetransfer/filetransferdialog.ui
 
 RESOURCES=qxygen.qrc
