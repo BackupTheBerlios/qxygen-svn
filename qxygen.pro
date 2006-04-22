@@ -31,6 +31,7 @@ HEADERS=src/qxygen.h \
 	src/settings/settings.h \
 	src/settings/profileform.h \
 	src/settings/settingsdialog.h \
+	src/settings/settingswidget.h \
 	src/roster/roster_view.h \
 	src/roster/roster_item.h \
 	src/roster/roster_delegate.h \
