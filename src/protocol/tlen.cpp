@@ -30,6 +30,9 @@
 
 #include "tlen.h"
 #include "auth.h"
+#include "settings.h"
+
+tlen* Tlen=new tlen();
 
 tlen::tlen( QObject* parent ): QObject( parent ) {
 	state = tlen::Disconnected;
@@ -250,7 +253,7 @@ void tlen::event(QDomNode n) {
 		QDomElement e=n.toElement();
 		if(e.attribute("e")=="1") {
 			//<f n='rfc2616.txt' c='1' s='422279' v='1' e='1' i='9752995' f='sowerek'/>
-			emit fileIncoming( e.attribute("n"), e.attribute("f"), e.attribute("s"), e.attribute("i") );
+			emit fileIncoming( n );
 			/*QDomDocument doc;
 			QDomElement f=doc.createElement("f");
 			f.setAttribute( "t", e.attribute("f") );

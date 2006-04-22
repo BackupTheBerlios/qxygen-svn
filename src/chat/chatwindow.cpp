@@ -35,7 +35,7 @@
 #include "chattextedit.h"
 #include "settings.h"
 
-chatWindow::chatWindow( QString label, QString jid, QWidget *parent ): QWidget( parent ) {
+chatWindow::chatWindow( QString label, QString jid, QWidget *parent ): QDialog( parent ) {
 	installEventFilter(this);
 	setGeometry(150,150,350,300);
 	title=label;
@@ -118,9 +118,7 @@ bool chatWindow::eventFilter(QObject *obj, QEvent *ev) {
 		if(ev->type()==QEvent::KeyPress) {
 			QKeyEvent *keyEvent=static_cast<QKeyEvent*>(ev);
 			if(keyEvent->key()==Qt::Key_Return || keyEvent->key()==Qt::Key_Enter) {
-				if(QApplication::keyboardModifiers()==Qt::ShiftModifier && setReturnSend->isChecked())
-					input->insertPlainText("\n");
-				else if(setReturnSend->isChecked())
+				if( setReturnSend->isChecked() && QApplication::keyboardModifiers()!=Qt::ShiftModifier )
 					sendMsg();
 				else
 					return QWidget::eventFilter(obj,ev);

@@ -18,51 +18,24 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef CHATWINDOW_H
-#define CHATWINDOW_H
+#include <QPushButton>
+#include <QHBoxLayout>
 
-#include <QDialog>
+#include "filetransfer.h"
 
-class chatTextEdit;
-class QShortcut;
-class QPushButton;
-class QLabel;
+fileTransferDialog::fileTransferDialog(QWidget *parent, bool receiveMode): QDialog(parent) {
+	buttonLay = new QHBoxLayout();
+	buttonLay->addStretch();
+	abort = new QPushButton(tr("Abort"));
 
-class chatWindow: public QDialog
-{
-Q_OBJECT
-
-public:
-	chatWindow(QString,QString, QWidget *parent=0);
-
-	QString jid(){return owner;}
-	void displayMsg(QString,QString);
-
-	void typingNotify(bool);
-
-private slots:
-	void checkSend();
-	void sendMsg();
-	void swapTitleBar();
-	void setupReturnSend();
-	void chatNotifyStop();
-
-signals:
-	void writeMsg(QString,QString);
-	void chatNotify(QString, bool);
-
-protected:
-	void resizeEvent(QResizeEvent*);
-	void moveEvent(QMoveEvent*);
-	bool eventFilter(QObject *obj, QEvent *ev);
-
-private:
-	QString owner,title;
-
-	QTimer *msgTimer,*notifyTimer;
-
-	chatTextEdit *input,*display;
-	QLabel *typingNotifyLabel;
-	QPushButton *sendButton, *sendAlarm, *setReturnSend;
-};
-#endif
+	if(!receiveMode) {
+		addFile = new QPushButton(tr("Add file to send"));
+		clearList = new QPushButton(tr("Clear list"));
+		send = new QPushButton(tr("Send"));
+		buttonLay->addWidget(addFile);
+		buttonLay->addWidget(clearList);
+		buttonLay->addWidget(send);
+	}
+	buttonLay->addWidget(abort);
+	layout()->addItem(buttonLay);
+}

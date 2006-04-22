@@ -7,14 +7,21 @@ OBJECTS_DIR=tmp/obj
 MOC_DIR=tmp/moc
 UI_DIR=tmp/ui
 
-DEPENDPATH=src/roster src/settings src/
+DEPENDPATH =	src \
+		src/chat \
+		src/filetransfer \
+		src/protocol \
+		src/roster \
+		src/settings \
+		src/tray
 
-INCLUDEPATH=src src/roster src/protocol src/chat src/tray src/settings
+INCLUDEPATH = $$DEPENDPATH
 
 FORMS = src/qxygen.ui \
 	src/descrdialog.ui \
 	src/roster/useradd.ui \
-	src/settings/profile.ui
+	src/settings/profile.ui \
+	src/filetransfer/filetransferdialog.ui
 
 RESOURCES=qxygen.qrc
 
@@ -22,6 +29,7 @@ HEADERS=src/qxygen.h \
 	src/descrdialog.h \
 	src/settings/settings.h \
 	src/settings/profileform.h \
+	src/settings/settingsdialog.h \
 	src/roster/roster_view.h \
 	src/roster/roster_item.h \
 	src/roster/roster_delegate.h \
@@ -32,13 +40,16 @@ HEADERS=src/qxygen.h \
 	src/protocol/auth.h \
 	src/tray/trayicon.h \
 	src/chat/chatwindow.h \
-	src/chat/chattextedit.h
+	src/chat/chattextedit.h \
+	src/filetransfer/filetransfer.h
 
 SOURCES=src/main.cpp \
 	src/qxygen.cpp \
 	src/descrdialog.cpp \
 	src/settings/settings.cpp \
 	src/settings/profileform.cpp \
+	src/settings/settingsdialog.cpp \
+	src/settings/settingswidget.h \
 	src/roster/roster_view.cpp \
 	src/roster/roster_item.cpp \
 	src/roster/roster_delegate.cpp \
@@ -48,7 +59,8 @@ SOURCES=src/main.cpp \
 	src/protocol/auth.cpp \
 	src/tray/trayicon.cpp \
 	src/chat/chatwindow.cpp \
-	src/chat/chattextedit.cpp
+	src/chat/chattextedit.cpp \
+	src/filetransfer/filetransfer.cpp
 
 TRANSLATIONS =	translation/qxygen_pl.ts
 

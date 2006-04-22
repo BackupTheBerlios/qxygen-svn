@@ -18,51 +18,18 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef CHATWINDOW_H
-#define CHATWINDOW_H
+#ifndef SETTINGSWIDGET_H
+#define SETTINGSWIDGET_H
 
-#include <QDialog>
+#include <QWidget>
 
-class chatTextEdit;
-class QShortcut;
-class QPushButton;
-class QLabel;
-
-class chatWindow: public QDialog
+class settingsWidget: public QWidget
 {
 Q_OBJECT
 
 public:
-	chatWindow(QString,QString, QWidget *parent=0);
-
-	QString jid(){return owner;}
-	void displayMsg(QString,QString);
-
-	void typingNotify(bool);
-
-private slots:
-	void checkSend();
-	void sendMsg();
-	void swapTitleBar();
-	void setupReturnSend();
-	void chatNotifyStop();
-
-signals:
-	void writeMsg(QString,QString);
-	void chatNotify(QString, bool);
-
-protected:
-	void resizeEvent(QResizeEvent*);
-	void moveEvent(QMoveEvent*);
-	bool eventFilter(QObject *obj, QEvent *ev);
-
-private:
-	QString owner,title;
-
-	QTimer *msgTimer,*notifyTimer;
-
-	chatTextEdit *input,*display;
-	QLabel *typingNotifyLabel;
-	QPushButton *sendButton, *sendAlarm, *setReturnSend;
+	settingsWidget(QWidget *parent=0);
+	virtual void saveSettings();
 };
+
 #endif

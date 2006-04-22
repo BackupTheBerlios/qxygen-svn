@@ -21,20 +21,27 @@
 #include <QCoreApplication>
 #include <QMessageBox>
 #include <QDateTime>
+#include <QHttp>
+#include <QHttpRequestHeader>
+#include <QHttpResponseHeader>
+#include <QUrl>
+#include <QTextEdit>
+#include <QNetworkProxy>
 
 #include <QDebug>
 
 #include "qxygen.h"
+#include "descrdialog.h"
 #include "roster_view.h"
 #include "roster_delegate.h"
 #include "roster_item.h"
+#include "useradd.h"
 #include "trayicon.h"
 #include "tlen.h"
-#include "useradd.h"
 #include "chatwindow.h"
 #include "settings.h"
 #include "profileform.h"
-#include "descrdialog.h"
+#include "settingsdialog.h"
 
 qxygen::qxygen( QWidget* parent): QMainWindow( parent ) {
 	setupTray();
@@ -120,6 +127,8 @@ void qxygen::setupMenus() {
 	connect(add,SIGNAL(triggered()),this,SLOT(addUser()));
 	remove=new QAction(QIcon(":remove.png"), tr("Remove contact"), this);
 	connect(remove, SIGNAL(triggered()), this, SLOT(parseRemove()));
+	settingsDialogA = new QAction(tr("Settings"), this);
+	connect(settingsDialogA, SIGNAL(triggered()), this, SLOT(showSettingsDialog()));
 	rosterMenu->addAction(remove);
 	mTrayMenu->addAction(online);
 	mTrayMenu->addAction(chatty);
@@ -133,6 +142,8 @@ void qxygen::setupMenus() {
 	mTrayMenu->addAction(exit);
 	mainMenu->addMenu(profilesMenu);
 	mainMenu->addAction(add);
+	mainMenu->addSeparator();
+	mainMenu->addAction(settingsDialogA);
 	mainMenu->addSeparator();
 	mainMenu->addAction(exit);
 	statusMenu->addAction(online);
@@ -161,7 +172,7 @@ void qxygen::setupRoster() {
 }
 
 void qxygen::setupProtocol() {
-	Tlen=new tlen(this);
+	Tlen = new tlen(this);
 	connect(Tlen, SIGNAL(statusChanged()), this, SLOT(statusChange()));
 	connect(Tlen, SIGNAL(clearRosterView()), rosterModel, SLOT(clearRoster()));
 	connect(Tlen, SIGNAL(itemReceived(QString, QString, QString, QString,bool)), rosterModel, SLOT(addItem(QString, QString, QString, QString,bool)));
@@ -173,7 +184,7 @@ void qxygen::setupProtocol() {
 	connect(Tlen, SIGNAL(removeItem(QString)), rosterModel, SLOT(removeItem(QString)));
 	connect(Tlen, SIGNAL(chatMsgReceived(QDomNode)), this, SLOT(chatMsgReceived(QDomNode)));
 	connect(Tlen, SIGNAL(chatNotify(QString,QString)), this, SLOT(chatNotify(QString,QString)));
-	connect(Tlen, SIGNAL(fileIncoming(QString,QString,QString,QString)), this, SLOT(fileIncoming(QString,QString,QString,QString)));
+	connect(Tlen, SIGNAL(fileIncoming(QDomNode)), this, SLOT(fileIncoming(QDomNode)));
 }
 
 void qxygen::setupSettings() {
@@ -181,6 +192,16 @@ void qxygen::setupSettings() {
 	connect(settings, SIGNAL(loadProfile()), this, SLOT(loadProfile()));
 	settings->initModule();
 	updateProfilesMenu();
+
+	if( settings->profileValue("network/useproxy").toBool() ) {
+		QNetworkProxy proxy;
+		proxy.setHostName( settings->profileValue("network/proxy/host").toString() );
+		proxy.setPort( settings->profileValue("network/proxy/port").toUInt() );
+		proxy.setUser( settings->profileValue("network/proxy/username").toString() );
+		proxy.setPassword( settings->profileValue("network/proxy/password").toString() );
+		QNetworkProxy::setApplicationProxy(proxy);
+	}
+	settingsDlg=new settingsDialog(this);
 }
 
 void qxygen::slotTrayClosed() {
@@ -495,5 +516,17 @@ void qxygen::setDescrDialog() {
 	dlg->exec();
 }
 
-void qxygen::fileIncoming(QString,QString,QString,QString) {
+void qxygen::fileIncoming(QDomNode n) {
+	QDomElement f=n.toElement();
+	QString fn;
+	if( f.hasAttribute("n") )
+		fn=tr("file '%1'").arg( f.attribute("n") );
+	else
+		fn=tr("%1 files").arg( f.attribute("c") );
+
+	rosterItem *user=rosterModel->find(f.attribute("f")+"@tlen.pl");
+}
+
+void qxygen::showSettingsDialog() {
+	settingsDlg->exec();
 }

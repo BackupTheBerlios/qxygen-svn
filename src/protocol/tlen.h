@@ -101,7 +101,7 @@ signals:
 	void statusUpdate();	// FOR TLEN TO WRITE STATUS
 	void eventReceived(QDomNode);
 
-	void fileIncoming(QString,QString,QString,QString);
+	void fileIncoming(QDomNode);
 
 	void chatNotify(QString,QString);
 private:
