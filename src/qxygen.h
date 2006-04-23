@@ -30,7 +30,7 @@ class QMenu;
 class TrayIcon;
 class rosterView;
 class rosterDelegate;
-class tlen;
+//class tlen;
 class QTextEdit;
 class chatWindow;
 class settingsMenager;
@@ -93,7 +93,7 @@ protected:
 
 private:
 	QTextEdit *mailEdit;
-	tlen *Tlen;
+//	tlen *Tlen;
 	QMap<QString /*jid*/, chatWindow*> chatMap;
 	QMap<QString /*jid*/, QStringList /*msg queue*/> msgMap;
 
@@ -124,4 +124,6 @@ private:
 	TrayIcon *mTray;
 	Ui::Qxygen ui;
 };
+
+extern qxygen *Qxygen;
 #endif

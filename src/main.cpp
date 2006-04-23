@@ -24,8 +24,8 @@
 
 int main( int argc, char *argv[] ) {
 	QApplication app(argc, argv);
-	qxygen Qxygen;
-	Qxygen.show();
+	qxygen *Qxygen=new qxygen;
+	Qxygen->show();
 	QApplication::connect(qApp, SIGNAL(lastWindowClosed()), qApp, SLOT(quit()));
 	return app.exec();
 }

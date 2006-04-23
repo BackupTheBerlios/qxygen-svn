@@ -229,8 +229,18 @@ void rosterTipLabel::paintEvent( QPaintEvent* ) {
 
 		painter.drawText(img.width()+(img.height()?10:5)+fm.width(tr("Status:"))+5+status.width()+5, fm.height()+10, 100, qMax(fm.height(),status.height()), Qt::AlignVCenter|Qt::AlignLeft, idx.model()->data(idx,rosterView::StatusRole).toString());
 
-		if(!descr.isEmpty())
-			painter.drawText(img.width()+(img.height()?10:5), 5 /*margin*/+fm.height()/*nick height*/+5/*spacing*/+qMax(fm.height(),status.height())/*status line height*/+5/*spacing*/, 400-img.width()-(img.height()?15:10), fm.boundingRect(0,0,400-img.width()-(img.height()?15:10),1000,Qt::AlignLeft|Qt::AlignTop|Qt::TextWrapAnywhere,descr).height(), Qt::AlignTop|Qt::AlignLeft|Qt::TextWrapAnywhere, descr);
+		if(!descr.isEmpty()) {
+			QFont pf=painter.font();
+			pf.setItalic(TRUE);
+			painter.setFont(pf);
+			painter.drawText(	img.width()+(img.height()?10:5),
+						5 /*margin*/+fm.height()/*nick height*/+5/*spacing*/+qMax(fm.height(),status.height())/*status line height*/+5/*spacing*/,
+						400-img.width()-(img.height()?15:10),
+						fm.boundingRect(0,0,400-img.width()-(img.height()?15:10),1000,Qt::AlignLeft|Qt::AlignTop|Qt::TextWrapAnywhere,descr).height(),
+						Qt::AlignTop|Qt::AlignLeft|Qt::TextWrapAnywhere, descr);
+			pf.setItalic(FALSE);
+			painter.setFont(pf);
+		}
 	}
 }
 

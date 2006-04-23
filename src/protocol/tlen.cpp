@@ -32,7 +32,7 @@
 #include "auth.h"
 #include "settings.h"
 
-tlen* Tlen=new tlen();
+tlen* Tlen=0;
 
 tlen::tlen( QObject* parent ): QObject( parent ) {
 	state = tlen::Disconnected;
@@ -252,18 +252,11 @@ void tlen::event(QDomNode n) {
 		//receive <f n='%filename%' e='1' i='%rndid%' c='1' s='%filesize%' v='1' f='%sender%'/>
 		QDomElement e=n.toElement();
 		if(e.attribute("e")=="1") {
-			//<f n='rfc2616.txt' c='1' s='422279' v='1' e='1' i='9752995' f='sowerek'/>
 			emit fileIncoming( n );
-			/*QDomDocument doc;
-			QDomElement f=doc.createElement("f");
-			f.setAttribute( "t", e.attribute("f") );
-			f.setAttribute( "i", e.attribute("i") );
-			f.setAttribute( "e", "5" );
-			f.setAttribute( "v", "1" );
-			doc.appendChild( f );
-			write(doc);*/
 		}
-		//send <f t="%sender%" i="%rndid%" e="5" v="1"/>
+		else if(e.attribute("e")=="6") {
+			// <f a='ip' p='port' e='6' i='rndid' f='from'/>
+		}
 	}
 }
 
@@ -572,5 +565,22 @@ void tlen::chatNotify( QString to, bool t ) {
 		m.setAttribute("tp", "u");
 
 	doc.appendChild(m);
+	write(doc);
+}
+
+void tlen::receiveFile(QString rndid, QString sender, bool receive) {
+	QDomDocument doc;
+	QDomElement f=doc.createElement("f");
+
+	if(receive) {
+		f.setAttribute("e", "5");
+		f.setAttribute("v", "1");
+	} else {
+		f.setAttribute("e", "4");
+	}
+	
+	f.setAttribute("t", sender);
+	f.setAttribute("i", rndid);
+	doc.appendChild(f);
 	write(doc);
 }

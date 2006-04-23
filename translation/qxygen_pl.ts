@@ -95,6 +95,79 @@
     </message>
 </context>
 <context>
+    <name>downloadDialog</name>
+    <message>
+        <source>File count: 0</source>
+        <translation>Liczba plików: 0</translation>
+    </message>
+    <message>
+        <source>Estimated time of arrival: 00:00:00</source>
+        <translation>Szacowany pozostały czas: 00:00:00</translation>
+    </message>
+    <message>
+        <source>Files remained: 0</source>
+        <translation>Pozostało plików: 0</translation>
+    </message>
+    <message>
+        <source>Files size: 0 kB</source>
+        <translation>Rozmiar plików: 0 kB</translation>
+    </message>
+    <message>
+        <source>Elapsed time: 00:00:00</source>
+        <translation>Upłynęło czasu: 00:00:00</translation>
+    </message>
+    <message>
+        <source>Avarage speed: 0 kB/s</source>
+        <translation>Średnia prędkość: 0kB/s</translation>
+    </message>
+</context>
+<context>
+    <name>fileTransferDialog</name>
+    <message>
+        <source>Abort</source>
+        <translation>Przerwij</translation>
+    </message>
+    <message>
+        <source>Add file to send</source>
+        <translation>Dodaj plik do wysłania</translation>
+    </message>
+    <message>
+        <source>Clear list</source>
+        <translation>Wyczyść listę</translation>
+    </message>
+    <message>
+        <source>Send</source>
+        <translation>Wyślij</translation>
+    </message>
+</context>
+<context>
+    <name>networkSWidget</name>
+    <message>
+        <source>Use proxy server</source>
+        <translation>Użyj serwera proxy</translation>
+    </message>
+    <message>
+        <source>Proxy server</source>
+        <translation>Serwer proxy</translation>
+    </message>
+    <message>
+        <source>Port:</source>
+        <translation>Port:</translation>
+    </message>
+    <message>
+        <source>Host:</source>
+        <translation>Host:</translation>
+    </message>
+    <message>
+        <source>User:</source>
+        <translation>Użytkownik:</translation>
+    </message>
+    <message>
+        <source>Password:</source>
+        <translation>Hasło:</translation>
+    </message>
+</context>
+<context>
     <name>newProfileDialog</name>
     <message>
         <source>Create</source>
@@ -214,6 +287,10 @@
         <source>With description</source>
         <translation>Z opisem</translation>
     </message>
+    <message>
+        <source>Settings</source>
+        <translation>Ustawienia</translation>
+    </message>
 </context>
 <context>
     <name>rosterItem</name>
@@ -282,6 +359,29 @@
     <message>
         <source>General</source>
         <translation>Ogólne</translation>
+    </message>
+</context>
+<context>
+    <name>settingsDialog</name>
+    <message>
+        <source>Qxygen: settings</source>
+        <translation>Qxygen: ustawienia</translation>
+    </message>
+    <message>
+        <source>Ok</source>
+        <translation>Ok</translation>
+    </message>
+    <message>
+        <source>Apply</source>
+        <translation>Zastosuj</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Anuluj</translation>
+    </message>
+    <message>
+        <source>Network</source>
+        <translation>Sieć</translation>
     </message>
 </context>
 <context>

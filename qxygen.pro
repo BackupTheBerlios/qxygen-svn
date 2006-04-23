@@ -43,7 +43,8 @@ HEADERS=src/qxygen.h \
 	src/tray/trayicon.h \
 	src/chat/chatwindow.h \
 	src/chat/chattextedit.h \
-	src/filetransfer/filetransfer.h
+	src/filetransfer/filetransfer.h \
+	src/filetransfer/fileincoming.h
 
 SOURCES=src/main.cpp \
 	src/qxygen.cpp \
@@ -62,7 +63,8 @@ SOURCES=src/main.cpp \
 	src/tray/trayicon.cpp \
 	src/chat/chatwindow.cpp \
 	src/chat/chattextedit.cpp \
-	src/filetransfer/filetransfer.cpp
+	src/filetransfer/filetransfer.cpp \
+	src/filetransfer/fileincoming.cpp
 
 TRANSLATIONS =	translation/qxygen_pl.ts
 

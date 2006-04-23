@@ -70,14 +70,14 @@ public slots:
 	void setStatus(QString s);
 	void setStatusDescr(QString,QString);
 	void addItem(QString jid, QString name, QString group, bool subscribe);
+	void receiveFile(QString,QString,bool);
 
 private slots:
-	bool write(const QDomDocument &d);
 	void writeStatus();
 	void socketConnected();
 	void socketReadyRead();
 	void socketDisconnected();
-
+	bool write(const QDomDocument &d);
 	void authorize(QString, bool);
 
 	void event(QDomNode n);
@@ -125,4 +125,6 @@ private:
 	quint16 hostport;
 	QTcpSocket *socket;
 };
+
+extern tlen *Tlen;
 #endif

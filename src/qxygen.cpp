@@ -42,6 +42,7 @@
 #include "settings.h"
 #include "profileform.h"
 #include "settingsdialog.h"
+#include "fileincoming.h"
 
 qxygen::qxygen( QWidget* parent): QMainWindow( parent ) {
 	setupTray();
@@ -59,6 +60,8 @@ qxygen::~qxygen() {
 		delete delegate;
 	if(rosterModel)
 		delete rosterModel;
+	if(mTray)
+		delete mTray;
 }
 
 void qxygen::setupTray() {
@@ -192,16 +195,6 @@ void qxygen::setupSettings() {
 	connect(settings, SIGNAL(loadProfile()), this, SLOT(loadProfile()));
 	settings->initModule();
 	updateProfilesMenu();
-
-	if( settings->profileValue("network/useproxy").toBool() ) {
-		QNetworkProxy proxy;
-		proxy.setHostName( settings->profileValue("network/proxy/host").toString() );
-		proxy.setPort( settings->profileValue("network/proxy/port").toUInt() );
-		proxy.setUser( settings->profileValue("network/proxy/username").toString() );
-		proxy.setPassword( settings->profileValue("network/proxy/password").toString() );
-		QNetworkProxy::setApplicationProxy(proxy);
-	}
-	settingsDlg=new settingsDialog(this);
 }
 
 void qxygen::slotTrayClosed() {
@@ -483,6 +476,15 @@ void qxygen::loadProfile() {
 	Tlen->setUname( settings->profileValue("user/login").toString() );
 	setWindowTitle( "Qxygen: "+settings->profileValue("user/profile").toString() );
 	rosterModel->clearRoster();
+	if(settingsDlg) {
+		delete settingsDlg;
+	}
+
+	settingsDlg=new settingsDialog(this);
+	settingsDlg->saveSettings();
+	
+	chatMap.clear();
+	msgMap.clear();
 }
 
 void qxygen::choseProfile ( QAction* a ) {
@@ -517,14 +519,9 @@ void qxygen::setDescrDialog() {
 }
 
 void qxygen::fileIncoming(QDomNode n) {
-	QDomElement f=n.toElement();
-	QString fn;
-	if( f.hasAttribute("n") )
-		fn=tr("file '%1'").arg( f.attribute("n") );
-	else
-		fn=tr("%1 files").arg( f.attribute("c") );
-
-	rosterItem *user=rosterModel->find(f.attribute("f")+"@tlen.pl");
+	fileIncomingDialog *dlg=new fileIncomingDialog(n, this);
+	connect(dlg, SIGNAL(receive(QString,QString,bool)), Tlen, SLOT(receiveFile(QString,QString,bool)));
+	dlg->show();
 }
 
 void qxygen::showSettingsDialog() {

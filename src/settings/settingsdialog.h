@@ -37,10 +37,12 @@ public:
 	enum settingsDataRole {	widgetRole = 99
 	};
 	settingsDialog(QWidget *parent=0);
+	
+public slots:
+	void saveSettings();
 
 private slots:
 	void swapSettingsWidget(QListWidgetItem*,QListWidgetItem*);
-	void saveSettings();
 
 private:
 	QListWidget *tabs;

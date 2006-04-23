@@ -34,5 +34,6 @@ private:
 	Ui::downloadDialog ui;
 	QPushButton *addFile, *clearList, *send, *abort, *goToFiles;
 	QHBoxLayout *buttonLay;
+	QLabel *statusLabel;
 };
 #endif

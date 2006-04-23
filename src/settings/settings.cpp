@@ -37,8 +37,11 @@ settingsMenager::settingsMenager( QObject* parent ):QObject( parent ) {
 
 	if(!dir->exists(dir->path()+"/profiles"))
 		dir->mkdir(dir->path()+"/profiles");
-
+#ifdef Q_WS_WIN
+	qxygen=new QSettings(dir->path()+"/qxygen",QSettings::IniFormat);
+#else
 	qxygen=new QSettings(dir->path()+"/qxygen",QSettings::NativeFormat);
+#endif
 }
 
 settingsMenager::~settingsMenager() {
@@ -49,13 +52,21 @@ void settingsMenager::initModule() {
 		emit noProfile();
 	else
 	{
+#ifdef Q_WS_WIN
+		profile=new QSettings(dir->path()+"/profiles/"+qxygen->value("profiles/default").toString(), QSettings::IniFormat);
+#else
 		profile=new QSettings(dir->path()+"/profiles/"+qxygen->value("profiles/default").toString(), QSettings::NativeFormat);
+#endif
 		emit loadProfile();
 	}
 }
 
 void settingsMenager::addProfile(QString name, QString login, QString pass) {
+#ifdef Q_WS_WIN
+	profile=new QSettings(dir->path()+"/profiles/"+name, QSettings::IniFormat);
+#else
 	profile=new QSettings(dir->path()+"/profiles/"+name, QSettings::NativeFormat);
+#endif
 	qxygen->setValue("profiles/default", name);
 	QStringList profilesList=qxygen->value("profiles/list").value<QStringList>();
 	profilesList<<name;
@@ -67,7 +78,11 @@ void settingsMenager::addProfile(QString name, QString login, QString pass) {
 
 void settingsMenager::choseProfile(QString p) {
 	qxygen->setValue("profiles/default", p);
+#ifdef Q_WS_WIN
+	profile=new QSettings(dir->path()+"/profiles/"+qxygen->value("profiles/default").toString(), QSettings::IniFormat);
+#else
 	profile=new QSettings(dir->path()+"/profiles/"+qxygen->value("profiles/default").toString(), QSettings::NativeFormat);
+#endif
 }
 
 void settingsMenager::setProfileValue(QString key, QVariant value) {

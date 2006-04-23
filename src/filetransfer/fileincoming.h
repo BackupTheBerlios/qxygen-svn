@@ -18,25 +18,29 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <QPushButton>
-#include <QHBoxLayout>
+#ifndef FILEINCOMING_H
+#define FILEINCOMING_H
 
-#include "filetransfer.h"
+#include "ui_fileincomingdialog.h"
 
-fileTransferDialog::fileTransferDialog(QWidget *parent, bool receiveMode): QDialog(parent) {
-	buttonLay = new QHBoxLayout();
-	statusLabel = new QLabel;
-	buttonLay->addWidget(statusLabel);
-	abort = new QPushButton(tr("Abort"));
+class QDomNode;
 
-	if(!receiveMode) {
-		addFile = new QPushButton(tr("Add file to send"));
-		clearList = new QPushButton(tr("Clear list"));
-		send = new QPushButton(tr("Send"));
-		buttonLay->addWidget(addFile);
-		buttonLay->addWidget(clearList);
-		buttonLay->addWidget(send);
-	}
-	buttonLay->addWidget(abort);
-	layout()->addItem(buttonLay);
-}
+class fileIncomingDialog: public QDialog
+{
+Q_OBJECT
+public:
+	fileIncomingDialog(QDomNode, QWidget *parent=0);
+
+signals:
+	void receive(QString,QString,bool);
+
+private slots:
+	void changeDownloadDir();
+	void receiveF();
+	void dontReceiveF();
+
+private:
+	QString rndid,sender;
+	Ui::fileIncoming ui;
+};
+#endif

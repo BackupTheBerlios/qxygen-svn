@@ -26,6 +26,7 @@
 #include <QAction>
 #include <QMenu>
 #include <QApplication>
+#include <QMessageBox>
 #include <QLabel>
 #include <QTimer>
 
@@ -34,6 +35,7 @@
 #include "chatwindow.h"
 #include "chattextedit.h"
 #include "settings.h"
+#include "tlen.h"
 
 chatWindow::chatWindow( QString label, QString jid, QWidget *parent ): QDialog( parent ) {
 	installEventFilter(this);
@@ -147,6 +149,14 @@ void chatWindow::chatNotifyStop() {
 }
 
 void chatWindow::sendMsg() {
+	if(Tlen->strStatus()=="unavailable") {
+		QMessageBox::information(	this,
+						tr("Connection error"),
+						tr("You can't send message. You're not connected. Connect to server first."),
+						1);
+		return;
+	}
+
 	QString msg=input->toPlainText();
 	if(msg.isEmpty())
 		return;
@@ -154,7 +164,7 @@ void chatWindow::sendMsg() {
 	input->clear();
 	msg.replace("<","&lt;");
 	msg.replace(">","&gt;");
-	msg.replace(" ", "&ensp;");
+//	msg.replace(" ", "&nbsp;");
 	msg.replace("\n", "<br/>");
 	display->append("<table width=\"100%\" style=\"background-color: #ffffff;\"><tr><td><b>"+settings->profileValue("user/profile").toString()+" :: "+QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss")+"</b></td></tr><tr><td>"+msg+"</td></tr></table>");
 	notifyTimer->stop();
@@ -163,7 +173,7 @@ void chatWindow::sendMsg() {
 void chatWindow::displayMsg(QString msg, QString time) {
 	msg.replace("<","&lt;");
 	msg.replace(">","&gt;");
-	msg.replace(" ", "&ensp;");
+//	msg.replace(" ", "&nbsp;");
 	msg.replace("\n","<br/>");
 	display->append("<table width=\"100%\" style=\"background-color: #e0e0e0;\"><tr><td><b>"+title+" :: "+time+"</b></td></tr><tr><td>"+msg+"</td></tr></table>");
 

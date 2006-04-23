@@ -39,6 +39,7 @@
  */
 
 #include "trayicon.h"
+#include <QApplication>
 #include <QPixmap>
 #include <QMouseEvent>
 #include <QEvent>
@@ -212,28 +213,26 @@ void TrayIcon::hide()
 /*!
   \reimp
 */
-bool TrayIcon::event( QEvent *e )
-{
-    switch ( e->type() ) {
-    case QEvent::MouseMove:
-	mouseMoveEvent( (QMouseEvent*)e );
-	break;
+bool TrayIcon::event( QEvent *e ) {
+	switch ( e->type() ) {
+	case QEvent::MouseMove:
+		mouseMoveEvent( (QMouseEvent*)e );
+		break;
 
-    case QEvent::MouseButtonPress:
-	mousePressEvent( (QMouseEvent*)e );
-	break;
+	case QEvent::MouseButtonPress:
+		mousePressEvent( (QMouseEvent*)e );
+		break;
 
-    case QEvent::MouseButtonRelease:
-	mouseReleaseEvent( (QMouseEvent*)e );
-	break;
+	case QEvent::MouseButtonRelease:
+		mouseReleaseEvent( (QMouseEvent*)e );
+		break;
 
-    case QEvent::MouseButtonDblClick:
-	mouseDoubleClickEvent( (QMouseEvent*)e );
-	break;
-    default:
-	return QObject::event( e );
+	case QEvent::MouseButtonDblClick:
+		mouseDoubleClickEvent( (QMouseEvent*)e );
+		break;
+	default:
+		return QObject::event( e );
     }
-
     return TRUE;
 }
 
@@ -245,7 +244,7 @@ bool TrayIcon::event( QEvent *e )
 */
 void TrayIcon::mouseMoveEvent( QMouseEvent *e )
 {
-    e->ignore();
+	e->ignore();
 }
 
 /*!
