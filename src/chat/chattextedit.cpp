@@ -27,7 +27,7 @@
 
 #include "chattextedit.h"
 
-chatTextEdit::chatTextEdit( QWidget* parent ): QTextEdit( parent ) {
+chatTextEdit::chatTextEdit( QWidget* parent ): QTextBrowser( parent ) {
 	displayM=new QMenu();
 	inputM=new QMenu();
 	selectAllA=new QAction(tr("Select All"), this);

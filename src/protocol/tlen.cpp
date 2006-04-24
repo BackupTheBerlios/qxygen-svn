@@ -87,10 +87,10 @@ void tlen::socketReadyRead() {
 	stream+=socket->readAll();
 	stream.append("</s>");
 	stream.prepend("<s>");
-	qDebug()<<"Read chunk:"<<stream;
+//	qDebug()<<"Read chunk:"<<stream;
 
 	if( tmpDoc->setContent(stream) || stream.startsWith("<s><s ") ) {
-		qDebug()<<"Read:"<<stream;
+		qDebug()<<"Read:"<<tmpDoc->toString();
 
 		QDomDocument d;
 		d.setContent(stream);

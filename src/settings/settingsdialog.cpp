@@ -93,6 +93,12 @@ void settingsDialog::saveSettings() {
 		close();
 }
 
+void settingsDialog::loadSettings() {
+	for(int i=0; i<tabs->count(); ++i) {
+		static_cast<settingsWidget*>(tabs->item(i)->data(widgetRole).value<QWidget*>() )->loadSettings();
+	}
+}
+
 networkSettings::networkSettings(QWidget *parent): settingsWidget(parent) {
 	ui.setupUi(this);
 	if( settings->profileValue("network/useproxy").toBool() ) {
@@ -112,6 +118,10 @@ void networkSettings::saveSettings() {
 	settings->setProfileValue( "network/proxy/username", ui.userLineEdit->text() );
 	settings->setProfileValue( "network/proxy/password", ui.passLineEdit->text() );
 
+	loadSettings();
+}
+
+void networkSettings::loadSettings() {
 	if( settings->profileValue("network/useproxy").toBool() ) {
 		QNetworkProxy proxy;
 		proxy.setHostName( settings->profileValue("network/proxy/host").toString() );
@@ -122,11 +132,4 @@ void networkSettings::saveSettings() {
 	} else {
 		QNetworkProxy::setApplicationProxy( QNetworkProxy::NoProxy );
 	}
-}
-
-//JUST FOR MODULAR SETTINGS DIALOG
-settingsWidget::settingsWidget(QWidget *parent): QWidget(parent){
-}
-
-void settingsWidget::saveSettings() {
 }

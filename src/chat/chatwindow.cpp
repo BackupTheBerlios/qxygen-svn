@@ -59,6 +59,7 @@ chatWindow::chatWindow( QString label, QString jid, QWidget *parent ): QDialog( 
 
 	input=new chatTextEdit();
 	input->installEventFilter(this);
+	input->setReadOnly(FALSE);
 	input->setTabChangesFocus(TRUE);
 	input->setAcceptRichText(FALSE);
 	sendButton=new QPushButton(tr("Send"));
@@ -167,6 +168,7 @@ void chatWindow::sendMsg() {
 //	msg.replace(" ", "&nbsp;");
 	msg.replace("\n", "<br/>");
 	display->append("<table width=\"100%\" style=\"background-color: #ffffff;\"><tr><td><b>"+settings->profileValue("user/profile").toString()+" :: "+QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss")+"</b></td></tr><tr><td>"+msg+"</td></tr></table>");
+//	display->append("<div width=\"100%\" style=\"background-color: #ffffff;\"><b>"+settings->profileValue("user/profile").toString()+" :: "+QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss")+"</b><br/>"+msg+"</div><br/>");
 	notifyTimer->stop();
 }
 
@@ -176,6 +178,7 @@ void chatWindow::displayMsg(QString msg, QString time) {
 //	msg.replace(" ", "&nbsp;");
 	msg.replace("\n","<br/>");
 	display->append("<table width=\"100%\" style=\"background-color: #e0e0e0;\"><tr><td><b>"+title+" :: "+time+"</b></td></tr><tr><td>"+msg+"</td></tr></table>");
+//	display->append("<div width=\"100%\" style=\"background-color: #e0e0e0;\"><b>"+title+" :: "+time+"</b><br/>"+msg+"</div><br/>");
 
 	if(!isActiveWindow())
 		msgTimer->start(500);

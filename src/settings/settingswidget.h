@@ -28,8 +28,9 @@ class settingsWidget: public QWidget
 Q_OBJECT
 
 public:
-	settingsWidget(QWidget *parent=0);
-	virtual void saveSettings();
+	settingsWidget(QWidget *parent=0): QWidget(parent){}
+	virtual void saveSettings(){}
+	virtual void loadSettings(){}
 };
 
 #endif

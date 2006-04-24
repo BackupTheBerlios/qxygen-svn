@@ -39,6 +39,7 @@ public:
 	settingsDialog(QWidget *parent=0);
 	
 public slots:
+	void loadSettings();
 	void saveSettings();
 
 private slots:
@@ -56,6 +57,7 @@ Q_OBJECT
 public:
 	networkSettings(QWidget *parent=0);
 	void saveSettings();
+	void loadSettings();
 private:
 	Ui::networkSWidget ui;
 };

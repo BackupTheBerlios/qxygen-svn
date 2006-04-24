@@ -21,9 +21,9 @@
 #ifndef CHATTEXTEDIT_H
 #define CHATTEXTEDIT_H
 
-#include <QTextEdit>
+#include <QTextBrowser>
 
-class chatTextEdit: public QTextEdit
+class chatTextEdit: public QTextBrowser
 {
 Q_OBJECT
 

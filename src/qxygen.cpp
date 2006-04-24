@@ -481,7 +481,7 @@ void qxygen::loadProfile() {
 	}
 
 	settingsDlg=new settingsDialog(this);
-	settingsDlg->saveSettings();
+	settingsDlg->loadSettings();
 	
 	chatMap.clear();
 	msgMap.clear();
