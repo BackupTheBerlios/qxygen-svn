@@ -23,14 +23,21 @@
 
 #include <QWidget>
 
+class QListWidgetItem;
+
 class settingsWidget: public QWidget
 {
 Q_OBJECT
 
 public:
+	enum settingsDataRole {	widgetRole = 99
+	};
+
 	settingsWidget(QWidget *parent=0): QWidget(parent){}
 	virtual void saveSettings(){}
 	virtual void loadSettings(){}
+	virtual void cancelSettings(){}
+	virtual QListWidgetItem *settingsTab(){return 0;}
 };
 
 #endif

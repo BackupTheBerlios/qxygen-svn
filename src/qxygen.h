@@ -119,7 +119,6 @@ private:
 		*createProfileAction,
 		*settingsDialogA;
 
-	rosterView *rosterModel;
 	rosterDelegate *delegate;
 	TrayIcon *mTray;
 	Ui::Qxygen ui;

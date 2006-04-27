@@ -90,4 +90,6 @@ private:
 	rosterItem *rootItem;
 	bool descr, subgroups;
 };
+
+extern rosterView *rosterModel;
 #endif

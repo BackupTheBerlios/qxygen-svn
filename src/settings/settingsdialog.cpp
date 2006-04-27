@@ -30,11 +30,13 @@
 
 #include "settingsdialog.h"
 #include "settings.h"
+#include "roster_view.h"
 
 settingsDialog *settingsDlg=0;
 
 settingsDialog::settingsDialog(QWidget *parent): QDialog(parent) {
 	setWindowTitle(tr("Qxygen: settings"));
+	setWindowIcon(QIcon(":logo.png"));
 	QGridLayout *main = new QGridLayout(this);
 	QHBoxLayout *top = new QHBoxLayout();
 	QHBoxLayout *bottom = new QHBoxLayout();
@@ -56,13 +58,10 @@ settingsDialog::settingsDialog(QWidget *parent): QDialog(parent) {
 	bottom->addWidget(apply);
 	bottom->addWidget(cancel);
 
-	//CREATE SETTINGS SECTIONS
-	QListWidgetItem *networkS = new QListWidgetItem( QIcon(":network.png"), tr("Network") );
-	networkSettings *networkWidget = new networkSettings();
-	QVariant networkV;
-	networkV.setValue<QWidget*>( networkWidget );
-	networkS->setData( widgetRole, networkV );
-	tabs->addItem(networkS);
+	generalSettings *generalS=new generalSettings();
+	tabs->addItem( generalS->settingsTab() );
+	networkSettings *networkS=new networkSettings();
+	tabs->addItem( networkS->settingsTab() );
 
 	top->addWidget(tabs);
 	top->addWidget(widgetScroll);
@@ -70,23 +69,27 @@ settingsDialog::settingsDialog(QWidget *parent): QDialog(parent) {
 	main->addLayout(top, 0, 0);
 	main->addLayout(bottom, 1, 0);
 
-	QListWidgetItem *firstItem = tabs->item(0);
-	tabs->setItemSelected(firstItem, TRUE);
-	widgetScroll->setWidget( firstItem->data(widgetRole).value<QWidget*>() );
+//	QListWidgetItem *firstItem = tabs->item(0);
+//	tabs->setItemSelected(firstItem, TRUE);
+//	widgetScroll->setWidget( firstItem->data(settingsWidget::widgetRole).value<QWidget*>() );
 
 	connect( tabs, SIGNAL( currentItemChanged(QListWidgetItem*, QListWidgetItem*) ), this, SLOT( swapSettingsWidget(QListWidgetItem*,QListWidgetItem*) ) );
-	connect( cancel, SIGNAL( clicked() ), this, SLOT( close() ) );
+	connect( cancel, SIGNAL( clicked() ), this, SLOT( cancelSettings() ) );
 	connect( ok, SIGNAL( clicked() ), this, SLOT( saveSettings() ) );
 	connect( apply, SIGNAL( clicked() ), this, SLOT( saveSettings() ) );
 }
 
-void settingsDialog::swapSettingsWidget(QListWidgetItem *curr, QListWidgetItem*) {
-	widgetScroll->setWidget( curr->data(widgetRole).value<QWidget*>() );
+void settingsDialog::swapSettingsWidget(QListWidgetItem *curr, QListWidgetItem *prev) {
+	if(prev)
+		widgetScroll->takeWidget();
+
+	widgetScroll->setWidget( curr->data(settingsWidget::widgetRole).value<QWidget*>() );
+	curr->data(settingsWidget::widgetRole).value<QWidget*>()->show();
 }
 
 void settingsDialog::saveSettings() {
 	for(int i=0; i<tabs->count(); ++i) {
-		static_cast<settingsWidget*>(tabs->item(i)->data(widgetRole).value<QWidget*>() )->saveSettings();
+		static_cast<settingsWidget*>(tabs->item(i)->data(settingsWidget::widgetRole).value<QWidget*>() )->saveSettings();
 	}
 	QPushButton *b=qobject_cast<QPushButton*>(sender());
 	if(b==ok)
@@ -95,20 +98,24 @@ void settingsDialog::saveSettings() {
 
 void settingsDialog::loadSettings() {
 	for(int i=0; i<tabs->count(); ++i) {
-		static_cast<settingsWidget*>(tabs->item(i)->data(widgetRole).value<QWidget*>() )->loadSettings();
+		static_cast<settingsWidget*>(tabs->item(i)->data(settingsWidget::widgetRole).value<QWidget*>() )->loadSettings();
 	}
+}
+
+void settingsDialog::cancelSettings() {
+	for(int i=0; i<tabs->count(); ++i) {
+		static_cast<settingsWidget*>(tabs->item(i)->data(settingsWidget::widgetRole).value<QWidget*>() )->cancelSettings();
+	}
+	close();
 }
 
 networkSettings::networkSettings(QWidget *parent): settingsWidget(parent) {
 	ui.setupUi(this);
-	if( settings->profileValue("network/useproxy").toBool() ) {
-		ui.useProxyCheckBox->setChecked(TRUE);
-		ui.groupBox->setEnabled(TRUE);
-	}
-	ui.hostLineEdit->setText( settings->profileValue("network/proxy/host").toString() );
-	ui.portLineEdit->setText( settings->profileValue("network/proxy/port").toString() );
-	ui.userLineEdit->setText( settings->profileValue("network/proxy/username").toString() );
-	ui.passLineEdit->setText( settings->profileValue("network/proxy/password").toString() );
+	cancelSettings();
+	item=new QListWidgetItem( QIcon(":network.png"), tr("Network") );
+	QVariant V;
+	V.setValue<QWidget*>( this );
+	item->setData( widgetRole, V );
 }
 
 void networkSettings::saveSettings() {
@@ -132,4 +139,49 @@ void networkSettings::loadSettings() {
 	} else {
 		QNetworkProxy::setApplicationProxy( QNetworkProxy::NoProxy );
 	}
+}
+
+void networkSettings::cancelSettings() {
+	if( settings->profileValue("network/useproxy").toBool() ) {
+		ui.useProxyCheckBox->setChecked(TRUE);
+		ui.groupBox->setEnabled(TRUE);
+	}
+	ui.hostLineEdit->setText( settings->profileValue("network/proxy/host").toString() );
+	ui.portLineEdit->setText( settings->profileValue("network/proxy/port").toString() );
+	ui.userLineEdit->setText( settings->profileValue("network/proxy/username").toString() );
+	ui.passLineEdit->setText( settings->profileValue("network/proxy/password").toString() );
+}
+
+generalSettings::generalSettings(QWidget *parent): settingsWidget(parent) {
+	ui.setupUi(this);
+	cancelSettings();
+	item=new QListWidgetItem( QIcon(":logo.png"), tr("General") );
+	QVariant V;
+	V.setValue<QWidget*>( this );
+	item->setData( widgetRole, V );
+}
+
+void generalSettings::saveSettings() {
+	settings->setProfileValue( "roster/showGroups", ui.showGroups->isChecked() );
+	settings->setProfileValue( "roster/showSubgroups", ui.showSubgroups->isChecked() );
+	settings->setProfileValue( "roster/showDescription", ui.showDescription->isChecked() );
+	loadSettings();
+}
+
+void generalSettings::loadSettings() {
+	if( settings->profileValue("roster/showSubgroups").toBool() )
+		rosterModel->setSubgroups(TRUE);
+	else
+		rosterModel->setSubgroups(FALSE);
+
+	if( settings->profileValue("roster/showDescription").toBool() )
+		rosterModel->setShowDescr(TRUE);
+	else
+		rosterModel->setShowDescr(FALSE);
+}
+
+void generalSettings::cancelSettings() {
+	ui.showGroups->setChecked( settings->profileValue("roster/showGroups").toBool() );
+	ui.showSubgroups->setChecked( settings->profileValue("roster/showSubgroups").toBool() );
+	ui.showDescription->setChecked( settings->profileValue("roster/showDescription").toBool() );
 }

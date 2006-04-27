@@ -25,6 +25,7 @@
 
 #include "settingswidget.h"
 #include "ui_networkswidget.h"
+#include "ui_generalswidget.h"
 
 class QListWidgetItem;
 class QScrollArea;
@@ -34,13 +35,12 @@ class settingsDialog: public QDialog
 {
 Q_OBJECT
 public:
-	enum settingsDataRole {	widgetRole = 99
-	};
 	settingsDialog(QWidget *parent=0);
 	
 public slots:
 	void loadSettings();
 	void saveSettings();
+	void cancelSettings();
 
 private slots:
 	void swapSettingsWidget(QListWidgetItem*,QListWidgetItem*);
@@ -51,6 +51,20 @@ private:
 	QPushButton *ok, *apply, *cancel;
 };
 
+class generalSettings: public settingsWidget
+{
+Q_OBJECT
+public:
+	generalSettings(QWidget *parent=0);
+	void saveSettings();
+	void loadSettings();
+	void cancelSettings();
+	QListWidgetItem *settingsTab(){return item;}
+private:
+	QListWidgetItem *item;
+	Ui::generalSWidget ui;
+};
+
 class networkSettings: public settingsWidget
 {
 Q_OBJECT
@@ -58,7 +72,10 @@ public:
 	networkSettings(QWidget *parent=0);
 	void saveSettings();
 	void loadSettings();
+	void cancelSettings();
+	QListWidgetItem *settingsTab(){return item;}
 private:
+	QListWidgetItem *item;
 	Ui::networkSWidget ui;
 };
 

@@ -280,6 +280,11 @@ void qxygen::statusChange() {
 }
 
 void qxygen::authorizationAsk( QString from ) {
+	if( rosterItem *item = rosterModel->find(from) ) {
+		if( item->data(3)=="subscribed" || item->data(3)=="both" )
+			return;
+	}
+
 	if(QMessageBox::question(this,
 				tr("User authorization"),
 				tr("User %1 requested authorization from You."

@@ -59,7 +59,6 @@ chatWindow::chatWindow( QString label, QString jid, QWidget *parent ): QDialog( 
 
 	input=new chatTextEdit();
 	input->installEventFilter(this);
-	input->setReadOnly(FALSE);
 	input->setTabChangesFocus(TRUE);
 	input->setAcceptRichText(FALSE);
 	sendButton=new QPushButton(tr("Send"));

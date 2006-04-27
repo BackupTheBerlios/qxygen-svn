@@ -182,6 +182,8 @@ void tlen::event(QDomNode n) {
 
 		if(e.hasAttribute("name"))
 			name=e.attribute("name");
+		else
+			name=jid;
 
 		if( n.hasChildNodes() ) {
 			QDomNodeList nl=n.childNodes();
@@ -192,8 +194,6 @@ void tlen::event(QDomNode n) {
 
 		if(group.isEmpty())
 			group=tr("General");
-		if(name.isEmpty())
-			name=jid;
 
 		group=decode(group.toUtf8());
 		name=decode(name.toUtf8());
@@ -208,7 +208,9 @@ void tlen::event(QDomNode n) {
 		if(e.hasAttribute("type") && e.attribute("type")=="subscribe") {
 			emit authorizationAsk(from);
 		}
-		else if(e.hasAttribute("type") && (e.attribute("type")=="unsubscribe" || e.attribute("type")=="subscribed" || e.attribute("type")=="unsubscribed"))
+		else if( e.hasAttribute("type") && e.attribute("type")=="subscribed" )
+			return;
+		else if(e.hasAttribute("type") && (e.attribute("type")=="unsubscribe" || e.attribute("type")=="unsubscribed"))
 			return;
 		else {
 			QString status="none";
@@ -264,6 +266,7 @@ void tlen::socketDisconnected() {
 	state=tlen::Disconnected;
 	ping->stop();
 	status="unavailable";
+	descr="";
 	emit statusChanged();
 	emit presenceDisconnected();
 }

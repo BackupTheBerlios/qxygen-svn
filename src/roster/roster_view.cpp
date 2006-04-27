@@ -23,10 +23,12 @@
 #include "roster_item.h"
 #include "roster_view.h"
 
+rosterView *rosterModel=0;
+
 rosterView::rosterView( QObject *parent ): QAbstractItemModel( parent ) {
 	rootItem = new rosterItem();
-	subgroups=TRUE;
-	descr=TRUE;
+	subgroups=FALSE;
+	descr=FALSE;
 }
 
 rosterView::~rosterView() {
@@ -182,7 +184,7 @@ void rosterView::addItem( QString jid, QString dn, QString subscription, QString
 		if(item->parent()->data(0)!=group) {
 			//remove and create new in other group
 			item->parent()->takeChild(item);
-			item->parent()->sort();
+			item->parent()->sort(subgroups);
 			addItem(jid,dn,subscription,group,sort);
 			sort=TRUE;
 		}
@@ -215,11 +217,26 @@ void rosterView::addItem( QString jid, QString dn, QString subscription, QString
 }
 
 void rosterView::setShowDescr( bool d ) {
+	if(d==descr)
+		return;
+
 	descr=d;
+	emit layoutChanged();
 }
 
 void rosterView::setSubgroups( bool s ) {
+	if(s==subgroups)
+		return;
+
 	subgroups=s;
+
+	QList<rosterItem*> groups=groupList();
+	QListIterator<rosterItem*> gi(groups);
+	while(gi.hasNext()) {
+		rosterItem *group=gi.next();
+		group->sort(subgroups);
+	}
+	emit layoutChanged();
 }
 
 bool rosterView::setData( const QModelIndex &index, const QVariant &value, int role ) {
@@ -290,6 +307,7 @@ void rosterView::sortRoster() {
 		group->sort(subgroups);
 		emit groupAdded(index(group->row(),0));
 	}
+	emit layoutChanged();
 }
 
 QStringList rosterView::groupNames() {
