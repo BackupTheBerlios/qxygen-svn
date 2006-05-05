@@ -31,11 +31,14 @@
 #include "tlen.h"
 #include "auth.h"
 #include "settings.h"
+#include "filetransfer.h"
+#include "fileincoming.h"
 
 tlen* Tlen=0;
 
 tlen::tlen( QObject* parent ): QObject( parent ) {
 	state = tlen::Disconnected;
+	sort=TRUE;
 	hostname = "s1.tlen.pl";
 	hostport = 443;
 
@@ -85,11 +88,10 @@ bool tlen::isConnected() {
 
 void tlen::socketReadyRead() {
 	stream+=socket->readAll();
-	stream.append("</s>");
-	stream.prepend("<s>");
-//	qDebug()<<"Read chunk:"<<stream;
+	stream.append("</xmlroot>");
+	stream.prepend("<xmlroot>");
 
-	if( tmpDoc->setContent(stream) || stream.startsWith("<s><s ") ) {
+	if( tmpDoc->setContent(stream) || stream.startsWith("<xmlroot><s ") ) {
 		qDebug()<<"Read:"<<tmpDoc->toString();
 
 		QDomDocument d;
@@ -104,18 +106,15 @@ void tlen::socketReadyRead() {
 		tmpDoc->clear();
 		stream.clear();
 	} else {
-		stream.replace("<s>", "");
-		stream.replace("</s>","");
+		stream.replace("<xmlroot>", "");
+		stream.replace("</xmlroot>","");
 	}
 }
 
 void tlen::socketConnected() {
 	state = tlen::Connecting;
-	socket->write(QString("<s v=\"7\" t=\"05170402\">").toUtf8());
+	socket->write( QByteArray("<s v=\"7\" t=\"05170402\">") );
 }
-
-
-bool sort=TRUE;
 
 void tlen::event(QDomNode n) {
 	QString nodeName=n.nodeName();
@@ -254,10 +253,15 @@ void tlen::event(QDomNode n) {
 		//receive <f n='%filename%' e='1' i='%rndid%' c='1' s='%filesize%' v='1' f='%sender%'/>
 		QDomElement e=n.toElement();
 		if(e.attribute("e")=="1") {
-			emit fileIncoming( n );
+			fileIncomingDialog *dlg=new fileIncomingDialog(n);
+			connect(dlg, SIGNAL(receive(QString,QString,bool)), this, SLOT(receiveFile(QString,QString,bool)));
+			dlg->show();
+		}
+		else if(e.attribute("e")=="5") {
 		}
 		else if(e.attribute("e")=="6") {
-			// <f a='ip' p='port' e='6' i='rndid' f='from'/>
+			fileTransferDialog *dlg=new fileTransferDialog(n,TRUE);
+			dlg->show();
 		}
 	}
 }

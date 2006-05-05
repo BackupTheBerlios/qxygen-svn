@@ -46,7 +46,8 @@ HEADERS=src/qxygen.h \
 	src/chat/chatwindow.h \
 	src/chat/chattextedit.h \
 	src/filetransfer/filetransfer.h \
-	src/filetransfer/fileincoming.h
+	src/filetransfer/fileincoming.h \
+	src/filetransfer/sha1.h
 
 SOURCES=src/main.cpp \
 	src/qxygen.cpp \
@@ -54,7 +55,6 @@ SOURCES=src/main.cpp \
 	src/settings/settings.cpp \
 	src/settings/profileform.cpp \
 	src/settings/settingsdialog.cpp \
-	src/settings/settingswidget.h \
 	src/roster/roster_view.cpp \
 	src/roster/roster_item.cpp \
 	src/roster/roster_delegate.cpp \
@@ -66,7 +66,8 @@ SOURCES=src/main.cpp \
 	src/chat/chatwindow.cpp \
 	src/chat/chattextedit.cpp \
 	src/filetransfer/filetransfer.cpp \
-	src/filetransfer/fileincoming.cpp
+	src/filetransfer/fileincoming.cpp \
+	src/filetransfer/sha1.cpp
 
 TRANSLATIONS =	translation/qxygen_pl.ts
 

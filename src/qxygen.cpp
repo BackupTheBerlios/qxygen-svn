@@ -42,7 +42,6 @@
 #include "settings.h"
 #include "profileform.h"
 #include "settingsdialog.h"
-#include "fileincoming.h"
 
 qxygen::qxygen( QWidget* parent): QMainWindow( parent ) {
 	setupTray();
@@ -187,7 +186,6 @@ void qxygen::setupProtocol() {
 	connect(Tlen, SIGNAL(removeItem(QString)), rosterModel, SLOT(removeItem(QString)));
 	connect(Tlen, SIGNAL(chatMsgReceived(QDomNode)), this, SLOT(chatMsgReceived(QDomNode)));
 	connect(Tlen, SIGNAL(chatNotify(QString,QString)), this, SLOT(chatNotify(QString,QString)));
-	connect(Tlen, SIGNAL(fileIncoming(QDomNode)), this, SLOT(fileIncoming(QDomNode)));
 }
 
 void qxygen::setupSettings() {
@@ -523,12 +521,7 @@ void qxygen::setDescrDialog() {
 	dlg->exec();
 }
 
-void qxygen::fileIncoming(QDomNode n) {
-	fileIncomingDialog *dlg=new fileIncomingDialog(n, this);
-	connect(dlg, SIGNAL(receive(QString,QString,bool)), Tlen, SLOT(receiveFile(QString,QString,bool)));
-	dlg->show();
-}
-
 void qxygen::showSettingsDialog() {
 	settingsDlg->exec();
 }
+

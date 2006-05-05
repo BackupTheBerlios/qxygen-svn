@@ -101,11 +101,10 @@ signals:
 	void statusUpdate();	// FOR TLEN TO WRITE STATUS
 	void eventReceived(QDomNode);
 
-	void fileIncoming(QDomNode);
-
 	void chatNotify(QString,QString);
 private:
 	bool tlenLogin();
+	bool sort;
 
 	QTimer *ping;
 

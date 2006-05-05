@@ -68,8 +68,6 @@ public slots:
 
 	void showSettingsDialog();
 
-	void fileIncoming(QDomNode);
-
 	void createProfile();
 	void addProfile(QString,QString,QString);
 	void updateProfilesMenu();

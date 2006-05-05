@@ -40,6 +40,7 @@ public:
 	void setDefaultValue(QString, QVariant);
 	QVariant profileValue(QString);
 	QVariant defaultValue(QString);
+	void removeProfileValue(QString);
 
 	void initModule();
 	void addProfile(QString,QString,QString);

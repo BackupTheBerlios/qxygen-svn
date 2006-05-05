@@ -100,3 +100,7 @@ QVariant settingsMenager::profileValue(QString key) {
 QVariant settingsMenager::defaultValue(QString key) {
 	return qxygen->value(key);
 }
+
+void settingsMenager::removeProfileValue(QString key) {
+	profile->remove(key);
+}

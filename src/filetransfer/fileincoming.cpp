@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include <QDomNode>
+#include <QFileDialog>
 #include <QDir>
 
 #include "fileincoming.h"
@@ -36,6 +37,8 @@ fileIncomingDialog::fileIncomingDialog(QDomNode fnode, QWidget *parent): QDialog
 	else
 		setWindowTitle( sender+"@tlen.pl "+tr("sends you file") );
 
+	setWindowIcon( QIcon(":logo.png") );
+
 	QString msg;
 	if( e.hasAttribute("n") )
 		msg+=tr("File name: %1 Size: %2kB Do you want to receive file?").arg( e.attribute("n") ).arg( QVariant( e.attribute("s") ).toInt()/1024 );
@@ -45,8 +48,6 @@ fileIncomingDialog::fileIncomingDialog(QDomNode fnode, QWidget *parent): QDialog
 	ui.label->setText(msg);
 
 	ui.dirLineEdit->setText( settings->profileValue("files/receivedir").toString() );
-	if( ui.dirLineEdit->text().isEmpty() )
-		ui.dirLineEdit->setText( QDir::homePath() );
 
 	connect(ui.ignorePushButton, SIGNAL(clicked()), this, SLOT(close()));
 	connect(ui.receivePushButton, SIGNAL(clicked()), this, SLOT(receiveF()));
@@ -55,6 +56,7 @@ fileIncomingDialog::fileIncomingDialog(QDomNode fnode, QWidget *parent): QDialog
 }
 
 void fileIncomingDialog::receiveF() {
+	settings->setProfileValue( QString("filetransfer/%1").arg(rndid), QVariant(ui.dirLineEdit->text()) );
 	emit receive(rndid, sender, TRUE);
 	close();
 }
@@ -65,4 +67,8 @@ void fileIncomingDialog::dontReceiveF() {
 }
 
 void fileIncomingDialog::changeDownloadDir() {
+	QString newDir = QFileDialog::getExistingDirectory(this, tr("Choose directory"), ui.dirLineEdit->text() );
+
+	if( !newDir.isEmpty() )
+		ui.dirLineEdit->setText(newDir);
 }

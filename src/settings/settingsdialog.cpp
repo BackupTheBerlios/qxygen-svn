@@ -25,6 +25,7 @@
 #include <QPushButton>
 #include <QScrollArea>
 #include <QNetworkProxy>
+#include <QDir>
 
 #include <QDebug>
 
@@ -169,6 +170,9 @@ void generalSettings::saveSettings() {
 }
 
 void generalSettings::loadSettings() {
+	if(	settings->profileValue("files/receivedir").toString().isEmpty() )
+		settings->setProfileValue("files/receivedir", QDir::homePath());
+
 	if( settings->profileValue("roster/showSubgroups").toBool() )
 		rosterModel->setSubgroups(TRUE);
 	else

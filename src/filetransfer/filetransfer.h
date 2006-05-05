@@ -21,19 +21,57 @@
 #ifndef FILETRANSFER_H
 #define FILETRANSFER_H
 
+#include <QAbstractSocket>
+
 #include "ui_filetransferdialog.h"
+
+class QTcpSocket;
+class QTcpServer;
+class QDomNode;
+class QFile;
 
 class fileTransferDialog: public QDialog
 {
 Q_OBJECT
 
 public:
-	fileTransferDialog(QWidget *parent=0, bool receiveMode=FALSE);
+	enum PacketType {
+		ConnectionRequest = 0x01,
+		ConnectionRequestAck = 0x02,
+		FileList = 0x32,
+		FileListAck = 0x33,
+		FileRequest = 0x34,
+		FileData = 0x35,
+		EndOfFile = 0x37,
+		TransferAbort = 0x39
+	};
+	fileTransferDialog(QDomNode, bool receiveMode=FALSE, QWidget *parent=0);
+
+private slots:
+	void estabilishFileTransfering();
+	void estabilishFileReceiving();
+	void disconnected();
+	void newConnection();
+	void error(QAbstractSocket::SocketError);
+	void readyRead();
 
 private:
+	void parseFileList( const QByteArray& );
+	void parseWriteData( const QByteArray& );
+	void parseEndOfFile();
+	void requestFile();
+	void updateTransferData(quint32);
+
+	quint32 fc,fs, allSize, currentFile, streamSize;
+	QFile *current;
+	QByteArray stream,streamHeader;
+	int rndid;
 	Ui::downloadDialog ui;
 	QPushButton *addFile, *clearList, *send, *abort, *goToFiles;
 	QHBoxLayout *buttonLay;
 	QLabel *statusLabel;
+	QTcpSocket *socket;
+	QTcpServer *server;
+	QMap<int, QTreeWidgetItem*> fileMap;
 };
 #endif
