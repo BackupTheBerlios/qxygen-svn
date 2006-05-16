@@ -157,7 +157,7 @@ void rosterView::addGroup( QString name,bool sort ) {
 		return;
 
 	if(name.isEmpty())
-		name=tr("General");
+		name=tr("Contacts");
 
 	rosterItem *group=new rosterItem(name, name, rosterItem::Group, rootItem);
 

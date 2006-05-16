@@ -22,6 +22,7 @@
 #define FILETRANSFER_H
 
 #include <QAbstractSocket>
+#include <QThread>
 
 #include "ui_filetransferdialog.h"
 
@@ -30,7 +31,7 @@ class QTcpServer;
 class QDomNode;
 class QFile;
 
-class fileTransferDialog: public QDialog
+class fileTransferThread: public QThread
 {
 Q_OBJECT
 
@@ -45,33 +46,85 @@ public:
 		EndOfFile = 0x37,
 		TransferAbort = 0x39
 	};
-	fileTransferDialog(QDomNode, bool receiveMode=FALSE, QWidget *parent=0);
+
+	fileTransferThread(QString,int,QString,quint16,bool,QObject *parent=0);
+	~fileTransferThread();
+	void run();
+	int id(){return rndid;}
+	void transferingAccepted();
+
+public slots:
+	void resetFilesData();
+	void addFilesToSend();
+	void send();
 
 private slots:
-	void estabilishFileTransfering();
-	void estabilishFileReceiving();
+	void readyRead();
+	void error(QAbstractSocket::SocketError);
 	void disconnected();
 	void newConnection();
-	void error(QAbstractSocket::SocketError);
-	void readyRead();
+	void estabilishFileReceiving();
+	void estabilishFileTransfering( const QByteArray& );
+
+signals:
+	void updateTransferData(quint32);
+	void addListItem(QTreeWidgetItem*);
+	void updateFilesData(quint32, quint32);
+	void prepareTransfering();
 
 private:
 	void parseFileList( const QByteArray& );
 	void parseWriteData( const QByteArray& );
 	void parseEndOfFile();
 	void requestFile();
-	void updateTransferData(quint32);
+	void sendFileList();
 
-	quint32 fc,fs, allSize, currentFile, streamSize;
+	QTcpSocket *socket;
+	QTcpServer *server;
 	QFile *current;
-	QByteArray stream,streamHeader;
+	QByteArray	stream,
+			streamHeader;
+
 	int rndid;
+	quint16 port;
+
+	QString	host,
+		owner;
+
+	quint32	fc,
+		fs,
+		allSize,
+		currentFile,
+		streamSize;
+
+	QList<QTreeWidgetItem*> fileMap;
+};
+
+class fileTransferDialog: public QDialog
+{
+Q_OBJECT
+
+public:
+	fileTransferDialog(int id, QString f, QString host=QString(), quint16 port=0, bool receiveMode=FALSE, QWidget *parent=0);
+	int id(){return thread->id();}
+	~fileTransferDialog();
+
+	void transferingAccepted();
+
+public slots:
+	void updateTransferData(quint32);
+	void addListItem(QTreeWidgetItem*);
+	void updateFilesData(quint32, quint32);
+	void prepareTransfering();
+
+private slots:
+	void resetDialog();
+
+private:
 	Ui::downloadDialog ui;
 	QPushButton *addFile, *clearList, *send, *abort, *goToFiles;
 	QHBoxLayout *buttonLay;
 	QLabel *statusLabel;
-	QTcpSocket *socket;
-	QTcpServer *server;
-	QMap<int, QTreeWidgetItem*> fileMap;
+	fileTransferThread *thread;
 };
 #endif

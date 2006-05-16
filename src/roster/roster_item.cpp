@@ -180,7 +180,7 @@ void rosterItem::sort( bool subgroups ) {
 
 		if(!parent()) {
 			int f=-1;
-			if(rosterItem *general=child(tr("General")))
+			if(rosterItem *general=child(tr("Contacts")))
 				f=general->row();
 			if(f!=-1 && f!=0)
 				moveItem(f,0);

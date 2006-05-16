@@ -74,6 +74,10 @@ public:
 	void loadSettings();
 	void cancelSettings();
 	QListWidgetItem *settingsTab(){return item;}
+
+public slots:
+	void testPort();
+
 private:
 	QListWidgetItem *item;
 	Ui::networkSWidget ui;

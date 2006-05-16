@@ -23,10 +23,12 @@
 
 #include <QObject>
 #include <QDomNode>
+#include <QMap>
 
 class QTcpSocket;
 class QDomDocument;
 class QTimer;
+class fileTransferDialog;
 
 class tlen: public QObject
 {
@@ -60,6 +62,10 @@ public:
 	QString decode(const QString&);
 	QByteArray encode(const QString&);
 
+	QString localAddress();
+
+	QMap<QString, fileTransferDialog*> fTransferMap;
+
 public slots:
 	void openConn();
 	void closeConn();
@@ -71,13 +77,13 @@ public slots:
 	void setStatusDescr(QString,QString);
 	void addItem(QString jid, QString name, QString group, bool subscribe);
 	void receiveFile(QString,QString,bool);
+	bool write(const QDomDocument &d);
 
 private slots:
 	void writeStatus();
 	void socketConnected();
 	void socketReadyRead();
 	void socketDisconnected();
-	bool write(const QDomDocument &d);
 	void authorize(QString, bool);
 
 	void event(QDomNode n);

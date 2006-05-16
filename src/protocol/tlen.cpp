@@ -28,6 +28,8 @@
 #include <QXmlSimpleReader>
 #include <QDebug>
 
+#include <QHostAddress>
+
 #include "tlen.h"
 #include "auth.h"
 #include "settings.h"
@@ -60,6 +62,7 @@ tlen::tlen( QObject* parent ): QObject( parent ) {
 	connect(this, SIGNAL(eventReceived(QDomNode)), this, SLOT(event(QDomNode)));
 
 	connect(ping, SIGNAL(timeout()), this, SLOT(sendPing()));
+	srand(time(NULL));
 }
 
 void tlen::openConn() {
@@ -109,6 +112,13 @@ void tlen::socketReadyRead() {
 		stream.replace("<xmlroot>", "");
 		stream.replace("</xmlroot>","");
 	}
+}
+
+QString tlen::localAddress() {
+	if( socket->isOpen() )
+		return socket->localAddress().toString();
+
+	return QString();
 }
 
 void tlen::socketConnected() {
@@ -192,7 +202,7 @@ void tlen::event(QDomNode n) {
 		}
 
 		if(group.isEmpty())
-			group=tr("General");
+			group=tr("Contacts");
 
 		group=decode(group.toUtf8());
 		name=decode(name.toUtf8());
@@ -247,10 +257,6 @@ void tlen::event(QDomNode n) {
 		//<n f='Rainer+Wiesenfarth+%3CRainer.Wiesenfarth@inpho.de%3E' s='Re%3A+qt+and+mysql,+odbc'/> - new mail
 	}
 	else if(nodeName=="f") {
-		//WHERE TO GET FILE
-		// <f a='83.6.94.2' p='443' e='6' i='120776000' f='sowerek'/> - a: ip; p:port; e:? ? ?; i: id; f:from
-
-		//receive <f n='%filename%' e='1' i='%rndid%' c='1' s='%filesize%' v='1' f='%sender%'/>
 		QDomElement e=n.toElement();
 		if(e.attribute("e")=="1") {
 			fileIncomingDialog *dlg=new fileIncomingDialog(n);
@@ -258,9 +264,11 @@ void tlen::event(QDomNode n) {
 			dlg->show();
 		}
 		else if(e.attribute("e")=="5") {
+			fTransferMap.value( QString("%1-%2").arg( e.attribute("f") ).arg( e.attribute("i") ) )->transferingAccepted();
 		}
 		else if(e.attribute("e")=="6") {
-			fileTransferDialog *dlg=new fileTransferDialog(n,TRUE);
+			fileTransferDialog *dlg=new fileTransferDialog( e.attribute("i").toInt(), e.attribute("f"), e.attribute("a"), (quint16)e.attribute("p").toInt(), TRUE);
+			fTransferMap.insert(QString("%1-%2").arg( e.attribute("f") ).arg( e.attribute("i") ), dlg);
 			dlg->show();
 		}
 	}

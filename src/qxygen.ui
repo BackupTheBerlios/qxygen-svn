@@ -38,10 +38,10 @@
   <widget class="QWidget" name="centralwidget" >
    <layout class="QGridLayout" >
     <property name="margin" >
-     <number>9</number>
+     <number>2</number>
     </property>
     <property name="spacing" >
-     <number>6</number>
+     <number>2</number>
     </property>
     <item row="1" column="0" >
      <widget class="QPushButton" name="menuButton" >

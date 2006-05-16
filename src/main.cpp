@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include <QCoreApplication>
+#include <QTranslator>
 
 #include "qxygen.h"
 

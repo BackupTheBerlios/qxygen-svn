@@ -42,6 +42,7 @@
 #include "settings.h"
 #include "profileform.h"
 #include "settingsdialog.h"
+#include "filetransfer.h"
 
 qxygen::qxygen( QWidget* parent): QMainWindow( parent ) {
 	setupTray();
@@ -50,6 +51,9 @@ qxygen::qxygen( QWidget* parent): QMainWindow( parent ) {
 	setupProtocol();
 	setupMenus();
 	setupSettings();
+
+	descrDlg=new descrDialog(Tlen->strStatus(), this);
+	connect(descrDlg, SIGNAL(statusChanged(QString, QString)), Tlen, SLOT(setStatusDescr(QString, QString)));
 }
 
 qxygen::~qxygen() {
@@ -61,6 +65,8 @@ qxygen::~qxygen() {
 		delete rosterModel;
 	if(mTray)
 		delete mTray;
+	if(descrDlg)
+		delete descrDlg;
 }
 
 void qxygen::setupTray() {
@@ -129,8 +135,11 @@ void qxygen::setupMenus() {
 	connect(add,SIGNAL(triggered()),this,SLOT(addUser()));
 	remove=new QAction(QIcon(":remove.png"), tr("Remove contact"), this);
 	connect(remove, SIGNAL(triggered()), this, SLOT(parseRemove()));
+	sendFile=new QAction(tr("Send file"), this);
+	connect( sendFile, SIGNAL( triggered() ), this, SLOT( fileSendDialog() ) );
 	settingsDialogA = new QAction(tr("Settings"), this);
 	connect(settingsDialogA, SIGNAL(triggered()), this, SLOT(showSettingsDialog()));
+	rosterMenu->addAction(sendFile);
 	rosterMenu->addAction(remove);
 	mTrayMenu->addAction(online);
 	mTrayMenu->addAction(chatty);
@@ -516,12 +525,25 @@ void qxygen::chatNotify(QString to, QString type) {
 }
 
 void qxygen::setDescrDialog() {
-	descrDialog *dlg=new descrDialog(Tlen->strStatus(), this);
-	connect(dlg, SIGNAL(statusChanged(QString, QString)), Tlen, SLOT(setStatusDescr(QString, QString)));
-	dlg->exec();
+	descrDlg->exec();
 }
 
 void qxygen::showSettingsDialog() {
 	settingsDlg->exec();
 }
 
+void qxygen::fileSendDialog() {
+	QModelIndex idx=ui.rosterView->currentIndex();
+
+	if(idx.isValid()) {
+		QString jid = idx.model()->data(idx, rosterView::JidRole).toString();
+		jid.remove("@tlen.pl");
+		int id=rand();
+		while( Tlen->fTransferMap.contains( QString("%1-%2").arg(jid).arg(id) ) )
+			++id;
+
+		fileTransferDialog *dlg = new fileTransferDialog( id, jid );
+		Tlen->fTransferMap.insert( QString("%1-%2").arg(jid).arg(id), dlg );
+		dlg->show();
+	}
+}

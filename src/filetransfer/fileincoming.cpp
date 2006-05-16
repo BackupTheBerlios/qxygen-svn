@@ -26,6 +26,8 @@
 #include "settings.h"
 
 fileIncomingDialog::fileIncomingDialog(QDomNode fnode, QWidget *parent): QDialog(parent) {
+	setAttribute(Qt::WA_DeleteOnClose);
+	setWindowFlags(Qt::Window);
 	ui.setupUi(this);
 	QDomElement e=fnode.toElement();
 

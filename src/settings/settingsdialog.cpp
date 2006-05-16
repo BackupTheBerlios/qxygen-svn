@@ -26,6 +26,8 @@
 #include <QScrollArea>
 #include <QNetworkProxy>
 #include <QDir>
+#include <QMessageBox>
+#include <QTcpServer>
 
 #include <QDebug>
 
@@ -111,12 +113,17 @@ void settingsDialog::cancelSettings() {
 }
 
 networkSettings::networkSettings(QWidget *parent): settingsWidget(parent) {
+	if(	settings->profileValue("files/receivedir").toString().isEmpty() )
+		settings->setProfileValue("files/receivedir", QDir::homePath());
+
 	ui.setupUi(this);
 	cancelSettings();
 	item=new QListWidgetItem( QIcon(":network.png"), tr("Network") );
 	QVariant V;
 	V.setValue<QWidget*>( this );
 	item->setData( widgetRole, V );
+
+	connect( ui.testPortPushButton, SIGNAL( clicked() ), this, SLOT( testPort() ) );
 }
 
 void networkSettings::saveSettings() {
@@ -125,7 +132,9 @@ void networkSettings::saveSettings() {
 	settings->setProfileValue( "network/proxy/port", ui.portLineEdit->text() );
 	settings->setProfileValue( "network/proxy/username", ui.userLineEdit->text() );
 	settings->setProfileValue( "network/proxy/password", ui.passLineEdit->text() );
-
+	settings->setProfileValue( "network/filetransfer/port", ui.sendPortSpinBox->value() );
+	settings->setProfileValue( "files/receivedir", ui.downloadDirLineEdit->text() );
+	settings->setProfileValue( "network/filetransfer/closeafterfinish", QVariant( ui.closeDialogCheckBox->isChecked() ) );
 	loadSettings();
 }
 
@@ -147,10 +156,27 @@ void networkSettings::cancelSettings() {
 		ui.useProxyCheckBox->setChecked(TRUE);
 		ui.groupBox->setEnabled(TRUE);
 	}
+
+	if( settings->profileValue("network/filetransfer/closeafterfinish").toBool() )
+		ui.closeDialogCheckBox->setChecked(TRUE);
+
 	ui.hostLineEdit->setText( settings->profileValue("network/proxy/host").toString() );
 	ui.portLineEdit->setText( settings->profileValue("network/proxy/port").toString() );
 	ui.userLineEdit->setText( settings->profileValue("network/proxy/username").toString() );
 	ui.passLineEdit->setText( settings->profileValue("network/proxy/password").toString() );
+	ui.downloadDirLineEdit->setText( settings->profileValue("files/receivedir").toString() );
+	ui.sendPortSpinBox->setValue( settings->profileValue("network/filetransfer/port").toInt() );
+}
+
+void networkSettings::testPort() {
+	QTcpServer *server = new QTcpServer(this);
+
+	if( server->listen(QHostAddress::Any, (quint16)ui.sendPortSpinBox->value() ) )
+		QMessageBox::information( static_cast<QWidget*>(this), tr("Port testing"), tr("Server can listen at port %1.").arg(ui.sendPortSpinBox->value()), 1);
+	else
+		QMessageBox::critical( static_cast<QWidget*>(this), tr("Port testing"), tr("Server couldn't listen at port %1. Please change port.").arg(ui.sendPortSpinBox->value()), 1, 0);
+
+	delete server;
 }
 
 generalSettings::generalSettings(QWidget *parent): settingsWidget(parent) {
@@ -170,9 +196,6 @@ void generalSettings::saveSettings() {
 }
 
 void generalSettings::loadSettings() {
-	if(	settings->profileValue("files/receivedir").toString().isEmpty() )
-		settings->setProfileValue("files/receivedir", QDir::homePath());
-
 	if( settings->profileValue("roster/showSubgroups").toBool() )
 		rosterModel->setSubgroups(TRUE);
 	else

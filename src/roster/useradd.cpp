@@ -23,6 +23,7 @@
 #include "useradd.h"
 
 useradd::useradd(QStringList sl,QWidget *parent): QDialog(parent) {
+	setAttribute(Qt::WA_DeleteOnClose);
 	ui.setupUi(this);
 	sl.prepend("");
 	ui.groupLine->addItems(sl);

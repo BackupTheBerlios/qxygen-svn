@@ -24,6 +24,7 @@
 #include "settings.h"
 
 profileForm::profileForm( QWidget *parent): QDialog( parent ) {
+	setAttribute(Qt::WA_DeleteOnClose);
 	ui.setupUi(this);
 
 	ui.passwordLineEdit->setEchoMode(QLineEdit::Password);

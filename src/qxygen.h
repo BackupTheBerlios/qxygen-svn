@@ -30,7 +30,7 @@ class QMenu;
 class TrayIcon;
 class rosterView;
 class rosterDelegate;
-//class tlen;
+class descrDialog;
 class QTextEdit;
 class chatWindow;
 class settingsMenager;
@@ -73,6 +73,8 @@ public slots:
 	void updateProfilesMenu();
 	void loadProfile();
 	void choseProfile(QAction*);
+	void fileSendDialog();
+
 signals:
 	void authorize(QString, bool);
 	void windowOpened(QString);
@@ -91,7 +93,9 @@ protected:
 
 private:
 	QTextEdit *mailEdit;
-//	tlen *Tlen;
+
+	descrDialog *descrDlg;
+
 	QMap<QString /*jid*/, chatWindow*> chatMap;
 	QMap<QString /*jid*/, QStringList /*msg queue*/> msgMap;
 
@@ -114,6 +118,7 @@ private:
 		*withDescr,
 		*add,
 		*remove,
+		*sendFile,
 		*createProfileAction,
 		*settingsDialogA;
 

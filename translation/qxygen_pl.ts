@@ -74,6 +74,14 @@
         <source>Send</source>
         <translation>Wyślij</translation>
     </message>
+    <message>
+        <source>Connection error</source>
+        <translation>Błąd połączenia</translation>
+    </message>
+    <message>
+        <source>You can&apos;t send message. You&apos;re not connected. Connect to server first.</source>
+        <translation>Nie możesz wysłać wiadomości. Połącz sie najpierw z serwerem.</translation>
+    </message>
 </context>
 <context>
     <name>descrDialog</name>
@@ -122,6 +130,48 @@
     </message>
 </context>
 <context>
+    <name>fileIncoming</name>
+    <message>
+        <source>Receive</source>
+        <translation>Odbierz</translation>
+    </message>
+    <message>
+        <source>Don&apos;t receive</source>
+        <translation>Nie odbieraj</translation>
+    </message>
+    <message>
+        <source>Ignore</source>
+        <translation>Ignoruj</translation>
+    </message>
+    <message>
+        <source>Change download directory</source>
+        <translation>Zmień katalog docelowy</translation>
+    </message>
+</context>
+<context>
+    <name>fileIncomingDialog</name>
+    <message>
+        <source>sends you files</source>
+        <translation>wysyła ci pliki</translation>
+    </message>
+    <message>
+        <source>sends you file</source>
+        <translation>wysyła ci plik</translation>
+    </message>
+    <message>
+        <source>File name: %1 Size: %2kB Do you want to receive file?</source>
+        <translation>Nazwa pliku: %1 Rozmiar: %2kB Czy chcesz odebrać plik?</translation>
+    </message>
+    <message>
+        <source>File count: %1 Size: %2kB Do you want to receive files?</source>
+        <translation>Liczba plików: %1 Rozmiar: %2kB Czy chcesz odebrać pliki?</translation>
+    </message>
+    <message>
+        <source>Choose directory</source>
+        <translation>Wybierz folder</translation>
+    </message>
+</context>
+<context>
     <name>fileTransferDialog</name>
     <message>
         <source>Abort</source>
@@ -138,6 +188,95 @@
     <message>
         <source>Send</source>
         <translation>Wyślij</translation>
+    </message>
+    <message>
+        <source>Filename</source>
+        <translation>Nazwa pliku</translation>
+    </message>
+    <message>
+        <source>Speed</source>
+        <translation>Prędkość</translation>
+    </message>
+    <message>
+        <source>Elapsed</source>
+        <translation>Pozostało</translation>
+    </message>
+    <message>
+        <source>Estimated</source>
+        <translation>Upłynęło</translation>
+    </message>
+    <message>
+        <source>Progress</source>
+        <translation>Postęp</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation>Rozmiar</translation>
+    </message>
+    <message>
+        <source>Path</source>
+        <translation>Scieżka</translation>
+    </message>
+    <message>
+        <source>Sending files to %1</source>
+        <translation>Wysyłanie plików do %1</translation>
+    </message>
+    <message>
+        <source>File count: 0</source>
+        <translation>Liczba plików: 0</translation>
+    </message>
+    <message>
+        <source>Files remained: 0 (0 kB)</source>
+        <translation>Pozostało plików: 0 (0 kB)</translation>
+    </message>
+    <message>
+        <source>Files size: 0 kB</source>
+        <translation>Rozmiar plików: 0 kB</translation>
+    </message>
+    <message>
+        <source>File count: %1</source>
+        <translation>Liczba plików: %1</translation>
+    </message>
+    <message>
+        <source>Files remained: %1 (%2 kB)</source>
+        <translation>Pozostało plików: %1 (%2 kB)</translation>
+    </message>
+    <message>
+        <source>Files size: %1 kB</source>
+        <translation>Rozmiar plików: %1 kB</translation>
+    </message>
+</context>
+<context>
+    <name>fileTransferThread</name>
+    <message>
+        <source>Choose files to send</source>
+        <translation>Wybierz pliki do wysłania</translation>
+    </message>
+</context>
+<context>
+    <name>generalSWidget</name>
+    <message>
+        <source>Roster</source>
+        <translation>Lista</translation>
+    </message>
+    <message>
+        <source>Show description in roster</source>
+        <translation>Pokazuj opis na liście</translation>
+    </message>
+    <message>
+        <source>Show subgroups</source>
+        <translation>Pokazuj subgrupy</translation>
+    </message>
+    <message>
+        <source>Show groups</source>
+        <translation>Pokazuj grupy</translation>
+    </message>
+</context>
+<context>
+    <name>generalSettings</name>
+    <message>
+        <source>General</source>
+        <translation>Ogólne</translation>
     </message>
 </context>
 <context>
@@ -165,6 +304,45 @@
     <message>
         <source>Password:</source>
         <translation>Hasło:</translation>
+    </message>
+    <message>
+        <source>File transfer</source>
+        <translation>Transfer plików</translation>
+    </message>
+    <message>
+        <source>Close file transfer dialog after finish</source>
+        <translation>Zamknij okno transferu plików po zakończeniu pobierania/wysyłania</translation>
+    </message>
+    <message>
+        <source>Automatic file receiving</source>
+        <translation>Automatyczne odbieranie plików</translation>
+    </message>
+    <message>
+        <source>Receive files from people on your list</source>
+        <translation>Odbieraj pliki od osób na liście</translation>
+    </message>
+    <message>
+        <source>Always ask for permission</source>
+        <translation>Zawszy pytaj o pozwolenie</translation>
+    </message>
+    <message>
+        <source>Default download directory:</source>
+        <translation>Domyślny katalog pobierania:</translation>
+    </message>
+    <message>
+        <source>Sending port:</source>
+        <translation>Port wysyłania:</translation>
+    </message>
+    <message>
+        <source>Test port</source>
+        <translation>Testuj port</translation>
+    </message>
+</context>
+<context>
+    <name>networkSettings</name>
+    <message>
+        <source>Network</source>
+        <translation>Sieć</translation>
     </message>
 </context>
 <context>
@@ -291,12 +469,16 @@
         <source>Settings</source>
         <translation>Ustawienia</translation>
     </message>
+    <message>
+        <source>Send file</source>
+        <translation>Wyślij plik</translation>
+    </message>
 </context>
 <context>
     <name>rosterItem</name>
     <message>
         <source>General</source>
-        <translation>Ogólne</translation>
+        <translation type="obsolete">Ogólne</translation>
     </message>
     <message>
         <source>No authorization</source>
@@ -313,6 +495,10 @@
     <message>
         <source>Currently available</source>
         <translation>Obecnie w sieci</translation>
+    </message>
+    <message>
+        <source>Contacts</source>
+        <translation>Kontakty</translation>
     </message>
 </context>
 <context>
@@ -358,7 +544,11 @@
     </message>
     <message>
         <source>General</source>
-        <translation>Ogólne</translation>
+        <translation type="obsolete">Ogólne</translation>
+    </message>
+    <message>
+        <source>Contacts</source>
+        <translation>Kontakty</translation>
     </message>
 </context>
 <context>
@@ -381,14 +571,18 @@
     </message>
     <message>
         <source>Network</source>
-        <translation>Sieć</translation>
+        <translation type="obsolete">Sieć</translation>
     </message>
 </context>
 <context>
     <name>tlen</name>
     <message>
         <source>General</source>
-        <translation>Ogólne</translation>
+        <translation type="obsolete">Ogólne</translation>
+    </message>
+    <message>
+        <source>Contacts</source>
+        <translation>Kontakty</translation>
     </message>
 </context>
 <context>
