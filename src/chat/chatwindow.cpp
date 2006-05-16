@@ -109,6 +109,7 @@ chatWindow::chatWindow( QString label, QString jid, QWidget *parent ): QDialog( 
 
 	move(settings->profileValue("chat/position").value<QPoint>());
 	resize(settings->profileValue("chat/size").value<QSize>());
+	setWindowFlags(Qt::Window);
 }
 
 void chatWindow::checkSend() {
