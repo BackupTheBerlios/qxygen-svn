@@ -51,9 +51,6 @@ qxygen::qxygen( QWidget* parent): QMainWindow( parent ) {
 	setupProtocol();
 	setupMenus();
 	setupSettings();
-
-	descrDlg=new descrDialog(Tlen->strStatus(), this);
-	connect(descrDlg, SIGNAL(statusChanged(QString, QString)), Tlen, SLOT(setStatusDescr(QString, QString)));
 }
 
 qxygen::~qxygen() {
@@ -497,6 +494,9 @@ void qxygen::loadProfile() {
 	
 	chatMap.clear();
 	msgMap.clear();
+
+	descrDlg=new descrDialog(Tlen->strStatus(), this);
+	connect(descrDlg, SIGNAL(statusChanged(QString, QString)), Tlen, SLOT(setStatusDescr(QString, QString)));
 }
 
 void qxygen::choseProfile ( QAction* a ) {
