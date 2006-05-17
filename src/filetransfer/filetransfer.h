@@ -30,6 +30,7 @@ class QTcpSocket;
 class QTcpServer;
 class QDomNode;
 class QFile;
+class QTimer;
 
 class fileTransferThread: public QThread
 {
@@ -52,6 +53,7 @@ public:
 	void run();
 	int id(){return rndid;}
 	void transferingAccepted();
+	void switchToSocketMode(QString, quint16);
 
 public slots:
 	void resetFilesData();
@@ -63,14 +65,19 @@ private slots:
 	void error(QAbstractSocket::SocketError);
 	void disconnected();
 	void newConnection();
+	void serverModeNewConnection();
 	void estabilishFileReceiving();
 	void estabilishFileTransfering( const QByteArray& );
+	void sendFileChunk( const QByteArray& );
+	void sendFileClose();
+	void timeUpdate();
 
 signals:
-	void updateTransferData(quint32);
+	void updateTransferData(quint32,quint32,quint32,quint32,quint32,quint32,QTreeWidgetItem*);
 	void addListItem(QTreeWidgetItem*);
 	void updateFilesData(quint32, quint32);
 	void prepareTransfering();
+	void readyToFileSend( const QByteArray& );
 
 private:
 	void parseFileList( const QByteArray& );
@@ -78,6 +85,8 @@ private:
 	void parseEndOfFile();
 	void requestFile();
 	void sendFileList();
+	void sendFile( const QByteArray& );
+	void switchToServerMode();
 
 	QTcpSocket *socket;
 	QTcpServer *server;
@@ -91,13 +100,21 @@ private:
 	QString	host,
 		owner;
 
-	quint32	fc,
-		fs,
-		allSize,
-		currentFile,
-		streamSize;
+	quint32	streamSize;
+
+	QTimer *t;
 
 	QList<QTreeWidgetItem*> fileMap;
+
+	quint32	fc,
+		fs,
+		filesParsed,
+		cfTime,
+		allTime,
+		currentFile,
+		cfParsed,
+		parsedSize,
+		allSize;
 };
 
 class fileTransferDialog: public QDialog
@@ -109,15 +126,15 @@ public:
 	int id(){return thread->id();}
 	~fileTransferDialog();
 
-	void transferingAccepted();
+	fileTransferThread *fileThread() { return thread;}
 
 public slots:
-	void updateTransferData(quint32);
 	void addListItem(QTreeWidgetItem*);
 	void updateFilesData(quint32, quint32);
 	void prepareTransfering();
 
 private slots:
+	void updateTransferData(quint32 fc, quint32 filesParsed, quint32 allSize, quint32 parsedSize, quint32 allTime, quint32 cfTime, QTreeWidgetItem *it);
 	void resetDialog();
 
 private:
@@ -126,5 +143,6 @@ private:
 	QHBoxLayout *buttonLay;
 	QLabel *statusLabel;
 	fileTransferThread *thread;
+	quint32 eta, avSpeed;
 };
 #endif

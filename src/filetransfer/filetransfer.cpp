@@ -27,6 +27,7 @@
 #include <QStringList>
 #include <QFileDialog>
 #include <QHostInfo>
+#include <QTimer>
 
 #include <QDebug>
 
@@ -58,6 +59,7 @@ fileTransferDialog::fileTransferDialog(int i, QString f, QString host, quint16 p
 	buttonLay->addWidget(statusLabel);
 	buttonLay->addStretch();
 	abort = new QPushButton(tr("Abort"));
+	send = new QPushButton(tr("Send"));
 
 	QStringList labelList;
 	labelList<<tr("Filename")<<tr("Speed")<<tr("Elapsed")<<tr("Estimated")<<tr("Progress")<<tr("Size")<<tr("Path")<<"RealSize";
@@ -70,13 +72,13 @@ fileTransferDialog::fileTransferDialog(int i, QString f, QString host, quint16 p
 	connect( thread, SIGNAL( addListItem( QTreeWidgetItem* ) ), this, SLOT( addListItem( QTreeWidgetItem* ) ) );
 	connect( thread, SIGNAL( updateFilesData(quint32, quint32) ), this, SLOT( updateFilesData(quint32, quint32) ) );
 	connect( thread, SIGNAL( prepareTransfering() ), this, SLOT( prepareTransfering() ) );
+	connect( thread, SIGNAL( updateTransferData(quint32,quint32,quint32,quint32,quint32,quint32,QTreeWidgetItem*) ), this, SLOT( updateTransferData(quint32,quint32,quint32,quint32,quint32,quint32,QTreeWidgetItem*) ) );
 
 	if(!receiveMode) {
 		addFile = new QPushButton(tr("Add file to send"));
 		connect( addFile, SIGNAL( clicked() ), thread, SLOT( addFilesToSend() ) );
 		clearList = new QPushButton(tr("Clear list"));
 		connect( clearList, SIGNAL( clicked() ), this, SLOT( resetDialog() ) );
-		send = new QPushButton(tr("Send"));
 		send->setEnabled(FALSE);
 		connect( send, SIGNAL( clicked() ), thread, SLOT( send() ) );
 		buttonLay->addWidget(addFile);
@@ -106,7 +108,17 @@ void fileTransferDialog::resetDialog() {
 	send->setEnabled(FALSE);
 }
 
-void fileTransferDialog::updateTransferData(quint32 /*size*/) {
+void fileTransferDialog::updateTransferData(quint32 fc, quint32 filesParsed, quint32 allSize, quint32 parsedSize, quint32 allTime, quint32 cfTime, QTreeWidgetItem *it) {
+	ui.filesRemainedLabel->setText( tr("Files remained: %1 (%2 kB)").arg(fc-filesParsed).arg( (allSize-parsedSize)/1024 ) );
+	if(allTime) {
+		avSpeed = (parsedSize/allTime)/1024;
+		ui.avarageSpeedLabel->setText( tr("Avarage speed: %1 kB/s").arg( avSpeed ) );
+		eta = (allSize-parsedSize)/(avSpeed*1024);
+		ui.etaLabel->setText( tr("Estimated time of arrival: %1:%2:%3").arg(eta/3600).arg( (eta%3600)/60 ).arg(eta%60) );
+	}
+
+	ui.elapsedTimeLabel->setText( tr("Elapsed time: %1:%2:%3").arg(allTime/3600).arg((allTime%3600)/60).arg(allTime%60) );
+	it->setText(2, QString("%1:%2:%3").arg( cfTime/3600 ).arg( (cfTime%3600)/60 ).arg( cfTime%60 ) );
 }
 
 void fileTransferDialog::updateFilesData(quint32 fc, quint32 allSize) {
@@ -124,10 +136,6 @@ void fileTransferDialog::prepareTransfering() {
 	send->setEnabled(FALSE);
 	clearList->setEnabled(FALSE);
 	addFile->setEnabled(FALSE);
-}
-
-void fileTransferDialog::transferingAccepted() {
-	thread->transferingAccepted();
 }
 
 void fileTransferThread::transferingAccepted() {
@@ -170,15 +178,27 @@ fileTransferThread::fileTransferThread(QString f,int i,QString h,quint16 p,bool 
 	} else {
 		server = new QTcpServer(this);
 		connect( server, SIGNAL( newConnection() ), this, SLOT( newConnection() ) );
+		connect( this, SIGNAL( readyToFileSend( const QByteArray& ) ), this, SLOT( sendFileChunk( const QByteArray& ) ) );
 	}
+
+	t=new QTimer(this);
+	connect(t, SIGNAL( timeout() ), this, SLOT( timeUpdate() ) );
 
 	currentFile=1;
 	allSize=0;
+	allTime=0;
 	fc=0;
 }
 
+void fileTransferThread::timeUpdate() {
+	allTime++;
+	cfTime++;
+
+	emit updateTransferData(fc, filesParsed, allSize, parsedSize, allTime, cfTime, fileMap.at(currentFile));
+}
+
 void fileTransferThread::addFilesToSend() {
-	QStringList flist = QFileDialog::getOpenFileNames( static_cast<QWidget*>(parent()), tr("Choose files to send") );
+	QStringList flist = QFileDialog::getOpenFileNames( static_cast<QWidget*>(parent()), tr("Choose files to send"), QDir::homePath() );
 
 	if( flist.count() ) {
 		QStringListIterator it(flist);
@@ -226,6 +246,7 @@ void fileTransferThread::readyRead() {
 			qDebug()<<"FileListAck";
 		} else if( streamHeader.at(0) == FileRequest) {
 			qDebug()<<"FileRequest";
+			sendFile( stream );
 		} else if( streamHeader.at(0) == FileData) {
 			qDebug()<<"FileData";
 			parseWriteData( stream );
@@ -237,14 +258,55 @@ void fileTransferThread::readyRead() {
 		} else {
 			qDebug()<<"Unknown type";
 		}
-		hexdump( (unsigned char*)stream.data(), streamSize );
 		stream.clear();
 		streamHeader.clear();
 	}
 }
 
 void fileTransferThread::error(QAbstractSocket::SocketError e) {
-	qDebug()<<"Error: "<<e;
+	switch(e) {
+	case QAbstractSocket::HostNotFoundError:
+	case QAbstractSocket::ConnectionRefusedError:
+		switchToServerMode();
+
+	default:
+		qDebug()<<"Error: "<<e;
+	}
+}
+
+void fileTransferThread::switchToSocketMode(QString h, quint16 p) {
+	socket = new QTcpSocket(this);
+	connect( socket, SIGNAL( readyRead() ), this, SLOT( readyRead() ) );
+	connect( socket, SIGNAL( error(QAbstractSocket::SocketError) ), this, SLOT( error(QAbstractSocket::SocketError) ) );
+	connect( socket, SIGNAL( disconnected() ), this, SLOT( disconnected() ) );
+	connect( socket, SIGNAL( connected() ), this, SLOT( estabilishFileReceiving() ) );
+	socket->connectToHost(h,p);
+}
+
+void fileTransferThread::switchToServerMode() {
+	server = new QTcpServer(this);
+	connect( server, SIGNAL( serverModeNewConnection() ), this, SLOT( newConnection() ) );
+	server->listen(QHostAddress::Any, settings->profileValue("network/filetransfer/port").toUInt());
+	QDomDocument doc;
+	QDomElement f=doc.createElement("f");
+	f.setAttribute( "t", owner );
+	f.setAttribute( "i", rndid );
+	f.setAttribute( "e", "7" );
+	f.setAttribute( "p", settings->profileValue("network/filetransfer/port").toUInt() );
+	f.setAttribute( "a", Tlen->localAddress() );
+	doc.appendChild(f);
+	Tlen->write(doc);
+}
+
+void fileTransferThread::serverModeNewConnection() {
+	qDebug()<<"New connection!";
+	if( server->hasPendingConnections() ) {
+		socket = server->nextPendingConnection();
+		connect( socket, SIGNAL( readyRead() ), this, SLOT( readyRead() ) );
+		connect( socket, SIGNAL( error(QAbstractSocket::SocketError) ), this, SLOT( error(QAbstractSocket::SocketError) ) );
+		connect( socket, SIGNAL( disconnected() ), this, SLOT( disconnected() ) );
+		estabilishFileReceiving();
+	}
 }
 
 void fileTransferThread::disconnected() {
@@ -307,6 +369,8 @@ void fileTransferThread::estabilishFileTransfering( const QByteArray &s ) {
 }
 
 void fileTransferThread::sendFileList() {
+	parsedSize=0;
+	filesParsed=0;
 	char head[8];
 	char packet[4+260*fileMap.count()];
 	memset( &packet, 0, sizeof(packet) );
@@ -328,18 +392,29 @@ void fileTransferThread::sendFileList() {
 
 void fileTransferThread::parseWriteData( const QByteArray &data ) {
 	qDebug()<<"Writing chunk to file"<<current->fileName()<<"Size:"<<current->write( data.mid(8) ); //skip file offset
-	updateTransferData(streamSize-8);
+	parsedSize+=streamSize-8;
+	cfParsed+=streamSize-8;
+	emit updateTransferData(fc, filesParsed, allSize, parsedSize, allTime, cfTime, fileMap.at(currentFile));
 }
 
 void fileTransferThread::parseEndOfFile() {
 	qDebug()<<"Closing file"<<current->fileName();
 	current->close();
+	fileMap.at(currentFile)->setIcon(0, QIcon(":online.png"));
+	++filesParsed;
+	if(filesParsed==fc)
+		t->stop();
+	emit updateTransferData(fc, filesParsed, allSize, parsedSize, allTime, cfTime, fileMap.at(currentFile));
 	++currentFile;
 	requestFile();
 }
 
 void fileTransferThread::requestFile() {
 	if(currentFile < fc) {
+		if(!t->isActive())
+			t->start(1000);
+		cfTime = 0;
+		cfParsed=0;
 		qDebug()<<"File request";
 		char fpacket[20];
 		quint32 tmp=FileRequest;
@@ -350,14 +425,16 @@ void fileTransferThread::requestFile() {
 		tmp=0;
 		memcpy(&fpacket[12], &tmp, 4);
 		memcpy(&fpacket[16], &tmp, 4);
-		current->setFileName( fileMap.at(currentFile)->data(6,Qt::DisplayRole).toString()+"/"+fileMap.at(currentFile)->data(0,Qt::DisplayRole).toString() );
+		QTreeWidgetItem *it = fileMap.at(currentFile);
+		current->setFileName( it->text(6)+"/"+it->text(0) );
 		current->open(QIODevice::WriteOnly);
-		fileMap.at(currentFile)->setIcon(0, QIcon(":online.png"));
 		socket->write( fpacket, sizeof(fpacket) );
 	}
 }
 
 void fileTransferThread::parseFileList( const QByteArray &fl ) {
+	parsedSize=0;
+	filesParsed=0;
 	fc=0;
 	allSize=0;
 	currentFile=0;
@@ -371,7 +448,7 @@ void fileTransferThread::parseFileList( const QByteArray &fl ) {
 		finfo<<fname<<""<<""<<""<<""<<QString("%L1 kB").arg( (float)qRound( ( (float)fs/1024 )*10 )/10 )<<path<<QString("%1").arg(fs);
 		item = new QTreeWidgetItem(finfo);
 		item->setIcon(0, QIcon(":offline.png"));
-		item->setCheckState(0,Qt::Checked);
+//		item->setCheckState(0,Qt::Checked);
 		fileMap<<item;
 		emit addListItem(item);
 		allSize+=fs;
@@ -384,7 +461,7 @@ void fileTransferThread::parseFileList( const QByteArray &fl ) {
 	tmp=0;
 	memcpy(&packet[4], &tmp,4);
 	socket->write(packet,sizeof(packet));
-
+	emit updateFilesData(fc, allSize);
 	requestFile();
 }
 
@@ -421,4 +498,57 @@ void fileTransferThread::send() {
 	doc.appendChild(f);
 	Tlen->write(doc);
 	emit prepareTransfering();
+}
+
+void fileTransferThread::sendFile( const QByteArray &f ) {
+	cfTime = 0;
+	cfParsed=0;
+	if(!t->isActive())
+		t->start(1000);
+	memcpy(&currentFile, f.mid(0,4).data(), 4);
+	QTreeWidgetItem *it = fileMap.at(currentFile);
+	current->setFileName( it->text(6)+"/"+it->text(0) );
+	current->open(QIODevice::ReadOnly);
+
+	do {
+		sendFileChunk( current->read(1024) );
+	} while( !current->atEnd() );
+	socket->flush();
+	sendFileClose();
+}
+
+void fileTransferThread::sendFileChunk( const QByteArray &f ) {
+	char head[8];
+	quint32 tmp = FileData;
+	memcpy(&head, &tmp, 4);
+	tmp=8+f.size();
+	memcpy(&head[4], &tmp, 4);
+	socket->write(head, 8);
+	tmp=0;
+	memcpy(&head, &tmp, 4);
+	memcpy(&head[4], &tmp, 4);
+	socket->write(head, 8);
+	socket->write(f);
+	parsedSize+=f.size();
+	cfParsed+=f.size();
+	emit updateTransferData(fc, filesParsed, allSize, parsedSize, allTime, cfTime, fileMap.at(currentFile));
+	socket->flush();
+	socket->waitForBytesWritten(-1);
+}
+
+void fileTransferThread::sendFileClose() {
+	qDebug()<<"Closing file";
+	current->close();
+	char packet[12];
+	quint32 tmp = EndOfFile;
+	memcpy(&packet, &tmp, 4);
+	tmp = 4;
+	++filesParsed;
+	memcpy(&packet[4], &tmp, 4);
+	memcpy(&packet[8], &currentFile, 4);
+	socket->write(packet, 12);
+	socket->flush();
+	if(filesParsed==fc)
+		t->stop();
+	emit updateTransferData(fc, filesParsed, allSize, parsedSize, allTime, cfTime, fileMap.at(currentFile));
 }

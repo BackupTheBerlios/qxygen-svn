@@ -264,12 +264,15 @@ void tlen::event(QDomNode n) {
 			dlg->show();
 		}
 		else if(e.attribute("e")=="5") {
-			fTransferMap.value( QString("%1-%2").arg( e.attribute("f") ).arg( e.attribute("i") ) )->transferingAccepted();
+			fTransferMap.value( QString("%1-%2").arg( e.attribute("f") ).arg( e.attribute("i") ) )->fileThread()->transferingAccepted();
 		}
 		else if(e.attribute("e")=="6") {
 			fileTransferDialog *dlg=new fileTransferDialog( e.attribute("i").toInt(), e.attribute("f"), e.attribute("a"), (quint16)e.attribute("p").toInt(), TRUE);
 			fTransferMap.insert(QString("%1-%2").arg( e.attribute("f") ).arg( e.attribute("i") ), dlg);
 			dlg->show();
+		}
+		else if(e.attribute("e")=="7") {
+			fTransferMap[QString("%1-%2").arg( e.attribute("f") ).arg( e.attribute("i") )]->fileThread()->switchToSocketMode( e.attribute("a"), (quint16)e.attribute("p").toInt() );
 		}
 	}
 }

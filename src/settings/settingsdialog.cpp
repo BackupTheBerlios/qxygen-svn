@@ -113,8 +113,11 @@ void settingsDialog::cancelSettings() {
 }
 
 networkSettings::networkSettings(QWidget *parent): settingsWidget(parent) {
-	if(	settings->profileValue("files/receivedir").toString().isEmpty() )
+	if( settings->profileValue("files/receivedir").toString().isEmpty() )
 		settings->setProfileValue("files/receivedir", QDir::homePath());
+
+	if( settings->profileValue("network/filetransfer/port").toInt()==0 )
+		settings->setProfileValue("network/filetransfer/port", 4433);
 
 	ui.setupUi(this);
 	cancelSettings();
