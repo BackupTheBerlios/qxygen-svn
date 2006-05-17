@@ -264,7 +264,7 @@ void tlen::event(QDomNode n) {
 			dlg->show();
 		}
 		else if(e.attribute("e")=="5") {
-			if( fileTransferDialog *dlg = fTransferMap.value( QString("%1-%2").arg( e.attribute("f") ).arg( e.attribute("i") ) )->fileThread() )
+			if( fileTransferDialog *dlg = fTransferMap.value( QString("%1-%2").arg( e.attribute("f") ).arg( e.attribute("i") ) ) )
 				dlg->fileThread()->transferingAccepted();
 		}
 		else if(e.attribute("e")=="6") {
