@@ -272,7 +272,7 @@ void tlen::event(QDomNode n) {
 			dlg->show();
 		}
 		else if(e.attribute("e")=="7") {
-			fTransferMap[QString("%1-%2").arg( e.attribute("f") ).arg( e.attribute("i") )]->fileThread()->switchToSocketMode( e.attribute("a"), (quint16)e.attribute("p").toInt() );
+			fTransferMap.value( QString("%1-%2").arg( e.attribute("f") ).arg( e.attribute("i") ) )->fileThread()->switchToSocketMode( e.attribute("a"), (quint16)e.attribute("p").toInt() );
 		}
 	}
 }

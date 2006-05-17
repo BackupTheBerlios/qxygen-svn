@@ -285,7 +285,7 @@ void fileTransferThread::switchToSocketMode(QString h, quint16 p) {
 
 void fileTransferThread::switchToServerMode() {
 	server = new QTcpServer(this);
-	connect( server, SIGNAL( serverModeNewConnection() ), this, SLOT( newConnection() ) );
+	connect( server, SIGNAL( newConnection() ), this, SLOT( serverModeNewConnection() ) );
 	server->listen(QHostAddress::Any, settings->profileValue("network/filetransfer/port").toUInt());
 	QDomDocument doc;
 	QDomElement f=doc.createElement("f");
