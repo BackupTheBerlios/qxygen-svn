@@ -26,7 +26,7 @@
 #include <QVariant>
 #include <QIcon>
 
-class rosterItem;
+#include "roster_item.h"
 
 class rosterView : public QAbstractItemModel
 {

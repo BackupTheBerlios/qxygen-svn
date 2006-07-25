@@ -23,14 +23,13 @@
 
 #include <QAbstractSocket>
 #include <QThread>
+#include <QTcpSocket>
+#include <QTcpServer>
+#include <QDomNode>
+#include <QFile>
+#include <QTimer>
 
 #include "ui_filetransferdialog.h"
-
-class QTcpSocket;
-class QTcpServer;
-class QDomNode;
-class QFile;
-class QTimer;
 
 class fileTransferThread: public QThread
 {

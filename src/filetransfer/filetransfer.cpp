@@ -20,14 +20,9 @@
 
 #include <QPushButton>
 #include <QHBoxLayout>
-#include <QTcpSocket>
-#include <QTcpServer>
-#include <QDomNode>
-#include <QFile>
 #include <QStringList>
 #include <QFileDialog>
 #include <QHostInfo>
-#include <QTimer>
 
 #include <QDebug>
 

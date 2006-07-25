@@ -24,11 +24,11 @@
 #include <QObject>
 #include <QDomNode>
 #include <QMap>
+#include <QTcpSocket>
+#include <QDomDocument>
+#include <QTimer>
 
-class QTcpSocket;
-class QDomDocument;
-class QTimer;
-class fileTransferDialog;
+#include "filetransfer.h"
 
 class tlen: public QObject
 {

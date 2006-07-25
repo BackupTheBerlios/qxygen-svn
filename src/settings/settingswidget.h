@@ -22,8 +22,7 @@
 #define SETTINGSWIDGET_H
 
 #include <QWidget>
-
-class QListWidgetItem;
+#include <QListWidgetItem>
 
 class settingsWidget: public QWidget
 {

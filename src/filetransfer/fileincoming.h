@@ -21,9 +21,9 @@
 #ifndef FILEINCOMING_H
 #define FILEINCOMING_H
 
-#include "ui_fileincomingdialog.h"
+#include <QDomNode>
 
-class QDomNode;
+#include "ui_fileincomingdialog.h"
 
 class fileIncomingDialog: public QDialog
 {

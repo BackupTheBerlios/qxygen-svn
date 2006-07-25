@@ -20,10 +20,7 @@
 
 #include <QGridLayout>
 #include <QHBoxLayout>
-#include <QListWidget>
-#include <QListWidgetItem>
 #include <QPushButton>
-#include <QScrollArea>
 #include <QNetworkProxy>
 #include <QDir>
 #include <QMessageBox>

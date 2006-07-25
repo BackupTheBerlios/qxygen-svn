@@ -22,9 +22,8 @@
 #define SETTINGS_H
 
 #include <QObject>
-
-class QDir;
-class QSettings;
+#include <QDir>
+#include <QSettings>
 
 class settingsMenager: public QObject
 {

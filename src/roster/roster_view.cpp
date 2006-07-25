@@ -20,7 +20,6 @@
 
 #include <QtGui>
 
-#include "roster_item.h"
 #include "roster_view.h"
 
 rosterView *rosterModel=0;

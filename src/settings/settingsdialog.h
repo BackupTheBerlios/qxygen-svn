@@ -22,14 +22,13 @@
 #define SETTINGSDIALOG_H
 
 #include <QDialog>
+#include <QListWidget>
+#include <QListWidgetItem>
+#include <QScrollArea>
 
 #include "settingswidget.h"
 #include "ui_networkswidget.h"
 #include "ui_generalswidget.h"
-
-class QListWidgetItem;
-class QScrollArea;
-class QListWidget;
 
 class settingsDialog: public QDialog
 {

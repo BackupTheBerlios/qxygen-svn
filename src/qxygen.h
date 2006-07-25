@@ -22,18 +22,16 @@
 #define QXYGEN_H
 
 #include <QDomNode>
+#include <QMenu>
+#include <QSystemTrayIcon>
+#include <QTimer>
 
 #include "ui_qxygen.h"
-
-class QMenu;
-
-class TrayIcon;
-class rosterView;
-class rosterDelegate;
-class descrDialog;
-class QTextEdit;
-class chatWindow;
-class settingsMenager;
+#include "roster_view.h"
+#include "roster_delegate.h"
+#include "descrdialog.h"
+#include "chatwindow.h"
+#include "settings.h"
 
 class qxygen: public QMainWindow
 {
@@ -75,29 +73,28 @@ public slots:
 	void choseProfile(QAction*);
 	void fileSendDialog();
 
+	void activated(int);
+	void swapMsgIcon();
 signals:
 	void authorize(QString, bool);
 	void windowOpened(QString);
 
 protected:
-	void queueMsg(QString,QString,QString);
 	void setupRoster();
 	void setupTray();
 	void setupMenus();
 	void setupProtocol();
 	void setupGui();
 	void setupSettings();
-	void closeEvent(QCloseEvent *e);
 	void resizeEvent(QResizeEvent*);
 	void moveEvent(QMoveEvent*);
 
 private:
-	QTextEdit *mailEdit;
-
 	descrDialog *descrDlg;
 
 	QMap<QString /*jid*/, chatWindow*> chatMap;
 	QMap<QString /*jid*/, QStringList /*msg queue*/> msgMap;
+	QStringList jidMsgOrderList;
 
 	QMenu	*mTrayMenu,
 		*mainMenu,
@@ -123,7 +120,11 @@ private:
 		*settingsDialogA;
 
 	rosterDelegate *delegate;
-	TrayIcon *mTray;
+	QSystemTrayIcon *mTray;
+
+	QTimer *msgTimer;
+	bool msg;
+
 	Ui::Qxygen ui;
 };
 

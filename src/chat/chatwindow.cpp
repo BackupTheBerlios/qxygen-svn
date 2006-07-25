@@ -19,7 +19,6 @@
  ***************************************************************************/
 
 #include <QSplitter>
-#include <QPushButton>
 #include <QGridLayout>
 #include <QKeyEvent>
 #include <QDateTime>
@@ -27,13 +26,11 @@
 #include <QMenu>
 #include <QApplication>
 #include <QMessageBox>
-#include <QLabel>
 #include <QTimer>
 
 #include <QDebug>
 
 #include "chatwindow.h"
-#include "chattextedit.h"
 #include "settings.h"
 #include "tlen.h"
 

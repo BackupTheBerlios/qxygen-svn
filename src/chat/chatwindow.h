@@ -22,11 +22,10 @@
 #define CHATWINDOW_H
 
 #include <QDialog>
+#include <QPushButton>
+#include <QLabel>
 
-class chatTextEdit;
-class QShortcut;
-class QPushButton;
-class QLabel;
+#include "chattextedit.h"
 
 class chatWindow: public QDialog
 {

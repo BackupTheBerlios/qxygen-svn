@@ -1,4 +1,4 @@
-CONFIG += qt warn_on x11 release
+CONFIG += qt thread warn_on x11 release
 
 QT += network xml
 
@@ -42,7 +42,6 @@ HEADERS=src/qxygen.h \
 	src/roster/useradd.h \
 	src/protocol/tlen.h \
 	src/protocol/auth.h \
-	src/tray/trayicon.h \
 	src/chat/chatwindow.h \
 	src/chat/chattextedit.h \
 	src/filetransfer/filetransfer.h \
@@ -62,7 +61,6 @@ SOURCES=src/main.cpp \
 	src/roster/useradd.cpp \
 	src/protocol/tlen.cpp \
 	src/protocol/auth.cpp \
-	src/tray/trayicon.cpp \
 	src/chat/chatwindow.cpp \
 	src/chat/chattextedit.cpp \
 	src/filetransfer/filetransfer.cpp \
@@ -70,22 +68,3 @@ SOURCES=src/main.cpp \
 	src/filetransfer/sha1.cpp
 
 TRANSLATIONS =	translation/qxygen_pl.ts
-
-unix:!mac {
-	SOURCES += src/tray/trayicon_x11.cpp
-	LIBS += -lXt
-}
-win32: {
-	SOURCES += src/tray/trayicon_win.cpp
-	win32-g++: {
-	# Probably MinGW
-		LIBS += libgdi32 libuser32 libshell32
-	}
-	else {
-	# Assume msvc compiler
-		LIBS += Gdi32.lib User32.lib shell32.lib
-	}
-}
-mac: {
-	SOURCES += src/tray/trayicon_mac.cpp
-}

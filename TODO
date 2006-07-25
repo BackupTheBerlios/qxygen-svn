@@ -21,7 +21,7 @@
 ==OTHER
 -theme system
 -theme editor/creator
--file transfer
+-file transfer // works but still buggy
 
 +++++++DONE+++++++
 

@@ -25,27 +25,22 @@
 #include <QHttpRequestHeader>
 #include <QHttpResponseHeader>
 #include <QUrl>
-#include <QTextEdit>
 #include <QNetworkProxy>
 
 #include <QDebug>
 
 #include "qxygen.h"
-#include "descrdialog.h"
-#include "roster_view.h"
-#include "roster_delegate.h"
 #include "roster_item.h"
 #include "useradd.h"
-#include "trayicon.h"
 #include "tlen.h"
-#include "chatwindow.h"
-#include "settings.h"
 #include "profileform.h"
 #include "settingsdialog.h"
 #include "filetransfer.h"
 
 qxygen::qxygen( QWidget* parent): QMainWindow( parent ) {
-	setupTray();
+	if ( QSystemTrayIcon::isSystemTrayAvailable() )
+		setupTray();
+
 	setupGui();
 	setupRoster();
 	setupProtocol();
@@ -54,31 +49,32 @@ qxygen::qxygen( QWidget* parent): QMainWindow( parent ) {
 }
 
 qxygen::~qxygen() {
-	if(Tlen)
-		delete Tlen;
-	if(delegate)
-		delete delegate;
-	if(rosterModel)
-		delete rosterModel;
-	if(mTray)
-		delete mTray;
-	if(descrDlg)
-		delete descrDlg;
 }
 
 void qxygen::setupTray() {
 	mTrayMenu = new QMenu();
-	qApp->setApplicationName("Qxygen");
-	mTray = new TrayIcon(QPixmap(":offline.png"), "Qxygen", 0, this);
-	mTray->setWMDock(false);
-	mTray->setPopup(mTrayMenu);
-	connect(mTray, SIGNAL(clicked(const QPoint &, int)), SLOT(toggleVisibility()));
-	connect(mTray, SIGNAL(closed()), SLOT(slotTrayClosed()));
+	mTray=new QSystemTrayIcon(QIcon(":offline.png"),this);
+
+	connect(mTray, SIGNAL(activated(int)), this, SLOT(activated(int)));
+
+	mTray->setContextMenu(mTrayMenu);
+	mTray->show();
+
+	msgTimer=new QTimer;
+	msg=TRUE;
+
+	connect(msgTimer, SIGNAL(timeout()), this, SLOT(swapMsgIcon()));
+//	qApp->setApplicationName("Qxygen");
+//	mTray = new TrayIcon(QPixmap(":offline.png"), "Qxygen", 0, this);
+//	mTray->setWMDock(false);
+//	mTray->setPopup(mTrayMenu);
+//	connect(mTray, SIGNAL(clicked(const QPoint &, int)), SLOT(toggleVisibility()));
+//	connect(mTray, SIGNAL(closed()), SLOT(slotTrayClosed()));
 //	connect(qApp, SIGNAL(newTrayOwner()), mTray, SLOT(newTrayOwner())); // Used on X11
 //	connect(qApp, SIGNAL(trayOwnerDied()), mTray, SLOT(hide())); // Used on X11
-	mTray->show();
-	connect(mTray, SIGNAL(openMsg(QString)), this, SLOT(openMsg(QString)));
-	connect(this, SIGNAL(windowOpened(QString)), mTray, SLOT(windowOpened(QString)));
+//	mTray->show();
+//	connect(mTray, SIGNAL(openMsg(QString)), this, SLOT(openMsg(QString)));
+//	connect(this, SIGNAL(windowOpened(QString)), mTray, SLOT(windowOpened(QString)));
 }
 
 void qxygen::setupGui() {
@@ -136,7 +132,7 @@ void qxygen::setupMenus() {
 	connect( sendFile, SIGNAL( triggered() ), this, SLOT( fileSendDialog() ) );
 	settingsDialogA = new QAction(tr("Settings"), this);
 	connect(settingsDialogA, SIGNAL(triggered()), this, SLOT(showSettingsDialog()));
-	rosterMenu->addAction(sendFile);
+//	rosterMenu->addAction(sendFile);
 	rosterMenu->addAction(remove);
 	mTrayMenu->addAction(online);
 	mTrayMenu->addAction(chatty);
@@ -226,20 +222,6 @@ void qxygen::toggleVisibility() {
 	}
 }
 
-
-void qxygen::closeEvent( QCloseEvent* e ) {
-#ifdef Q_WS_MAC
-	hide();
-	e->accept();
-#else
-	if (!mTray)
-		qApp->quit();
-
-	toggleVisibility();
-	e->ignore();
-#endif
-}
-
 void qxygen::expandItem( const QModelIndex &index ) {
 	delegate->setWidth(ui.rosterView->viewport()->width());
 	rosterModel->setData(index, QVariant(TRUE), rosterView::ExpandRole);
@@ -280,7 +262,7 @@ void qxygen::statusChange() {
 
 	ui.statusButton->setIcon(QIcon(px));
 	setWindowIcon(QIcon(px));
-	mTray->setIcon(px);
+//	mTray->setIcon(px);
 }
 
 void qxygen::authorizationAsk( QString from ) {
@@ -342,13 +324,18 @@ void qxygen::chatMsgReceived( QDomNode n ) {
 	if(timeStamp.isEmpty())
 		timeStamp=QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss");
 
-	if(chatWindow *w=chatMap[from])
-		if(!w->isHidden())
+	if(chatWindow *w=chatMap[from]) {
+		if(!w->isHidden()) {
 			w->displayMsg(Tlen->decode(body.toUtf8()),timeStamp);
-		else
-			queueMsg(body,timeStamp,from);
-	else
-		queueMsg(body,timeStamp,from);
+			return;
+		}
+	}
+
+	jidMsgOrderList.removeAll(from);
+	jidMsgOrderList.prepend(from);
+
+	msgMap[from].append(body+'\t'+timeStamp);
+	msgTimer->start(500);
 }
 
 void qxygen::showChatWindow(const QModelIndex &index)
@@ -384,12 +371,6 @@ void qxygen::showChatWindow(const QModelIndex &index)
 			emit windowOpened(jid);
 		}
 	}
-}
-
-void qxygen::queueMsg(QString msg,QString ts,QString from)
-{
-	msgMap[from].append(msg+"\t"+ts);
-	mTray->gotMsg(from);
 }
 
 void qxygen::openMsg(QString from)
@@ -477,7 +458,7 @@ void qxygen::updateProfilesMenu()
 }
 
 void qxygen::loadProfile() {
-	mTray->clearQueue();
+//	mTray->clearQueue();
 	if( Tlen->isConnected() )
 		Tlen->closeConn();
 
@@ -494,6 +475,10 @@ void qxygen::loadProfile() {
 	
 	chatMap.clear();
 	msgMap.clear();
+	jidMsgOrderList.clear();
+	msgTimer->stop();
+	if(!msg)
+		swapMsgIcon();
 
 	descrDlg=new descrDialog(Tlen->strStatus(), this);
 	connect(descrDlg, SIGNAL(statusChanged(QString, QString)), Tlen, SLOT(setStatusDescr(QString, QString)));
@@ -546,4 +531,22 @@ void qxygen::fileSendDialog() {
 		Tlen->fTransferMap.insert( QString("%1-%2").arg(jid).arg(id), dlg );
 		dlg->show();
 	}
+}
+void qxygen::activated(int r) {
+	if ( jidMsgOrderList.count() ) {
+		openMsg( jidMsgOrderList[0] );
+		jidMsgOrderList.removeAll( jidMsgOrderList[0] );
+		if(!jidMsgOrderList.count()) {
+			msgTimer->stop();
+			if(!msg)
+				swapMsgIcon();
+		}
+	}
+	else if ( r == QSystemTrayIcon::DoubleClick || r == QSystemTrayIcon::Trigger )
+		toggleVisibility();
+}
+
+void qxygen::swapMsgIcon() {
+	msg?mTray->setIcon(QPixmap(":msg.png")):mTray->setIcon(windowIcon());
+	msg=!msg;
 }
