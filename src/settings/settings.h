@@ -25,8 +25,7 @@
 #include <QDir>
 #include <QSettings>
 
-class settingsMenager: public QObject
-{
+class settingsMenager: public QObject {
 Q_OBJECT
 
 public:
@@ -44,6 +43,7 @@ public:
 	void initModule();
 	void addProfile(QString,QString,QString);
 
+	bool exists(const QString&);
 signals:
 	void noProfile();
 	void loadProfile();

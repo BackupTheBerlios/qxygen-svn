@@ -1,7 +1,4 @@
 <ui version="4.0" >
- <author></author>
- <comment></comment>
- <exportmacro></exportmacro>
  <class>generalSWidget</class>
  <widget class="QWidget" name="generalSWidget" >
   <property name="geometry" >
@@ -84,7 +81,11 @@
    </item>
   </layout>
  </widget>
- <pixmapfunction></pixmapfunction>
+ <tabstops>
+  <tabstop>showGroups</tabstop>
+  <tabstop>showSubgroups</tabstop>
+  <tabstop>showDescription</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

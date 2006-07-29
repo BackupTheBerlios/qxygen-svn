@@ -33,8 +33,7 @@
 #include "chatwindow.h"
 #include "settings.h"
 
-class qxygen: public QMainWindow
-{
+class qxygen: public QMainWindow {
 Q_OBJECT
 
 public:
@@ -42,12 +41,13 @@ public:
 	qxygen(QWidget *parent=0);
 	~qxygen();
 
+	rosterWidget *roster();
+
 public slots:
 	void parseRemove();
 	void collapseItem(const QModelIndex &index);
 	void expandItem(const QModelIndex &index);
 	void toggleVisibility();
-	void slotTrayClosed();
 	void showMainMenu();
 	void showStatusMenu();
 	void statusChange();
@@ -77,7 +77,6 @@ public slots:
 	void swapMsgIcon();
 signals:
 	void authorize(QString, bool);
-	void windowOpened(QString);
 
 protected:
 	void setupRoster();
@@ -86,8 +85,7 @@ protected:
 	void setupProtocol();
 	void setupGui();
 	void setupSettings();
-	void resizeEvent(QResizeEvent*);
-	void moveEvent(QMoveEvent*);
+	void createChatWindow(const QString&, const QString&, const QIcon&);
 
 private:
 	descrDialog *descrDlg;

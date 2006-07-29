@@ -24,18 +24,21 @@
 #include <QDialog>
 #include <QListWidget>
 #include <QListWidgetItem>
-#include <QScrollArea>
+#include <QStackedWidget>
+#include <QFont>
+#include <QIcon>
+#include <QColor>
 
 #include "settingswidget.h"
 #include "ui_networkswidget.h"
 #include "ui_generalswidget.h"
+#include "ui_lookswidget.h"
 
-class settingsDialog: public QDialog
-{
+class settingsDialog: public QDialog {
 Q_OBJECT
 public:
 	settingsDialog(QWidget *parent=0);
-	
+	void insertSettings(settingsWidget*);
 public slots:
 	void loadSettings();
 	void saveSettings();
@@ -44,14 +47,16 @@ public slots:
 private slots:
 	void swapSettingsWidget(QListWidgetItem*,QListWidgetItem*);
 
+signals:
+	void updateSettings();
+
 private:
 	QListWidget *tabs;
-	QScrollArea *widgetScroll;
 	QPushButton *ok, *apply, *cancel;
+	QStackedWidget *settingsStackedWidget;
 };
 
-class generalSettings: public settingsWidget
-{
+class generalSettings: public settingsWidget {
 Q_OBJECT
 public:
 	generalSettings(QWidget *parent=0);
@@ -64,8 +69,7 @@ private:
 	Ui::generalSWidget ui;
 };
 
-class networkSettings: public settingsWidget
-{
+class networkSettings: public settingsWidget {
 Q_OBJECT
 public:
 	networkSettings(QWidget *parent=0);
@@ -80,6 +84,28 @@ public slots:
 private:
 	QListWidgetItem *item;
 	Ui::networkSWidget ui;
+};
+
+class lookSettings: public settingsWidget {
+Q_OBJECT
+public:
+	lookSettings(QWidget *parent=0);
+	void saveSettings();
+	void loadSettings();
+	void cancelSettings();
+	QListWidgetItem *settingsTab(){return item;}
+
+public slots:
+	void pickColor();
+	void pickFont();
+
+protected:
+	QIcon generateIcon(const QColor&);
+	QColor getColor( QPushButton* );
+
+private:
+	QListWidgetItem *item;
+	Ui::lookSettings ui;
 };
 
 extern settingsDialog *settingsDlg;

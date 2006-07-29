@@ -30,8 +30,7 @@
 
 #include "filetransfer.h"
 
-class tlen: public QObject
-{
+class tlen: public QObject {
 Q_OBJECT
 
 public:

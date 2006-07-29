@@ -24,8 +24,7 @@
 #include <QDialog>
 #include "ui_profile.h"
 
-class profileForm: public QDialog
-{
+class profileForm: public QDialog {
 Q_OBJECT
 
 public:

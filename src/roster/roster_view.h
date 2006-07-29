@@ -28,8 +28,7 @@
 
 #include "roster_item.h"
 
-class rosterView : public QAbstractItemModel
-{
+class rosterView : public QAbstractItemModel {
 Q_OBJECT
 
 public:

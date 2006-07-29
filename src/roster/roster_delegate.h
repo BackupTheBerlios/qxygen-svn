@@ -23,8 +23,7 @@
 
 #include <QItemDelegate>
 
-class rosterDelegate: public QItemDelegate
-{
+class rosterDelegate: public QItemDelegate {
 Q_OBJECT
 
 public:

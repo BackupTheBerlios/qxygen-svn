@@ -249,6 +249,7 @@ bool rosterView::setData( const QModelIndex &index, const QVariant &value, int r
 }
 
 void rosterView::emitLayoutChanged() {
+	emit layoutAboutToBeChanged();
 	emit layoutChanged();
 }
 
@@ -265,6 +266,10 @@ void rosterView::clearRoster() {
 
 void rosterView::presenceUpdate( QString from, QString status, QString descr ) {
 	rosterItem *item=find(from);
+
+	if( !item )
+		return;
+
 	bool sort=TRUE;
 
 	if((item->data(4)=="unavailable" && status=="unavailable") || (item->data(4)!="unavailable" && status!="unavailable"))

@@ -27,8 +27,7 @@
 #include <QRect>
 #include <QImage>
 
-class rosterItem: public QObject
-{
+class rosterItem: public QObject {
 Q_OBJECT
 
 public:

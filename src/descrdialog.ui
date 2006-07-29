@@ -1,7 +1,4 @@
 <ui version="4.0" >
- <author></author>
- <comment></comment>
- <exportmacro></exportmacro>
  <class>descrDialog</class>
  <widget class="QDialog" name="descrDialog" >
   <property name="geometry" >
@@ -154,6 +151,9 @@
          <property name="text" >
           <string>History:</string>
          </property>
+         <property name="buddy" >
+          <cstring>historyComboBox</cstring>
+         </property>
         </widget>
        </item>
       </layout>
@@ -222,14 +222,11 @@
    </item>
   </layout>
  </widget>
- <pixmapfunction></pixmapfunction>
  <customwidgets>
   <customwidget>
    <class>chatTextEdit</class>
    <extends>QTextEdit</extends>
    <header>chattextedit.h</header>
-   <container>0</container>
-   <pixmap></pixmap>
   </customwidget>
  </customwidgets>
  <resources/>

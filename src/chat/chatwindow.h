@@ -24,11 +24,11 @@
 #include <QDialog>
 #include <QPushButton>
 #include <QLabel>
+#include <QTextCursor>
 
 #include "chattextedit.h"
 
-class chatWindow: public QDialog
-{
+class chatWindow: public QWidget {
 Q_OBJECT
 
 public:
@@ -38,6 +38,9 @@ public:
 	void displayMsg(QString,QString);
 
 	void typingNotify(bool);
+
+public slots:
+	void updateSettings();
 
 private slots:
 	void checkSend();
@@ -57,11 +60,13 @@ protected:
 
 private:
 	QString owner,title;
-
+	int firstmsg;
 	QTimer *msgTimer,*notifyTimer;
 
 	chatTextEdit *input,*display;
 	QLabel *typingNotifyLabel;
 	QPushButton *sendButton, *sendAlarm, *setReturnSend;
+
+	QTextCursor cursor;
 };
 #endif

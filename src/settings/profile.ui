@@ -1,7 +1,4 @@
 <ui version="4.0" >
- <author></author>
- <comment></comment>
- <exportmacro></exportmacro>
  <class>newProfileDialog</class>
  <widget class="QDialog" name="newProfileDialog" >
   <property name="geometry" >
@@ -84,6 +81,9 @@
        <property name="text" >
         <string>Password:</string>
        </property>
+       <property name="buddy" >
+        <cstring>passwordLineEdit</cstring>
+       </property>
       </widget>
      </item>
      <item>
@@ -120,6 +120,9 @@
        <property name="text" >
         <string>Login:</string>
        </property>
+       <property name="buddy" >
+        <cstring>loginLineEdit</cstring>
+       </property>
       </widget>
      </item>
      <item>
@@ -152,6 +155,9 @@
        <property name="text" >
         <string>Profile name:</string>
        </property>
+       <property name="buddy" >
+        <cstring>profileLineEdit</cstring>
+       </property>
       </widget>
      </item>
      <item>
@@ -161,7 +167,6 @@
    </item>
   </layout>
  </widget>
- <pixmapfunction></pixmapfunction>
  <tabstops>
   <tabstop>profileLineEdit</tabstop>
   <tabstop>loginLineEdit</tabstop>

@@ -25,8 +25,7 @@
 
 #include "ui_fileincomingdialog.h"
 
-class fileIncomingDialog: public QDialog
-{
+class fileIncomingDialog: public QDialog {
 Q_OBJECT
 public:
 	fileIncomingDialog(QDomNode, QWidget *parent=0);

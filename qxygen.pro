@@ -23,6 +23,7 @@ FORMS = src/qxygen.ui \
 	src/settings/profile.ui \
 	src/settings/networkswidget.ui \
 	src/settings/generalswidget.ui \
+	src/settings/lookswidget.ui \
 	src/filetransfer/filetransferdialog.ui \
 	src/filetransfer/fileincomingdialog.ui
 

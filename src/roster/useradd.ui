@@ -1,7 +1,4 @@
 <ui version="4.0" >
- <author></author>
- <comment></comment>
- <exportmacro></exportmacro>
  <class>addForm</class>
  <widget class="QWidget" name="addForm" >
   <property name="geometry" >
@@ -119,6 +116,9 @@
           <property name="text" >
            <string>Group:</string>
           </property>
+          <property name="buddy" >
+           <cstring>groupLine</cstring>
+          </property>
          </widget>
         </item>
         <item>
@@ -176,6 +176,9 @@
           <property name="text" >
            <string>Login:</string>
           </property>
+          <property name="buddy" >
+           <cstring>loginLine</cstring>
+          </property>
          </widget>
         </item>
         <item>
@@ -220,6 +223,9 @@
           </property>
           <property name="text" >
            <string>Name:</string>
+          </property>
+          <property name="buddy" >
+           <cstring>nameLine</cstring>
           </property>
          </widget>
         </item>
@@ -307,7 +313,6 @@
    </item>
   </layout>
  </widget>
- <pixmapfunction></pixmapfunction>
  <tabstops>
   <tabstop>nameLine</tabstop>
   <tabstop>loginLine</tabstop>

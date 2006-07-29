@@ -101,3 +101,7 @@ QVariant settingsMenager::defaultValue(QString key) {
 void settingsMenager::removeProfileValue(QString key) {
 	profile->remove(key);
 }
+
+bool settingsMenager::exists(const QString& key) {
+	return profile->contains(key);
+}

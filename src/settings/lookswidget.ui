@@ -1,0 +1,699 @@
+<ui version="4.0" >
+ <class>lookSettings</class>
+ <widget class="QWidget" name="lookSettings" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>462</width>
+    <height>700</height>
+   </rect>
+  </property>
+  <property name="minimumSize" >
+   <size>
+    <width>400</width>
+    <height>700</height>
+   </size>
+  </property>
+  <property name="maximumSize" >
+   <size>
+    <width>16777215</width>
+    <height>700</height>
+   </size>
+  </property>
+  <property name="windowTitle" >
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" >
+   <property name="margin" >
+    <number>9</number>
+   </property>
+   <property name="spacing" >
+    <number>6</number>
+   </property>
+   <item row="0" column="0" >
+    <widget class="QGroupBox" name="groupBox_2" >
+     <property name="minimumSize" >
+      <size>
+       <width>0</width>
+       <height>87</height>
+      </size>
+     </property>
+     <property name="maximumSize" >
+      <size>
+       <width>16777215</width>
+       <height>999999</height>
+      </size>
+     </property>
+     <property name="title" >
+      <string>Fonts</string>
+     </property>
+     <layout class="QGridLayout" >
+      <property name="margin" >
+       <number>9</number>
+      </property>
+      <property name="spacing" >
+       <number>6</number>
+      </property>
+      <item row="0" column="0" >
+       <widget class="QGroupBox" name="groupBox_5" >
+        <property name="title" >
+         <string>Roster</string>
+        </property>
+        <layout class="QGridLayout" >
+         <property name="margin" >
+          <number>9</number>
+         </property>
+         <property name="spacing" >
+          <number>6</number>
+         </property>
+         <item rowspan="4" row="0" column="1" >
+          <spacer>
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" >
+            <size>
+             <width>26</width>
+             <height>111</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="2" column="3" >
+          <widget class="QPushButton" name="groupFontPushButton" >
+           <property name="text" >
+            <string>Select</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="3" >
+          <widget class="QPushButton" name="subgroupFontPushButton" >
+           <property name="text" >
+            <string>Select</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2" >
+          <widget class="QLineEdit" name="groupFontLineEdit" >
+           <property name="minimumSize" >
+            <size>
+             <width>150</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize" >
+            <size>
+             <width>150</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="readOnly" >
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="2" >
+          <widget class="QLineEdit" name="subgroupFontLineEdit" >
+           <property name="minimumSize" >
+            <size>
+             <width>150</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize" >
+            <size>
+             <width>150</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="readOnly" >
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0" >
+          <widget class="QLabel" name="label_14" >
+           <property name="text" >
+            <string>Group font:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0" >
+          <widget class="QLabel" name="label_13" >
+           <property name="text" >
+            <string>Subgroup font:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" >
+          <widget class="QLabel" name="label_12" >
+           <property name="text" >
+            <string>Description font:</string>
+           </property>
+           <property name="buddy" >
+            <cstring>groupFontPushButton</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2" >
+          <widget class="QLineEdit" name="nickFontLineEdit" >
+           <property name="minimumSize" >
+            <size>
+             <width>150</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize" >
+            <size>
+             <width>150</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="readOnly" >
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" >
+          <widget class="QLabel" name="label" >
+           <property name="text" >
+            <string>Nickname font:</string>
+           </property>
+           <property name="buddy" >
+            <cstring>nickFontPushButton</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3" >
+          <widget class="QPushButton" name="nickFontPushButton" >
+           <property name="text" >
+            <string>Select</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2" >
+          <widget class="QLineEdit" name="descrFontLineEdit" >
+           <property name="minimumSize" >
+            <size>
+             <width>150</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize" >
+            <size>
+             <width>150</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="readOnly" >
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3" >
+          <widget class="QPushButton" name="descrFontPushButton" >
+           <property name="text" >
+            <string>Select</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="1" column="0" >
+       <widget class="QGroupBox" name="groupBox_6" >
+        <property name="title" >
+         <string>Chat window</string>
+        </property>
+        <layout class="QGridLayout" >
+         <property name="margin" >
+          <number>9</number>
+         </property>
+         <property name="spacing" >
+          <number>6</number>
+         </property>
+         <item row="1" column="2" >
+          <widget class="QLineEdit" name="yourMsgFontLineEdit" >
+           <property name="minimumSize" >
+            <size>
+             <width>150</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize" >
+            <size>
+             <width>150</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="readOnly" >
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item rowspan="3" row="0" column="1" >
+          <spacer>
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" >
+            <size>
+             <width>20</width>
+             <height>141</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="2" column="2" >
+          <widget class="QLineEdit" name="userMsgFontLineEdit" >
+           <property name="minimumSize" >
+            <size>
+             <width>150</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize" >
+            <size>
+             <width>150</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="readOnly" >
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2" >
+          <widget class="QLineEdit" name="headerMsgFontLineEdit" >
+           <property name="minimumSize" >
+            <size>
+             <width>150</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize" >
+            <size>
+             <width>150</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="readOnly" >
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="3" >
+          <widget class="QPushButton" name="userMsgFontPushButton" >
+           <property name="text" >
+            <string>Select</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3" >
+          <widget class="QPushButton" name="yourMsgFontPushButton" >
+           <property name="text" >
+            <string>Select</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3" >
+          <widget class="QPushButton" name="headerMsgFontPushButton" >
+           <property name="text" >
+            <string>Select</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0" >
+          <widget class="QLabel" name="label_16" >
+           <property name="minimumSize" >
+            <size>
+             <width>0</width>
+             <height>16</height>
+            </size>
+           </property>
+           <property name="maximumSize" >
+            <size>
+             <width>16777215</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text" >
+            <string>User message font:</string>
+           </property>
+           <property name="buddy" >
+            <cstring>yourMsgFontPushButton</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" >
+          <widget class="QLabel" name="label_15" >
+           <property name="minimumSize" >
+            <size>
+             <width>0</width>
+             <height>16</height>
+            </size>
+           </property>
+           <property name="maximumSize" >
+            <size>
+             <width>16777215</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text" >
+            <string>Your message font:</string>
+           </property>
+           <property name="buddy" >
+            <cstring>yourMsgFontPushButton</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" >
+          <widget class="QLabel" name="label_2" >
+           <property name="minimumSize" >
+            <size>
+             <width>0</width>
+             <height>16</height>
+            </size>
+           </property>
+           <property name="maximumSize" >
+            <size>
+             <width>16777215</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text" >
+            <string>Chat message header font:</string>
+           </property>
+           <property name="buddy" >
+            <cstring>yourMsgFontPushButton</cstring>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0" >
+    <widget class="QGroupBox" name="groupBox" >
+     <property name="title" >
+      <string>Colors</string>
+     </property>
+     <layout class="QGridLayout" >
+      <property name="margin" >
+       <number>9</number>
+      </property>
+      <property name="spacing" >
+       <number>6</number>
+      </property>
+      <item row="0" column="0" >
+       <widget class="QGroupBox" name="groupBox_3" >
+        <property name="title" >
+         <string>Main window</string>
+        </property>
+        <layout class="QGridLayout" >
+         <property name="margin" >
+          <number>9</number>
+         </property>
+         <property name="spacing" >
+          <number>6</number>
+         </property>
+         <item row="2" column="2" >
+          <widget class="QPushButton" name="descrCPushButton" >
+           <property name="text" >
+            <string/>
+           </property>
+           <property name="iconSize" >
+            <size>
+             <width>50</width>
+             <height>15</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2" >
+          <widget class="QPushButton" name="nickCPushButton" >
+           <property name="text" >
+            <string/>
+           </property>
+           <property name="iconSize" >
+            <size>
+             <width>50</width>
+             <height>15</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2" >
+          <widget class="QPushButton" name="rosterBgPushButton" >
+           <property name="text" >
+            <string/>
+           </property>
+           <property name="iconSize" >
+            <size>
+             <width>50</width>
+             <height>15</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item rowspan="3" row="0" column="1" >
+          <spacer>
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" >
+            <size>
+             <width>81</width>
+             <height>81</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="2" column="0" >
+          <widget class="QLabel" name="label_5" >
+           <property name="text" >
+            <string>Description font color:</string>
+           </property>
+           <property name="buddy" >
+            <cstring>descrCPushButton</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" >
+          <widget class="QLabel" name="label_4" >
+           <property name="text" >
+            <string>Nick font color:</string>
+           </property>
+           <property name="buddy" >
+            <cstring>nickCPushButton</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" >
+          <widget class="QLabel" name="label_3" >
+           <property name="text" >
+            <string>Roster background color:</string>
+           </property>
+           <property name="buddy" >
+            <cstring>rosterBgPushButton</cstring>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="1" column="0" >
+       <widget class="QGroupBox" name="groupBox_4" >
+        <property name="title" >
+         <string>Chat window</string>
+        </property>
+        <layout class="QGridLayout" >
+         <property name="margin" >
+          <number>9</number>
+         </property>
+         <property name="spacing" >
+          <number>6</number>
+         </property>
+         <item rowspan="6" row="0" column="1" >
+          <spacer>
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" >
+            <size>
+             <width>40</width>
+             <height>171</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="1" column="0" >
+          <widget class="QLabel" name="label_7" >
+           <property name="text" >
+            <string>Text edit font color:</string>
+           </property>
+           <property name="buddy" >
+            <cstring>tEditCPushButton</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0" >
+          <widget class="QLabel" name="label_8" >
+           <property name="text" >
+            <string>Your background color:</string>
+           </property>
+           <property name="buddy" >
+            <cstring>yourBgPushButton</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0" >
+          <widget class="QLabel" name="label_9" >
+           <property name="text" >
+            <string>Your font color:</string>
+           </property>
+           <property name="buddy" >
+            <cstring>yourCPushButton</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0" >
+          <widget class="QLabel" name="label_10" >
+           <property name="text" >
+            <string>User background color:</string>
+           </property>
+           <property name="buddy" >
+            <cstring>userBgPushButton</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0" >
+          <widget class="QLabel" name="label_11" >
+           <property name="text" >
+            <string>User font color:</string>
+           </property>
+           <property name="buddy" >
+            <cstring>userCPushButton</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="2" >
+          <widget class="QPushButton" name="userCPushButton" >
+           <property name="text" >
+            <string/>
+           </property>
+           <property name="iconSize" >
+            <size>
+             <width>50</width>
+             <height>15</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="2" >
+          <widget class="QPushButton" name="userBgPushButton" >
+           <property name="text" >
+            <string/>
+           </property>
+           <property name="iconSize" >
+            <size>
+             <width>50</width>
+             <height>15</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="2" >
+          <widget class="QPushButton" name="yourCPushButton" >
+           <property name="text" >
+            <string/>
+           </property>
+           <property name="iconSize" >
+            <size>
+             <width>50</width>
+             <height>15</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2" >
+          <widget class="QPushButton" name="yourBgPushButton" >
+           <property name="text" >
+            <string/>
+           </property>
+           <property name="iconSize" >
+            <size>
+             <width>50</width>
+             <height>15</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2" >
+          <widget class="QPushButton" name="tEditCPushButton" >
+           <property name="text" >
+            <string/>
+           </property>
+           <property name="iconSize" >
+            <size>
+             <width>50</width>
+             <height>15</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2" >
+          <widget class="QPushButton" name="tEditBgPushButton" >
+           <property name="text" >
+            <string/>
+           </property>
+           <property name="iconSize" >
+            <size>
+             <width>50</width>
+             <height>15</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" >
+          <widget class="QLabel" name="label_6" >
+           <property name="text" >
+            <string>Text edit background color:
+</string>
+           </property>
+           <property name="buddy" >
+            <cstring>tEditBgPushButton</cstring>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>nickFontLineEdit</tabstop>
+  <tabstop>nickFontPushButton</tabstop>
+  <tabstop>descrFontLineEdit</tabstop>
+  <tabstop>descrFontPushButton</tabstop>
+  <tabstop>headerMsgFontLineEdit</tabstop>
+  <tabstop>headerMsgFontPushButton</tabstop>
+  <tabstop>rosterBgPushButton</tabstop>
+  <tabstop>nickCPushButton</tabstop>
+  <tabstop>descrCPushButton</tabstop>
+  <tabstop>tEditBgPushButton</tabstop>
+  <tabstop>tEditCPushButton</tabstop>
+  <tabstop>yourBgPushButton</tabstop>
+  <tabstop>yourCPushButton</tabstop>
+  <tabstop>userBgPushButton</tabstop>
+  <tabstop>userCPushButton</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

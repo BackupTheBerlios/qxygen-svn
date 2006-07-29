@@ -34,7 +34,8 @@
 #include "settings.h"
 #include "tlen.h"
 
-chatWindow::chatWindow( QString label, QString jid, QWidget *parent ): QDialog( parent ) {
+chatWindow::chatWindow( QString label, QString jid, QWidget *parent ): QWidget( parent ) {
+	firstmsg=1;
 	installEventFilter(this);
 	setGeometry(150,150,350,300);
 	title=label;
@@ -48,6 +49,8 @@ chatWindow::chatWindow( QString label, QString jid, QWidget *parent ): QDialog( 
 	display=new chatTextEdit(splitter);
 	display->setReadOnly(TRUE);
 	display->setWordWrapMode(QTextOption::WrapAnywhere);
+	cursor=QTextCursor(display->textCursor());
+	cursor.movePosition(QTextCursor::Start);
 
 	QWidget *lower=new QWidget(splitter);
 
@@ -58,6 +61,7 @@ chatWindow::chatWindow( QString label, QString jid, QWidget *parent ): QDialog( 
 	input->installEventFilter(this);
 	input->setTabChangesFocus(TRUE);
 	input->setAcceptRichText(FALSE);
+	updateSettings();
 	sendButton=new QPushButton(tr("Send"));
 	sendButton->setIcon(QIcon(":send.png"));
 	sendButton->adjustSize();
@@ -107,6 +111,7 @@ chatWindow::chatWindow( QString label, QString jid, QWidget *parent ): QDialog( 
 	move(settings->profileValue("chat/position").value<QPoint>());
 	resize(settings->profileValue("chat/size").value<QSize>());
 	setWindowFlags(Qt::Window);
+	show();
 }
 
 void chatWindow::checkSend() {
@@ -155,31 +160,65 @@ void chatWindow::sendMsg() {
 		return;
 	}
 
-	QString msg=input->toPlainText();
-	if(msg.isEmpty())
+	if(input->toPlainText().isEmpty())
 		return;
-	emit writeMsg(msg,owner);
-	input->clear();
-	msg.replace("<","&lt;");
-	msg.replace(">","&gt;");
-//	msg.replace(" ", "&nbsp;");
-	msg.replace("\n", "<br/>");
-	display->append("<table width=\"100%\" style=\"background-color: #ffffff;\"><tr><td><b>"+settings->profileValue("user/profile").toString()+" :: "+QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss")+"</b></td></tr><tr><td>"+msg+"</td></tr></table>");
-//	display->append("<div width=\"100%\" style=\"background-color: #ffffff;\"><b>"+settings->profileValue("user/profile").toString()+" :: "+QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss")+"</b><br/>"+msg+"</div><br/>");
+
+	emit writeMsg(input->toPlainText(),owner);
+
+
+
+	QTextBlockFormat bf;
+	bf.setForeground( QBrush( settings->profileValue("look/color/yourc").value<QColor>() ) );
+	bf.setBackground( QBrush( settings->profileValue("look/color/yourbg").value<QColor>() ) );
+	if(firstmsg) {
+		cursor.beginEditBlock();
+		cursor.setBlockFormat(bf);
+	} else
+		cursor.insertBlock(bf);
+
+	QTextCharFormat tf;
+	tf.setFont( settings->profileValue("look/font/headermsg").value<QFont>() );
+	cursor.insertText( settings->profileValue("user/profile").toString()+" :: "+QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss\n"),tf);
+	tf.setFont( settings->profileValue("look/font/yourmsg").value<QFont>() );
+	cursor.insertText( input->toPlainText(), tf );
+
+	if(firstmsg) {
+		cursor.endEditBlock();
+		firstmsg=0;
+	}
+
+
 	notifyTimer->stop();
+	input->clear();
+	display->scrollToBottom();
 }
 
 void chatWindow::displayMsg(QString msg, QString time) {
-	msg.replace("<","&lt;");
-	msg.replace(">","&gt;");
-//	msg.replace(" ", "&nbsp;");
-	msg.replace("\n","<br/>");
-	display->append("<table width=\"100%\" style=\"background-color: #e0e0e0;\"><tr><td><b>"+title+" :: "+time+"</b></td></tr><tr><td>"+msg+"</td></tr></table>");
-//	display->append("<div width=\"100%\" style=\"background-color: #e0e0e0;\"><b>"+title+" :: "+time+"</b><br/>"+msg+"</div><br/>");
+	QTextBlockFormat bf;
+	bf.setForeground( QBrush( settings->profileValue("look/color/userc").value<QColor>() ) );
+	bf.setBackground( QBrush( settings->profileValue("look/color/userbg").value<QColor>() ) );
+	if(firstmsg) {
+		cursor.beginEditBlock();
+		cursor.setBlockFormat(bf);
+	} else
+		cursor.insertBlock(bf);
+
+	QTextCharFormat tf;
+	tf.setFont( settings->profileValue("look/font/headermsg").value<QFont>() );
+	cursor.insertText( title+" :: "+time+"\n",tf);
+	tf.setFont( settings->profileValue("look/font/usermsg").value<QFont>() );
+	cursor.insertText( msg, tf );
+
+	if(firstmsg) {
+		cursor.endEditBlock();
+		firstmsg=0;
+	}
 
 	if(!isActiveWindow())
 		msgTimer->start(500);
+
 	typingNotifyLabel->setPixmap(QPixmap(":noff.png"));
+	display->scrollToBottom();
 }
 
 void chatWindow::swapTitleBar() {
@@ -212,4 +251,12 @@ void chatWindow::typingNotify(bool t) {
 		typingNotifyLabel->setPixmap(QPixmap(":non.png"));
 	else
 		typingNotifyLabel->setPixmap(QPixmap(":noff.png"));
+}
+
+void chatWindow::updateSettings() {
+	input->setFont( settings->profileValue("look/font/yourmsg").value<QFont>() );
+	QPalette tmp=input->palette();
+	tmp.setColor( QPalette::Base, settings->profileValue("look/color/teditbg").value<QColor>() );
+	tmp.setColor( QPalette::Text, settings->profileValue("look/color/teditc").value<QColor>() );
+	input->setPalette(tmp);
 }

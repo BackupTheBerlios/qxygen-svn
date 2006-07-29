@@ -74,6 +74,10 @@ chatTextEdit::chatTextEdit( QWidget* parent ): QTextBrowser( parent ) {
 	connect(redoA, SIGNAL(triggered()), document(), SLOT(redo()));
 }
 
+void chatTextEdit::scrollToBottom() {
+	verticalScrollBar()->setValue( verticalScrollBar()->maximum() );
+}
+
 void chatTextEdit::contextMenuEvent( QContextMenuEvent* e ) {
 	if(isReadOnly())
 		displayM->popup(e->globalPos());

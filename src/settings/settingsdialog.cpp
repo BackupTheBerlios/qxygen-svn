@@ -25,29 +25,43 @@
 #include <QDir>
 #include <QMessageBox>
 #include <QTcpServer>
+#include <QScrollArea>
+#include <QFontDialog>
+#include <QColorDialog>
+#include <QPixmap>
 
 #include <QDebug>
 
 #include "settingsdialog.h"
 #include "settings.h"
 #include "roster_view.h"
+#include "roster_widget.h"
 
 settingsDialog *settingsDlg=0;
 
+
+/*******************************************************************************************
+Settings dialog
+*******************************************************************************************/
+
 settingsDialog::settingsDialog(QWidget *parent): QDialog(parent) {
+	settingsDlg=this;
 	setWindowTitle(tr("Qxygen: settings"));
 	setWindowIcon(QIcon(":logo.png"));
+	setWindowFlags(Qt::Window);
 	QGridLayout *main = new QGridLayout(this);
 	QHBoxLayout *top = new QHBoxLayout();
 	QHBoxLayout *bottom = new QHBoxLayout();
-	widgetScroll=new QScrollArea();
-	widgetScroll->setLayout( new QHBoxLayout() );
-	widgetScroll->setWidgetResizable(TRUE);
+//	widgetScroll=new QScrollArea();
+//	widgetScroll->setLayout( new QHBoxLayout() );
+//	widgetScroll->setWidgetResizable(TRUE);
+	settingsStackedWidget=new QStackedWidget(this);
+
 	tabs = new QListWidget();
 	tabs->setIconSize(QSize(32,32));
 	tabs->setMovement(QListView::Static);
 	tabs->setFlow(QListView::TopToBottom);
-	tabs->setFixedWidth(150);
+	tabs->setFixedWidth(120);
 
 	ok=new QPushButton(tr("Ok"));
 	apply=new QPushButton(tr("Apply"));
@@ -58,20 +72,17 @@ settingsDialog::settingsDialog(QWidget *parent): QDialog(parent) {
 	bottom->addWidget(apply);
 	bottom->addWidget(cancel);
 
-	generalSettings *generalS=new generalSettings();
-	tabs->addItem( generalS->settingsTab() );
-	networkSettings *networkS=new networkSettings();
-	tabs->addItem( networkS->settingsTab() );
+	new generalSettings();
+	new networkSettings();
+	new lookSettings();
 
 	top->addWidget(tabs);
-	top->addWidget(widgetScroll);
+	top->addWidget(settingsStackedWidget);
 
 	main->addLayout(top, 0, 0);
 	main->addLayout(bottom, 1, 0);
 
-//	QListWidgetItem *firstItem = tabs->item(0);
-//	tabs->setItemSelected(firstItem, TRUE);
-//	widgetScroll->setWidget( firstItem->data(settingsWidget::widgetRole).value<QWidget*>() );
+	tabs->setItemSelected(tabs->item(0), TRUE);
 
 	connect( tabs, SIGNAL( currentItemChanged(QListWidgetItem*, QListWidgetItem*) ), this, SLOT( swapSettingsWidget(QListWidgetItem*,QListWidgetItem*) ) );
 	connect( cancel, SIGNAL( clicked() ), this, SLOT( cancelSettings() ) );
@@ -79,18 +90,17 @@ settingsDialog::settingsDialog(QWidget *parent): QDialog(parent) {
 	connect( apply, SIGNAL( clicked() ), this, SLOT( saveSettings() ) );
 }
 
-void settingsDialog::swapSettingsWidget(QListWidgetItem *curr, QListWidgetItem *prev) {
-	if(prev)
-		widgetScroll->takeWidget();
-
-	widgetScroll->setWidget( curr->data(settingsWidget::widgetRole).value<QWidget*>() );
-	curr->data(settingsWidget::widgetRole).value<QWidget*>()->show();
+void settingsDialog::swapSettingsWidget(QListWidgetItem *curr, QListWidgetItem*) {
+	settingsStackedWidget->setCurrentIndex( tabs->row(curr) );
 }
 
 void settingsDialog::saveSettings() {
 	for(int i=0; i<tabs->count(); ++i) {
-		static_cast<settingsWidget*>(tabs->item(i)->data(settingsWidget::widgetRole).value<QWidget*>() )->saveSettings();
+		static_cast<settingsWidget*>( ((QScrollArea*)settingsStackedWidget->widget(i))->widget() )->saveSettings();
 	}
+
+	emit updateSettings();
+
 	QPushButton *b=qobject_cast<QPushButton*>(sender());
 	if(b==ok)
 		close();
@@ -98,16 +108,29 @@ void settingsDialog::saveSettings() {
 
 void settingsDialog::loadSettings() {
 	for(int i=0; i<tabs->count(); ++i) {
-		static_cast<settingsWidget*>(tabs->item(i)->data(settingsWidget::widgetRole).value<QWidget*>() )->loadSettings();
+		static_cast<settingsWidget*>( ((QScrollArea*)settingsStackedWidget->widget(i))->widget() )->loadSettings();
 	}
 }
 
 void settingsDialog::cancelSettings() {
 	for(int i=0; i<tabs->count(); ++i) {
-		static_cast<settingsWidget*>(tabs->item(i)->data(settingsWidget::widgetRole).value<QWidget*>() )->cancelSettings();
+		static_cast<settingsWidget*>( ((QScrollArea*)settingsStackedWidget->widget(i))->widget() )->cancelSettings();
 	}
 	close();
 }
+
+void settingsDialog::insertSettings(settingsWidget *sw) {
+	tabs->addItem( sw->settingsTab() );
+	QScrollArea *sa=new QScrollArea();
+	sa->setLayout( new QGridLayout() );
+	sa->setWidgetResizable(TRUE);
+	sa->setWidget( sw->settingsTab()->data(settingsWidget::widgetRole).value<QWidget*>() );
+	settingsStackedWidget->addWidget( sa );
+}
+
+/*******************************************************************************************
+Network settings
+*******************************************************************************************/
 
 networkSettings::networkSettings(QWidget *parent): settingsWidget(parent) {
 	if( settings->profileValue("files/receivedir").toString().isEmpty() )
@@ -124,6 +147,8 @@ networkSettings::networkSettings(QWidget *parent): settingsWidget(parent) {
 	item->setData( widgetRole, V );
 
 	connect( ui.testPortPushButton, SIGNAL( clicked() ), this, SLOT( testPort() ) );
+
+	settingsDlg->insertSettings( this );
 }
 
 void networkSettings::saveSettings() {
@@ -179,6 +204,10 @@ void networkSettings::testPort() {
 	delete server;
 }
 
+/*******************************************************************************************
+General settings
+*******************************************************************************************/
+
 generalSettings::generalSettings(QWidget *parent): settingsWidget(parent) {
 	ui.setupUi(this);
 	cancelSettings();
@@ -186,6 +215,8 @@ generalSettings::generalSettings(QWidget *parent): settingsWidget(parent) {
 	QVariant V;
 	V.setValue<QWidget*>( this );
 	item->setData( widgetRole, V );
+
+	settingsDlg->insertSettings( this );
 }
 
 void generalSettings::saveSettings() {
@@ -211,4 +242,207 @@ void generalSettings::cancelSettings() {
 	ui.showGroups->setChecked( settings->profileValue("roster/showGroups").toBool() );
 	ui.showSubgroups->setChecked( settings->profileValue("roster/showSubgroups").toBool() );
 	ui.showDescription->setChecked( settings->profileValue("roster/showDescription").toBool() );
+}
+
+/*******************************************************************************************
+Look settings
+*******************************************************************************************/
+
+lookSettings::lookSettings(QWidget *parent): settingsWidget(parent) {
+	ui.setupUi(this);
+
+	item=new QListWidgetItem( QIcon(":look.png"), tr("Look") );
+	QVariant V;
+	V.setValue<QWidget*>( this );
+	item->setData( widgetRole, V );
+
+	// setup defaults
+
+	if ( !settings->exists("look/font/nick") ) {
+		QFont roster=font();
+		settings->setProfileValue("look/font/nick",roster);
+		settings->setProfileValue("look/font/yourmsg",roster);
+		settings->setProfileValue("look/font/usermsg",roster);
+		roster.setItalic(TRUE);
+		settings->setProfileValue("look/font/descr",roster);
+		roster.setItalic(FALSE);
+		roster.setBold(TRUE);
+		settings->setProfileValue("look/font/headermsg",roster);
+		settings->setProfileValue("look/font/group",roster);
+		settings->setProfileValue("look/font/subgroup",roster);
+	}
+
+	if( !settings->exists("look/color/rosterbg") ) {
+		QPalette p=palette();
+		settings->setProfileValue( "look/color/rosterbg",p.color( QPalette::Base ) );
+		settings->setProfileValue( "look/color/nickc",p.color( QPalette::Text ) );
+		settings->setProfileValue( "look/color/descrc",p.color( QPalette::Text ) );
+		settings->setProfileValue( "look/color/teditbg",p.color( QPalette::Base ) );
+		settings->setProfileValue( "look/color/teditc",p.color( QPalette::Text ) );
+		settings->setProfileValue( "look/color/yourbg",p.color( QPalette::Base ) );
+		settings->setProfileValue( "look/color/yourc",p.color( QPalette::Text ) );
+		settings->setProfileValue( "look/color/userbg",p.color( QPalette::AlternateBase ) );
+		settings->setProfileValue( "look/color/userc",p.color( QPalette::Text ) );
+	}
+
+	cancelSettings();
+
+	connect( ui.nickFontPushButton, SIGNAL(clicked()), this, SLOT(pickFont()) );
+	connect( ui.descrFontPushButton, SIGNAL(clicked()), this, SLOT(pickFont()) );
+	connect( ui.groupFontPushButton, SIGNAL(clicked()), this, SLOT(pickFont()) );
+	connect( ui.subgroupFontPushButton, SIGNAL(clicked()), this, SLOT(pickFont()) );
+	connect( ui.headerMsgFontPushButton, SIGNAL(clicked()), this, SLOT(pickFont()) );
+	connect( ui.yourMsgFontPushButton, SIGNAL(clicked()), this, SLOT(pickFont()) );
+	connect( ui.userMsgFontPushButton, SIGNAL(clicked()), this, SLOT(pickFont()) );
+
+	connect( ui.rosterBgPushButton, SIGNAL(clicked()), this, SLOT(pickColor()) );
+	connect( ui.nickCPushButton, SIGNAL(clicked()), this, SLOT(pickColor()) );
+	connect( ui.descrCPushButton, SIGNAL(clicked()), this, SLOT(pickColor()) );
+	connect( ui.tEditBgPushButton, SIGNAL(clicked()), this, SLOT(pickColor()) );
+	connect( ui.tEditCPushButton, SIGNAL(clicked()), this, SLOT(pickColor()) );
+	connect( ui.yourBgPushButton, SIGNAL(clicked()), this, SLOT(pickColor()) );
+	connect( ui.yourCPushButton, SIGNAL(clicked()), this, SLOT(pickColor()) );
+	connect( ui.userBgPushButton, SIGNAL(clicked()), this, SLOT(pickColor()) );
+	connect( ui.userCPushButton, SIGNAL(clicked()), this, SLOT(pickColor()) );
+
+	settingsDlg->insertSettings( this );
+}
+
+void lookSettings::saveSettings() {
+	// FONTS
+	settings->setProfileValue( "look/font/nick", ui.nickFontLineEdit->font() );
+	settings->setProfileValue( "look/font/descr", ui.descrFontLineEdit->font() );
+	settings->setProfileValue( "look/font/group", ui.groupFontLineEdit->font() );
+	settings->setProfileValue( "look/font/subgroup", ui.subgroupFontLineEdit->font() );
+	settings->setProfileValue( "look/font/headermsg", ui.headerMsgFontLineEdit->font() );
+	settings->setProfileValue( "look/font/usermsg", ui.userMsgFontLineEdit->font() );
+	settings->setProfileValue( "look/font/yourmsg", ui.yourMsgFontLineEdit->font() );
+
+	// COLORS
+	settings->setProfileValue( "look/color/rosterbg", getColor(ui.rosterBgPushButton) );
+	settings->setProfileValue( "look/color/nickc", getColor(ui.nickCPushButton) );
+	settings->setProfileValue( "look/color/descrc", getColor(ui.descrCPushButton) );
+	settings->setProfileValue( "look/color/teditbg", getColor(ui.tEditBgPushButton) );
+	settings->setProfileValue( "look/color/teditc", getColor(ui.tEditCPushButton) );
+	settings->setProfileValue( "look/color/yourbg", getColor(ui.yourBgPushButton) );
+	settings->setProfileValue( "look/color/yourc", getColor(ui.yourCPushButton) );
+	settings->setProfileValue( "look/color/userbg", getColor(ui.userBgPushButton) );
+	settings->setProfileValue( "look/color/userc", getColor(ui.userCPushButton) );
+
+	// APPLY VISUAL CHANGES
+	rosterModel->emitLayoutChanged();
+	loadSettings();
+}
+
+void lookSettings::loadSettings() {
+	QPalette tmp=rosterW->palette();
+	tmp.setColor( QPalette::Base, settings->profileValue("look/color/rosterbg").value<QColor>() );
+	tmp.setColor( QPalette::Text, settings->profileValue("look/color/nickc").value<QColor>() );
+	tmp.setColor( QPalette::LinkVisited, settings->profileValue("look/color/descrc").value<QColor>() );
+	rosterW->setPalette(tmp);
+}
+
+void lookSettings::cancelSettings() {
+	QFont tmp;
+	// FONTS
+	tmp=settings->profileValue("look/font/nick").value<QFont>();
+	ui.nickFontLineEdit->setFont( tmp );
+	ui.nickFontLineEdit->setText( QString( "%1, %2" ).arg( tmp.family() ).arg( tmp.pointSize() ) );
+
+	tmp=settings->profileValue("look/font/descr").value<QFont>();
+	ui.descrFontLineEdit->setFont( tmp );
+	ui.descrFontLineEdit->setText( QString( "%1, %2" ).arg( tmp.family() ).arg( tmp.pointSize() ) );
+
+	tmp=settings->profileValue("look/font/group").value<QFont>();
+	ui.groupFontLineEdit->setFont( tmp );
+	ui.groupFontLineEdit->setText( QString( "%1, %2" ).arg( tmp.family() ).arg( tmp.pointSize() ) );
+
+	tmp=settings->profileValue("look/font/subgroup").value<QFont>();
+	ui.subgroupFontLineEdit->setFont( tmp );
+	ui.subgroupFontLineEdit->setText( QString( "%1, %2" ).arg( tmp.family() ).arg( tmp.pointSize() ) );
+
+	tmp=settings->profileValue("look/font/headermsg").value<QFont>();
+	ui.headerMsgFontLineEdit->setFont( tmp );
+	ui.headerMsgFontLineEdit->setText( QString( "%1, %2" ).arg( tmp.family() ).arg( tmp.pointSize() ) );
+
+	tmp=settings->profileValue("look/font/yourmsg").value<QFont>();
+	ui.yourMsgFontLineEdit->setFont( tmp );
+	ui.yourMsgFontLineEdit->setText( QString( "%1, %2" ).arg( tmp.family() ).arg( tmp.pointSize() ) );
+
+	tmp=settings->profileValue("look/font/usermsg").value<QFont>();
+	ui.userMsgFontLineEdit->setFont( tmp );
+	ui.userMsgFontLineEdit->setText( QString( "%1, %2" ).arg( tmp.family() ).arg( tmp.pointSize() ) );
+
+
+	// COLORS
+	ui.rosterBgPushButton->setIcon( generateIcon( settings->profileValue("look/color/rosterbg").value<QColor>() ) );
+	ui.nickCPushButton->setIcon( generateIcon( settings->profileValue("look/color/nickc").value<QColor>() ) );
+	ui.descrCPushButton->setIcon( generateIcon( settings->profileValue("look/color/descrc").value<QColor>() ) );
+	ui.tEditBgPushButton->setIcon( generateIcon( settings->profileValue("look/color/teditbg").value<QColor>() ) );
+	ui.tEditCPushButton->setIcon( generateIcon( settings->profileValue("look/color/teditc").value<QColor>() ) );
+	ui.yourBgPushButton->setIcon( generateIcon( settings->profileValue("look/color/yourbg").value<QColor>() ) );
+	ui.yourCPushButton->setIcon( generateIcon( settings->profileValue("look/color/yourc").value<QColor>() ) );
+	ui.userBgPushButton->setIcon( generateIcon( settings->profileValue("look/color/userbg").value<QColor>() ) );
+	ui.userCPushButton->setIcon( generateIcon( settings->profileValue("look/color/userc").value<QColor>() ) );
+}
+
+void lookSettings::pickColor() {
+	QPushButton *s=qobject_cast<QPushButton*>(sender());
+
+	QColor newColor=QColorDialog::getColor( getColor(s), this );
+
+	if( newColor.isValid() ) {
+		s->setIcon( generateIcon( newColor ) );
+	}
+}
+
+void lookSettings::pickFont() {
+	QPushButton *s=qobject_cast<QPushButton*>(sender());
+	QLineEdit *f;
+	QString n;
+	bool ok;
+
+	if ( s == ui.nickFontPushButton ) {
+		f=ui.nickFontLineEdit;
+		n="look/font/nick";
+	} else if ( s == ui.descrFontPushButton ) {
+		f=ui.descrFontLineEdit;
+		n="look/font/descr";
+	} else if ( s == ui.groupFontPushButton ) {
+		f=ui.groupFontLineEdit;
+		n="look/font/group";
+	} else if ( s == ui.subgroupFontPushButton ) {
+		f=ui.subgroupFontLineEdit;
+		n="look/font/subgroup";
+	} else if ( s == ui.headerMsgFontPushButton ) {
+		f=ui.headerMsgFontLineEdit;
+		n="look/font/headermsg";
+	} else if ( s == ui.yourMsgFontPushButton ) {
+		f=ui.yourMsgFontLineEdit;
+		n="look/font/yourmsg";
+	} else if ( s == ui.userMsgFontPushButton ) {
+		f=ui.userMsgFontLineEdit;
+		n="look/font/usermsg";
+	} else {
+		return;
+	}
+
+	QFont newFont=QFontDialog::getFont(&ok,settings->profileValue(n).value<QFont>(),settingsDlg);
+
+	if(ok) {
+		f->setFont( newFont );
+		f->setText( QString( "%1, %2" ).arg( newFont.family() ).arg( newFont.pointSize() ) );
+	}
+}
+
+QIcon lookSettings::generateIcon( const QColor& color ) {
+	QPixmap tmp(50,15);
+	tmp.fill(color);
+	return QIcon ( tmp );
+}
+
+QColor lookSettings::getColor( QPushButton* b ) {
+	QIcon ic=b->icon();
+	QImage tmp=ic.pixmap(50,15).toImage();
+	return QColor( tmp.pixel( 0,1 ) );
 }

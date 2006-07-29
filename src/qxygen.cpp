@@ -31,13 +31,18 @@
 
 #include "qxygen.h"
 #include "roster_item.h"
+#include "roster_widget.h"
 #include "useradd.h"
 #include "tlen.h"
 #include "profileform.h"
 #include "settingsdialog.h"
 #include "filetransfer.h"
 
+qxygen *Qxygen=0;
+rosterWidget *rosterW=0;
+
 qxygen::qxygen( QWidget* parent): QMainWindow( parent ) {
+	Qxygen=this;
 	if ( QSystemTrayIcon::isSystemTrayAvailable() )
 		setupTray();
 
@@ -64,17 +69,6 @@ void qxygen::setupTray() {
 	msg=TRUE;
 
 	connect(msgTimer, SIGNAL(timeout()), this, SLOT(swapMsgIcon()));
-//	qApp->setApplicationName("Qxygen");
-//	mTray = new TrayIcon(QPixmap(":offline.png"), "Qxygen", 0, this);
-//	mTray->setWMDock(false);
-//	mTray->setPopup(mTrayMenu);
-//	connect(mTray, SIGNAL(clicked(const QPoint &, int)), SLOT(toggleVisibility()));
-//	connect(mTray, SIGNAL(closed()), SLOT(slotTrayClosed()));
-//	connect(qApp, SIGNAL(newTrayOwner()), mTray, SLOT(newTrayOwner())); // Used on X11
-//	connect(qApp, SIGNAL(trayOwnerDied()), mTray, SLOT(hide())); // Used on X11
-//	mTray->show();
-//	connect(mTray, SIGNAL(openMsg(QString)), this, SLOT(openMsg(QString)));
-//	connect(this, SIGNAL(windowOpened(QString)), mTray, SLOT(windowOpened(QString)));
 }
 
 void qxygen::setupGui() {
@@ -164,6 +158,7 @@ void qxygen::setupMenus() {
 void qxygen::setupRoster() {
 	rosterMenu=new QMenu(ui.rosterView);
 	rosterModel=new rosterView();
+	rosterW=ui.rosterView;
 	ui.rosterView->setModel(rosterModel);
 	delegate=new rosterDelegate();
 	ui.rosterView->setItemDelegate(delegate);
@@ -197,12 +192,6 @@ void qxygen::setupSettings() {
 	updateProfilesMenu();
 }
 
-void qxygen::slotTrayClosed() {
-	if(isHidden())
-		show();
-}
-
-
 void qxygen::toggleVisibility() {
 	if(isHidden()) {
 		show();
@@ -218,6 +207,8 @@ void qxygen::toggleVisibility() {
 		activateWindow();
 	}
 	else {
+		settings->setDefaultValue("window/size", QVariant(size()));
+		settings->setDefaultValue("window/position", QVariant(pos()));
 		hide();
 	}
 }
@@ -243,26 +234,26 @@ void qxygen::showStatusMenu() {
 void qxygen::statusChange() {
 	QString status=Tlen->strStatus();
 	bool descr=(Tlen->description()).isEmpty();
-	QPixmap px;
+	QIcon px;
 
 	if(status=="available")
-		px=descr?QPixmap(":online.png"):QPixmap(":onlinei.png");
+		px=descr?QIcon(":online.png"):QIcon(":onlinei.png");
 	else if(status=="chat" || status=="chatty")
-		px=descr?QPixmap(":chatty.png"):QPixmap(":chattyi.png");
+		px=descr?QIcon(":chatty.png"):QIcon(":chattyi.png");
 	else if(status=="away")
-		px=descr?QPixmap(":away.png"):QPixmap(":awayi.png");
+		px=descr?QIcon(":away.png"):QIcon(":awayi.png");
 	else if(status=="xa")
-		px=descr?QPixmap(":unavailable.png"):QPixmap(":unavailablei.png");
+		px=descr?QIcon(":unavailable.png"):QIcon(":unavailablei.png");
 	else if(status=="dnd")
-		px=descr?QPixmap(":dnd.png"):QPixmap(":dndi.png");
+		px=descr?QIcon(":dnd.png"):QIcon(":dndi.png");
 	else if(status=="invisible")
-		px=descr?QPixmap(":invisible.png"):QPixmap(":invisiblei.png");
+		px=descr?QIcon(":invisible.png"):QIcon(":invisiblei.png");
 	else
-		px=descr?QPixmap(":offline.png"):QPixmap(":offlinei.png");
+		px=descr?QIcon(":offline.png"):QIcon(":offlinei.png");
 
-	ui.statusButton->setIcon(QIcon(px));
-	setWindowIcon(QIcon(px));
-//	mTray->setIcon(px);
+	ui.statusButton->setIcon( px );
+	setWindowIcon( px );
+	mTray->setIcon( px );
 }
 
 void qxygen::authorizationAsk( QString from ) {
@@ -354,21 +345,7 @@ void qxygen::showChatWindow(const QModelIndex &index)
 			w->activateWindow();
 		}
 		else {
-			QString label=index.model()->data(index,Qt::DisplayRole).toString();
-			chatWindow *w=new chatWindow(label,jid,0);
-			w->setWindowIcon(QIcon(QPixmap::fromImage(index.model()->data(index,Qt::DecorationRole).value<QImage>())));
-			chatMap.insert(jid,w);
-			QStringListIterator it(msgMap[jid]);
-			while(it.hasNext()) {
-				QString line=it.next();
-				QStringList msg=line.split("\t");
-				w->displayMsg(Tlen->decode(msg[0].toUtf8()), msg[1]);
-			}
-			msgMap[jid].clear();
-			connect(w, SIGNAL(writeMsg(QString,QString)), Tlen, SLOT(writeMsg(QString,QString)));
-			connect(w, SIGNAL(chatNotify(QString, bool)), Tlen, SLOT(chatNotify(QString,bool)));
-			w->show();
-			emit windowOpened(jid);
+			createChatWindow( index.model()->data(index,Qt::DisplayRole).toString(),jid, QIcon(QPixmap::fromImage(index.model()->data(index,Qt::DecorationRole).value<QImage>())) );
 		}
 	}
 }
@@ -397,22 +374,24 @@ void qxygen::openMsg(QString from)
 	}
 	else {
 		rosterItem *item=rosterModel->find(from);
-		QString label=item->data(0);
-		chatWindow *w=new chatWindow(label,from,0);
-		chatMap.insert(from,w);
-		connect(w, SIGNAL(writeMsg(QString,QString)), Tlen, SLOT(writeMsg(QString,QString)));
-		connect(w, SIGNAL(chatNotify(QString, bool)), Tlen, SLOT(chatNotify(QString,bool)));
-		w->setWindowIcon(QIcon(QPixmap::fromImage(item->icon())));
-		QStringListIterator it(msgMap[from]);
-		while(it.hasNext()) {
-			QString line=it.next();
-			QStringList msg=line.split("\t");
-			w->displayMsg(Tlen->decode(msg[0].toUtf8()), msg[1]);
-		}
-		msgMap[from].clear();
-
-		w->show();
+		createChatWindow(item->data(0),from,QIcon(QPixmap::fromImage(item->icon())));
 	}
+}
+
+void qxygen::createChatWindow(const QString& label, const QString& jid, const QIcon& icon) {
+	chatWindow *w=new chatWindow(label,jid,0);
+	w->setWindowIcon( icon );
+	chatMap.insert(jid,w);
+	QStringListIterator it(msgMap[jid]);
+	while(it.hasNext()) {
+		QString line=it.next();
+		QStringList msg=line.split("\t");
+		w->displayMsg(Tlen->decode(msg[0].toUtf8()), msg[1]);
+	}
+	msgMap[jid].clear();
+	connect(w, SIGNAL(writeMsg(QString,QString)), Tlen, SLOT(writeMsg(QString,QString)));
+	connect(w, SIGNAL(chatNotify(QString, bool)), Tlen, SLOT(chatNotify(QString,bool)));
+	connect(settingsDlg, SIGNAL(updateSettings()), w, SLOT(updateSettings()));
 }
 
 void qxygen::windowUpdate(QString owner, QIcon ico)
@@ -458,7 +437,6 @@ void qxygen::updateProfilesMenu()
 }
 
 void qxygen::loadProfile() {
-//	mTray->clearQueue();
 	if( Tlen->isConnected() )
 		Tlen->closeConn();
 
@@ -470,7 +448,7 @@ void qxygen::loadProfile() {
 		delete settingsDlg;
 	}
 
-	settingsDlg=new settingsDialog(this);
+	new settingsDialog(this);
 	settingsDlg->loadSettings();
 	
 	chatMap.clear();
@@ -489,16 +467,6 @@ void qxygen::choseProfile ( QAction* a ) {
 	loadProfile();
 }
 
-void qxygen::resizeEvent (QResizeEvent *e) {
-	settings->setDefaultValue("window/size", QVariant(size()));
-	QMainWindow::resizeEvent(e);
-}
-
-void qxygen::moveEvent (QMoveEvent *e) {
-	settings->setDefaultValue("window/position", QVariant(pos()));
-	QMainWindow::moveEvent(e);
-}
-
 void qxygen::chatNotify(QString to, QString type) {
 	if(chatWindow *w=chatMap[to]) {
 		if(type=="t")
@@ -510,11 +478,11 @@ void qxygen::chatNotify(QString to, QString type) {
 }
 
 void qxygen::setDescrDialog() {
-	descrDlg->exec();
+	descrDlg->show();
 }
 
 void qxygen::showSettingsDialog() {
-	settingsDlg->exec();
+	settingsDlg->show();
 }
 
 void qxygen::fileSendDialog() {
@@ -549,4 +517,8 @@ void qxygen::activated(int r) {
 void qxygen::swapMsgIcon() {
 	msg?mTray->setIcon(QPixmap(":msg.png")):mTray->setIcon(windowIcon());
 	msg=!msg;
+}
+
+rosterWidget* qxygen::roster() {
+	return ui.rosterView;
 }

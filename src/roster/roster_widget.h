@@ -23,8 +23,7 @@
 
 #include <QTreeView>
 
-class rosterWidget: public QTreeView
-{
+class rosterWidget: public QTreeView {
 Q_OBJECT
 
 public:
@@ -41,4 +40,6 @@ protected:
 private:
 	QMenu *menu;
 };
+
+extern rosterWidget *rosterW;
 #endif

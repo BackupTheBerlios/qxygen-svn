@@ -16,7 +16,6 @@
 
 ==CONFIGURATION
 -profile manager
--color/font picking
 
 ==OTHER
 -theme system
@@ -43,6 +42,7 @@
 ==CONFIGURATION
 -create configuration dialog
 -profiles adding/switching
+-color/font picking
 
 ==OTHER
 -proxy

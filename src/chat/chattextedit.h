@@ -23,12 +23,12 @@
 
 #include <QTextBrowser>
 
-class chatTextEdit: public QTextBrowser
-{
+class chatTextEdit: public QTextBrowser {
 Q_OBJECT
 
 public:
 	chatTextEdit(QWidget *parent=0);
+	void scrollToBottom();
 
 protected:
 	void contextMenuEvent(QContextMenuEvent *e);

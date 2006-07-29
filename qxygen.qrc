@@ -28,6 +28,7 @@
 		<file alias="non.png">img/notify_on.png</file>
 		<file alias="noff.png">img/notify_off.png</file>
 		<file alias="network.png">img/settings/network.png</file>
+		<file alias="look.png">img/settings/look.png</file>
 		<file alias="logo.png">img/logo.png</file>
 	</qresource>
 </RCC>

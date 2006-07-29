@@ -25,8 +25,7 @@
 
 #include "ui_useradd.h"
 
-class useradd: public QDialog
-{
+class useradd: public QDialog {
 Q_OBJECT
 
 public:

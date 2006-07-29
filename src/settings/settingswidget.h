@@ -24,8 +24,7 @@
 #include <QWidget>
 #include <QListWidgetItem>
 
-class settingsWidget: public QWidget
-{
+class settingsWidget: public QWidget {
 Q_OBJECT
 
 public:

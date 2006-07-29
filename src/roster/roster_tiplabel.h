@@ -26,8 +26,7 @@
 #include <QImage>
 #include <QModelIndex>
 
-class rosterTipLabel: public QLabel
-{
+class rosterTipLabel: public QLabel {
 Q_OBJECT
 
 public:

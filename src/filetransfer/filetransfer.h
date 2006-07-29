@@ -31,8 +31,7 @@
 
 #include "ui_filetransferdialog.h"
 
-class fileTransferThread: public QThread
-{
+class fileTransferThread: public QThread {
 Q_OBJECT
 
 public:
@@ -116,8 +115,7 @@ private:
 		allSize;
 };
 
-class fileTransferDialog: public QDialog
-{
+class fileTransferDialog: public QDialog {
 Q_OBJECT
 
 public:
