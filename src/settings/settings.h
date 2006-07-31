@@ -43,7 +43,7 @@ public:
 	void initModule();
 	void addProfile(QString,QString,QString);
 
-	bool exists(const QString&);
+	bool exists(const QString&, bool profileV=1);
 signals:
 	void noProfile();
 	void loadProfile();

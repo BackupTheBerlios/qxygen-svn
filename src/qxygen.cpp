@@ -51,6 +51,8 @@ qxygen::qxygen( QWidget* parent): QMainWindow( parent ) {
 	setupProtocol();
 	setupMenus();
 	setupSettings();
+
+	tr("LANG_NAME");
 }
 
 qxygen::~qxygen() {
@@ -521,4 +523,26 @@ void qxygen::swapMsgIcon() {
 
 rosterWidget* qxygen::roster() {
 	return ui.rosterView;
+}
+
+QString qxygen::getLanguage() {
+#ifdef Q_WS_WIN
+	QDir dir(QDir::homePath()+"/qxygen");
+#else
+	QDir dir(QDir::homePath()+"/.qxygen");
+#endif
+
+	if(dir.exists()) {
+
+#ifdef Q_WS_WIN
+		QSettings qxygen(dir.path()+"/qxygen",QSettings::IniFormat);
+#else
+		QSettings qxygen(dir.path()+"/qxygen",QSettings::NativeFormat);
+#endif
+
+		if( qxygen.contains("window/language") )
+			return qxygen.value("window/language").toString();
+	}
+
+	return QString();
 }

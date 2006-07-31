@@ -28,6 +28,7 @@
 #include <QFont>
 #include <QIcon>
 #include <QColor>
+#include <QTranslator>
 
 #include "settingswidget.h"
 #include "ui_networkswidget.h"
@@ -67,6 +68,7 @@ public:
 private:
 	QListWidgetItem *item;
 	Ui::generalSWidget ui;
+	QTranslator *translator;
 };
 
 class networkSettings: public settingsWidget {

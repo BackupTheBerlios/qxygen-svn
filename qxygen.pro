@@ -13,7 +13,7 @@ DEPENDPATH =	src \
 		src/protocol \
 		src/roster \
 		src/settings \
-		src/tray
+		src/tray \
 
 INCLUDEPATH = $$DEPENDPATH
 
@@ -68,4 +68,5 @@ SOURCES=src/main.cpp \
 	src/filetransfer/fileincoming.cpp \
 	src/filetransfer/sha1.cpp
 
-TRANSLATIONS =	translation/qxygen_pl.ts
+TRANSLATIONS =	translation/qxygen_pl.ts \
+		translation/qxygen_en.ts

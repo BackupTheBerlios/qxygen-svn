@@ -43,6 +43,8 @@ public:
 
 	rosterWidget *roster();
 
+	static QString getLanguage();
+
 public slots:
 	void parseRemove();
 	void collapseItem(const QModelIndex &index);

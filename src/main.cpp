@@ -21,10 +21,21 @@
 #include <QCoreApplication>
 #include <QTranslator>
 
+#include <QDebug>
+
 #include "qxygen.h"
 
 int main( int argc, char *argv[] ) {
 	QApplication app(argc, argv);
+	QTranslator trans;
+	QString lang=qxygen::getLanguage();
+	qDebug()<<lang;
+	if(!lang.isEmpty()) {
+		trans.load(":/translation/"+lang);
+		qDebug()<<trans.translate("qxygen", "LANG_NAME");
+		app.installTranslator(&trans);
+	}
+
 	new qxygen;
 	Qxygen->show();
 	QApplication::connect(qApp, SIGNAL(lastWindowClosed()), qApp, SLOT(quit()));

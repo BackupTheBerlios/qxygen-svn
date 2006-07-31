@@ -30,5 +30,8 @@
 		<file alias="network.png">img/settings/network.png</file>
 		<file alias="look.png">img/settings/look.png</file>
 		<file alias="logo.png">img/logo.png</file>
+
+		<file>translation/qxygen_pl.qm</file>
+		<file>translation/qxygen_en.qm</file>
 	</qresource>
 </RCC>

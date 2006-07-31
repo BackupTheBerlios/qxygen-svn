@@ -209,12 +209,30 @@ General settings
 *******************************************************************************************/
 
 generalSettings::generalSettings(QWidget *parent): settingsWidget(parent) {
+	translator=new QTranslator;
 	ui.setupUi(this);
 	cancelSettings();
 	item=new QListWidgetItem( QIcon(":logo.png"), tr("General") );
 	QVariant V;
 	V.setValue<QWidget*>( this );
 	item->setData( widgetRole, V );
+
+	QDir dir(":/translation");
+	QStringList fileNames = dir.entryList(QStringList("*.qm"), QDir::Files, QDir::Name);
+
+	QStringListIterator i(fileNames);
+
+	while(i.hasNext()) {
+		QString l=i.next();
+		translator->load( ":/translation/"+l );
+		ui.langComboBox->addItem( translator->translate("qxygen", "LANG_NAME"), l );
+	}
+
+	if ( settings->exists( "window/language", 0 ) ) {
+		ui.langComboBox->setCurrentIndex( ui.langComboBox->findData( settings->defaultValue("window/language") ) );
+	} else {
+		ui.langComboBox->setCurrentIndex( ui.langComboBox->findText("English") );
+	}
 
 	settingsDlg->insertSettings( this );
 }
@@ -223,6 +241,8 @@ void generalSettings::saveSettings() {
 	settings->setProfileValue( "roster/showGroups", ui.showGroups->isChecked() );
 	settings->setProfileValue( "roster/showSubgroups", ui.showSubgroups->isChecked() );
 	settings->setProfileValue( "roster/showDescription", ui.showDescription->isChecked() );
+
+	settings->setDefaultValue( "window/language", ui.langComboBox->itemData( ui.langComboBox->currentIndex() ) );
 	loadSettings();
 }
 

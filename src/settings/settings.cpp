@@ -102,6 +102,9 @@ void settingsMenager::removeProfileValue(QString key) {
 	profile->remove(key);
 }
 
-bool settingsMenager::exists(const QString& key) {
-	return profile->contains(key);
+bool settingsMenager::exists(const QString& key, bool profileV) {
+	if(profileV)
+		return profile->contains(key);
+	else
+		return qxygen->contains(key);
 }
