@@ -38,7 +38,7 @@ Q_OBJECT
 
 public:
 	enum {Available=0, Chatty=1, Away=2, Unavailable=3, Dnd=4, Invisible=5, Offline=6};
-	qxygen(QWidget *parent=0);
+	qxygen(bool reloading=FALSE,QWidget *parent=0);
 	~qxygen();
 
 	rosterWidget *roster();
@@ -123,7 +123,7 @@ private:
 	QSystemTrayIcon *mTray;
 
 	QTimer *msgTimer;
-	bool msg;
+	bool msg, reloading;
 
 	Ui::Qxygen ui;
 };

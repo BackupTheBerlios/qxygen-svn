@@ -106,12 +106,11 @@ chatWindow::chatWindow( QString label, QString jid, QWidget *parent ): QWidget( 
 
 	connect(msgTimer, SIGNAL(timeout()), this, SLOT(swapTitleBar()));
 	connect(notifyTimer, SIGNAL(timeout()), this, SLOT(chatNotifyStop()));
-	input->setFocus();
-
 	move(settings->profileValue("chat/position").value<QPoint>());
 	resize(settings->profileValue("chat/size").value<QSize>());
 	setWindowFlags(Qt::Window);
 	show();
+	input->setFocus();
 }
 
 void chatWindow::checkSend() {

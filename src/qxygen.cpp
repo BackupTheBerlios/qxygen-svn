@@ -41,7 +41,12 @@
 qxygen *Qxygen=0;
 rosterWidget *rosterW=0;
 
-qxygen::qxygen( QWidget* parent): QMainWindow( parent ) {
+qxygen::qxygen( bool re, QWidget* parent): QMainWindow( parent ) {
+	reloading=re;
+	if( Qxygen ) {
+		delete Qxygen;
+	}
+
 	Qxygen=this;
 	if ( QSystemTrayIcon::isSystemTrayAvailable() )
 		setupTray();
@@ -80,8 +85,8 @@ void qxygen::setupGui() {
 	ui.statusButton->setIcon(QIcon(":offline.png"));
 	connect(ui.statusButton, SIGNAL(clicked()), this, SLOT(showStatusMenu()));
 	ui.menuButton->setIcon(QIcon(":menu.png"));
-	ui.menuButton->setFixedSize(ui.menuButton->sizeHint());
-	ui.menuButton->setIconSize(ui.menuButton->sizeHint());
+//	ui.menuButton->setFixedSize(ui.menuButton->sizeHint());
+	ui.menuButton->setIconSize( QImage(":menu.png").size() );
 	connect(ui.menuButton, SIGNAL(clicked()), this, SLOT(showMainMenu()));
 	resize(settings->defaultValue("window/size").value<QSize>());
 	move(settings->defaultValue("window/position").value<QPoint>());
@@ -446,13 +451,25 @@ void qxygen::loadProfile() {
 	Tlen->setUname( settings->profileValue("user/login").toString() );
 	setWindowTitle( "Qxygen: "+settings->profileValue("user/profile").toString() );
 	rosterModel->clearRoster();
-	if(settingsDlg) {
+
+	if (settingsDlg && !reloading)
 		delete settingsDlg;
+
+	if(!reloading)
+		new settingsDialog();
+	else
+		reloading=FALSE;
+	
+	settingsDlg->loadSettings();
+
+	QMapIterator<QString,chatWindow*> it(chatMap);
+
+	while ( it.hasNext() ) {
+		chatWindow *w=it.next().value();
+		w->close();
+		delete w;
 	}
 
-	new settingsDialog(this);
-	settingsDlg->loadSettings();
-	
 	chatMap.clear();
 	msgMap.clear();
 	jidMsgOrderList.clear();

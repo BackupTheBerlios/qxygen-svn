@@ -39,6 +39,7 @@ class settingsDialog: public QDialog {
 Q_OBJECT
 public:
 	settingsDialog(QWidget *parent=0);
+	~settingsDialog();
 	void insertSettings(settingsWidget*);
 public slots:
 	void loadSettings();

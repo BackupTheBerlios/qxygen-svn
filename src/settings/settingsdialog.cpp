@@ -36,6 +36,7 @@
 #include "settings.h"
 #include "roster_view.h"
 #include "roster_widget.h"
+#include "qxygen.h"
 
 settingsDialog *settingsDlg=0;
 
@@ -88,6 +89,10 @@ settingsDialog::settingsDialog(QWidget *parent): QDialog(parent) {
 	connect( cancel, SIGNAL( clicked() ), this, SLOT( cancelSettings() ) );
 	connect( ok, SIGNAL( clicked() ), this, SLOT( saveSettings() ) );
 	connect( apply, SIGNAL( clicked() ), this, SLOT( saveSettings() ) );
+}
+
+settingsDialog::~settingsDialog() {
+	settingsDlg=0;
 }
 
 void settingsDialog::swapSettingsWidget(QListWidgetItem *curr, QListWidgetItem*) {
@@ -242,7 +247,18 @@ void generalSettings::saveSettings() {
 	settings->setProfileValue( "roster/showSubgroups", ui.showSubgroups->isChecked() );
 	settings->setProfileValue( "roster/showDescription", ui.showDescription->isChecked() );
 
-	settings->setDefaultValue( "window/language", ui.langComboBox->itemData( ui.langComboBox->currentIndex() ) );
+	if( settings->defaultValue( "window/language" ) != ui.langComboBox->itemData( ui.langComboBox->currentIndex() ) ) {
+		settings->setDefaultValue( "window/language", ui.langComboBox->itemData( ui.langComboBox->currentIndex() ) );
+
+		translator->load( ":/translation/"+ui.langComboBox->itemData( ui.langComboBox->currentIndex() ).toString() );
+		qApp->installTranslator(translator);
+		new qxygen(TRUE);
+		Qxygen->show();
+		settingsDlg->setAttribute(Qt::WA_DeleteOnClose,TRUE);
+		settingsDlg->close();
+		new settingsDialog;
+		settingsDlg->show();
+	}
 	loadSettings();
 }
 
