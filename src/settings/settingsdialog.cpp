@@ -93,6 +93,7 @@ settingsDialog::settingsDialog(QWidget *parent): QDialog(parent) {
 
 settingsDialog::~settingsDialog() {
 	settingsDlg=0;
+	
 }
 
 void settingsDialog::swapSettingsWidget(QListWidgetItem *curr, QListWidgetItem*) {
@@ -247,6 +248,8 @@ void generalSettings::saveSettings() {
 	settings->setProfileValue( "roster/showSubgroups", ui.showSubgroups->isChecked() );
 	settings->setProfileValue( "roster/showDescription", ui.showDescription->isChecked() );
 
+	loadSettings();
+
 	if( settings->defaultValue( "window/language" ) != ui.langComboBox->itemData( ui.langComboBox->currentIndex() ) ) {
 		settings->setDefaultValue( "window/language", ui.langComboBox->itemData( ui.langComboBox->currentIndex() ) );
 
@@ -254,12 +257,11 @@ void generalSettings::saveSettings() {
 		qApp->installTranslator(translator);
 		new qxygen(TRUE);
 		Qxygen->show();
-		settingsDlg->setAttribute(Qt::WA_DeleteOnClose,TRUE);
+//		settingsDlg->setAttribute(Qt::WA_DeleteOnClose,TRUE);
 		settingsDlg->close();
 		new settingsDialog;
 		settingsDlg->show();
 	}
-	loadSettings();
 }
 
 void generalSettings::loadSettings() {
