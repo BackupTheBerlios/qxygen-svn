@@ -234,12 +234,6 @@ generalSettings::generalSettings(QWidget *parent): settingsWidget(parent) {
 		ui.langComboBox->addItem( translator->translate("qxygen", "LANG_NAME"), l );
 	}
 
-	if ( settings->exists( "window/language", 0 ) ) {
-		ui.langComboBox->setCurrentIndex( ui.langComboBox->findData( settings->defaultValue("window/language") ) );
-	} else {
-		ui.langComboBox->setCurrentIndex( ui.langComboBox->findText("English") );
-	}
-
 	settingsDlg->insertSettings( this );
 }
 
@@ -247,8 +241,6 @@ void generalSettings::saveSettings() {
 	settings->setProfileValue( "roster/showGroups", ui.showGroups->isChecked() );
 	settings->setProfileValue( "roster/showSubgroups", ui.showSubgroups->isChecked() );
 	settings->setProfileValue( "roster/showDescription", ui.showDescription->isChecked() );
-
-	loadSettings();
 
 	if( settings->defaultValue( "window/language" ) != ui.langComboBox->itemData( ui.langComboBox->currentIndex() ) ) {
 		settings->setDefaultValue( "window/language", ui.langComboBox->itemData( ui.langComboBox->currentIndex() ) );
@@ -262,6 +254,8 @@ void generalSettings::saveSettings() {
 		new settingsDialog;
 		settingsDlg->show();
 	}
+
+	loadSettings();
 }
 
 void generalSettings::loadSettings() {
@@ -280,6 +274,12 @@ void generalSettings::cancelSettings() {
 	ui.showGroups->setChecked( settings->profileValue("roster/showGroups").toBool() );
 	ui.showSubgroups->setChecked( settings->profileValue("roster/showSubgroups").toBool() );
 	ui.showDescription->setChecked( settings->profileValue("roster/showDescription").toBool() );
+
+	if ( settings->exists( "window/language", 0 ) ) {
+		ui.langComboBox->setCurrentIndex( ui.langComboBox->findData( settings->defaultValue("window/language") ) );
+	} else {
+		ui.langComboBox->setCurrentIndex( ui.langComboBox->findText("English") );
+	}
 }
 
 /*******************************************************************************************

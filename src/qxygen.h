@@ -75,7 +75,7 @@ public slots:
 	void choseProfile(QAction*);
 	void fileSendDialog();
 
-	void activated(int);
+	void activated(QSystemTrayIcon::ActivationReason);
 	void swapMsgIcon();
 signals:
 	void authorize(QString, bool);

@@ -67,7 +67,7 @@ void qxygen::setupTray() {
 	mTrayMenu = new QMenu();
 	mTray=new QSystemTrayIcon(QIcon(":offline.png"),this);
 
-	connect(mTray, SIGNAL(activated(int)), this, SLOT(activated(int)));
+	connect(mTray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(activated(QSystemTrayIcon::ActivationReason)));
 
 	mTray->setContextMenu(mTrayMenu);
 	mTray->show();
@@ -519,7 +519,7 @@ void qxygen::fileSendDialog() {
 		dlg->show();
 	}
 }
-void qxygen::activated(int r) {
+void qxygen::activated(QSystemTrayIcon::ActivationReason r) {
 	if ( jidMsgOrderList.count() ) {
 		openMsg( jidMsgOrderList[0] );
 		jidMsgOrderList.removeAll( jidMsgOrderList[0] );
